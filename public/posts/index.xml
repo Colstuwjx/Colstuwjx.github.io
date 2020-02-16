@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Colstuwjx&#39;s site</title>
+    <link>https://colstuwjx.github.io/posts/</link>
+    <description>Recent content in Posts on Colstuwjx&#39;s site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 14 May 2014 20:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://colstuwjx.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Saltstack 学习之target minions（一）</title>
+      <link>https://colstuwjx.github.io/posts/salt-minion-target-01/</link>
+      <pubDate>Wed, 14 May 2014 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/posts/salt-minion-target-01/</guid>
+      <description>本文总结saltstack如何定位目标主机，以及介绍一些常见使用样例。
+ 为什么需要定位主机？
+ 作为配置管理软件，首先要解决的是如何确定一次推送的主机，或者说特定配置的推送目标。试问如果无法很好的确定一次或多次推送的目标，又何谈实现大批主机的分类配置管理的自动化呢？
+ saltstack的target机制？
+ saltstack 为此建立了一套很是完善的minion定位机制。官方术语叫“target minions”，即通过多种途径，指定minion具有的属性（比如正则匹配minion id，或是匹配minion的特定grains属性等）来区分出本次推送命令或状态的对应目标，以下是salt提供的匹配主机的方法：
+ globbing （默认的匹配方式，linux shell风格的通配） Perl-compatible regular expressions (E，即正则匹配方式，对象同样是minion id) Lists （L，直接是一串minion id 列表） Grains （G/P，使用grains值匹配，P是使用正则匹配方式，G则是默认通配方式。） NodeGroup （N，master配置文件里预定义好的组别信息） Subnet（S，利用minion 的IP属性进行匹配） Range cluster （R，设置range服务器反馈值匹配?暂时没搞懂） Pillar（I，简单，用pillar数据匹配） Compound（C，组合匹配方式，以上述一种或多种方式联合匹配）  一些常见的target例子：
+salt &#39;*&#39; test.ping -v salt &#39;Cloud[1-5]&#39; test.ping -v salt &#39;test*&#39; test.ping -v salt -E &#39;Test.*&#39; test.ping -v salt -L &#39;TestVM01,TestVM02&#39; test.ping -v #中间不要有空格 salt -G &#39;os:CentOS&#39; test.ping -v #同样的，不要有多余字符 salt -N &#39;group1&#39; test.</description>
+    </item>
+    
+    <item>
+      <title>个人博客站点开放</title>
+      <link>https://colstuwjx.github.io/posts/intro/</link>
+      <pubDate>Sat, 10 May 2014 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/posts/intro/</guid>
+      <description>没有博客分享精神的IT男，无法成为一个真正的大牛。 作为一个IT人，总是对博客有点特殊情结的说。于是，便买了个域名外加搭建了一个Ghost博客站点，用来存放本人的一些文章，欢迎踩踩! 这里主要放的博客文章将会是关于Saltstack、Openstack、Python开发、Linux运维等技术和知识概念，也会有一些奇怪的东西进来 ……
+对于Devops理念，近几年越来越火，个人认为，就跟文理搭配一样，IT界的两种类型：开发与运维，最终还是会融合到一起，形成的就是新兴的Devops工程师。对于Devopser而言，鄙人认为运维是基石，倘若没有坚实的运维基础，何谈将其整合、开发、自动化？
+开发、Linux、集群、网络、配置管理、监控、各种新兴技术，诶，慢慢学吧。。
+关于本人： Colstuwjx，运维攻城狮入门屌丝一枚，学习Devops中，开发和运维两方面压力压的实在喘不过气。。</description>
+    </item>
+    
+  </channel>
+</rss>

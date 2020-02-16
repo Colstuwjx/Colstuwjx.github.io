@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Categories on Colstuwjx&#39;s site</title>
+    <link>https://colstuwjx.github.io/categories/</link>
+    <description>Recent content in Categories on Colstuwjx&#39;s site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 14 May 2014 20:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://colstuwjx.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>it</title>
+      <link>https://colstuwjx.github.io/categories/it/</link>
+      <pubDate>Wed, 14 May 2014 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/categories/it/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>talk</title>
+      <link>https://colstuwjx.github.io/categories/talk/</link>
+      <pubDate>Sat, 10 May 2014 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/categories/talk/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
