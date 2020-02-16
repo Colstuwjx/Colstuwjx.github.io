@@ -3,9 +3,10 @@ title: "个人博客站点开放"
 date: 2014-05-10T20:00:00+08:00
 tags: ["site"]
 categories: ["talk"]
-comments: false
+comments: true
 showMeta: false
 showAction: false
+GHissueID: 1
 ---
 
 没有博客分享精神的IT男，无法成为一个真正的大牛。
