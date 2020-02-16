@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>it on Colstuwjx&#39;s site</title>
+    <link>https://colstuwjx.github.io/categories/it/</link>
+    <description>Recent content in it on Colstuwjx&#39;s site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 14 May 2014 20:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://colstuwjx.github.io/categories/it/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Saltstack 学习之target minions（一）</title>
+      <link>https://colstuwjx.github.io/2014/05/saltstack-%E5%AD%A6%E4%B9%A0%E4%B9%8Btarget-minions%E4%B8%80/</link>
+      <pubDate>Wed, 14 May 2014 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/2014/05/saltstack-%E5%AD%A6%E4%B9%A0%E4%B9%8Btarget-minions%E4%B8%80/</guid>
+      <description>&lt;p&gt;本文总结saltstack如何定位目标主机，以及介绍一些常见使用样例。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

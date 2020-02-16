@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Gossip on Colstuwjx&#39;s site</title>
+    <link>https://colstuwjx.github.io/categories/gossip/</link>
+    <description>Recent content in Gossip on Colstuwjx&#39;s site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sun, 16 Feb 2020 15:11:09 +0800</lastBuildDate>
+    
+	<atom:link href="https://colstuwjx.github.io/categories/gossip/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>个人博客站点开放</title>
+      <link>https://colstuwjx.github.io/posts/intro/</link>
+      <pubDate>Sun, 16 Feb 2020 15:11:09 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/posts/intro/</guid>
+      <description>没有博客分享精神的IT男，无法成为一个真正的大牛。  作为一个IT人，总是对博客有点特殊情结的说。于是，便买了个域名外加搭建了一个Ghost博客站点，用来存放本人的一些文章，欢迎踩踩! 这里主要放的博客文章将会是关于Saltstack、Openstack、Python开发、Linux运维等技术和知识概念，也会有一些奇怪的东西进来 ……
+对于Devops理念，近几年越来越火，个人认为，就跟文理搭配一样，IT界的两种类型：开发与运维，最终还是会融合到一起，形成的就是新兴的Devops工程师。对于Devopser而言，鄙人认为运维是基石，倘若没有坚实的运维基础，何谈将其整合、开发、自动化？
+开发、Linux、集群、网络、配置管理、监控、各种新兴技术，诶，慢慢学吧。。
+关于本人： Colstuwjx，运维攻城狮入门屌丝一枚，学习Devops中，开发和运维两方面压力压的实在喘不过气。。 </description>
+    </item>
+    
+  </channel>
+</rss>
