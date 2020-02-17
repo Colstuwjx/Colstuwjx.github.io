@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>kubernetes on Colstuwjx&#39;s site</title>
+    <link>https://colstuwjx.github.io/tags/kubernetes/</link>
+    <description>Recent content in kubernetes on Colstuwjx&#39;s site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 20 Jan 2018 20:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://colstuwjx.github.io/tags/kubernetes/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>kube-dns实现原理的解读</title>
+      <link>https://colstuwjx.github.io/2018/01/kube-dns%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E7%9A%84%E8%A7%A3%E8%AF%BB/</link>
+      <pubDate>Sat, 20 Jan 2018 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/2018/01/kube-dns%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E7%9A%84%E8%A7%A3%E8%AF%BB/</guid>
+      <description>&lt;p&gt;最近一直在做类似skydns的dns服务发现相关的研究和代码实现，也就有了兴趣想解读下kube-dns的实现过程，学习和参考下社区的做法。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

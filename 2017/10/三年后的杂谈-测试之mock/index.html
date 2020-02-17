@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.64.1 with theme Tranquilpeak 0.4.7-BETA">
+<meta name="author" content="Jacky Wu (Colstuwjx)">
+<meta name="keywords" content="">
+<meta name="description" content="笔者最近开始补全测试方面的一些基础知识，由于也算是个人职业技能建设的一部分，权且也算作&rdquo;三年小结&rdquo;系列的一篇罢。">
+
+
+<meta property="og:description" content="笔者最近开始补全测试方面的一些基础知识，由于也算是个人职业技能建设的一部分，权且也算作&rdquo;三年小结&rdquo;系列的一篇罢。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[ 三年后的杂谈 ] 测试之Mock">
+<meta name="twitter:title" content="[ 三年后的杂谈 ] 测试之Mock">
+<meta property="og:url" content="https://colstuwjx.github.io/2017/10/%E4%B8%89%E5%B9%B4%E5%90%8E%E7%9A%84%E6%9D%82%E8%B0%88-%E6%B5%8B%E8%AF%95%E4%B9%8Bmock/">
+<meta property="twitter:url" content="https://colstuwjx.github.io/2017/10/%E4%B8%89%E5%B9%B4%E5%90%8E%E7%9A%84%E6%9D%82%E8%B0%88-%E6%B5%8B%E8%AF%95%E4%B9%8Bmock/">
+<meta property="og:site_name" content="Colstuwjx&#39;s site">
+<meta property="og:description" content="笔者最近开始补全测试方面的一些基础知识，由于也算是个人职业技能建设的一部分，权且也算作&rdquo;三年小结&rdquo;系列的一篇罢。">
+<meta name="twitter:description" content="笔者最近开始补全测试方面的一些基础知识，由于也算是个人职业技能建设的一部分，权且也算作&rdquo;三年小结&rdquo;系列的一篇罢。">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2017-10-14T20:00:00">
+  
+  
+    <meta property="article:modified_time" content="2017-10-14T20:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="test">
+    
+  
+  
+    
+      <meta property="article:tag" content="talk">
+    
+      <meta property="article:tag" content="mock">
+    
+      <meta property="article:tag" content="devops">
+    
+      <meta property="article:tag" content="test">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+  <meta property="twitter:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+
+
+    <title>[ 三年后的杂谈 ] 测试之Mock</title>
+
+    <link rel="icon" href="https://colstuwjx.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://colstuwjx.github.io/2017/10/%E4%B8%89%E5%B9%B4%E5%90%8E%E7%9A%84%E6%9D%82%E8%B0%88-%E6%B5%8B%E8%AF%95%E4%B9%8Bmock/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/comments.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://colstuwjx.github.io/">Colstuwjx&#39;s site</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://colstuwjx.github.io/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://colstuwjx.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">Jacky Wu (Colstuwjx)</h4>
+        
+          <h5 class="sidebar-profile-bio">DevOPS &amp; OpenSource Fans</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Colstuwjx" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-user"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      [ 三年后的杂谈 ] 测试之Mock
+    </h1>
+  
+  
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>笔者最近开始补全测试方面的一些基础知识，由于也算是个人职业技能建设的一部分，权且也算作&rdquo;三年小结&rdquo;系列的一篇罢。</p>
+
+<blockquote>
+<p>TIPS：测试领域的水非常深，本人只是班门弄斧，欢迎测试领域的大佬们拍砖~</p>
+</blockquote>
+
+<h2 id="mock">Mock</h2>
+
+<h3 id="why-mock">why mock</h3>
+
+<p>在软件测试的领域里，单元测试被视为一个项目代码覆盖率的重要衡量指标。我们在执行单元测试时，往往需要测试和关注的是自身组件代码的稳定性，而非外界依赖\服务的交互（这块的测试放到了集成测试的部分），也因此产生了伪造调用依赖/服务的需求。</p>
+
+<p>通过mock，我们可以假装调用了xxx服务，或者xxx sdk的方法，甚至于可以借此测试一些复杂的场景，比如重试部分的代码是否符合预期等等。</p>
+
+<h3 id="mock-in-python">mock in Python</h3>
+
+<p>Python的mock库为我们提供了完善的功能，可以很好地实现伪造请求/调用的需求。</p>
+
+<h3 id="magicmock">MagicMock</h3>
+
+<p>我们一起来看看下面这个例子：</p>
+<pre><code># a simple module with a simple class
+class AClass(object):
+    def method(self, an_argument):
+        print "I typed {}".format(an_argument)</code></pre><pre><code>>>> from mock import MagicMock
+>>> import amodule
+>>> thing = amodule.AClass()
+
+# method方法替换成MagicMock实例
+# 这里传入参数指定了return_value，因此调用MagicMock伪造的method方法，将会返回3！
+>>> thing.method = MagicMock(return_value=3)
+>>> print thing.method('an_arg')
+3
+
+# assert_called_with 即验证，我们最近一次调用method方法，是传入了'others'来调用的
+# 但是，显然不是:( 因此这行会报错
+>>> print thing.method.assert_called_with('others')
+...
+AssertionError: Expected call: mock('others')
+Actual call: mock('an_arg')</code></pre>
+<p>上面这个例子可以实现什么效果呢？<code>MagicMock</code>是mock模块的一个魔法类，它可以实现对现实方法的模拟，在本例子里，MagicMock即替代了<code>thing</code>的<code>method</code>方法，它会假装接受传入的参数，然后返回值设置为<code>3</code>，因此调用<code>thing.method</code>时实现的效果便是得到的返回值为<code>3</code>。</p>
+
+<p>我们还注意到，这里有调用一个<code>assert_called_with</code>方法，那么这个方法的作用是什么呢？正如注释里面所说的，它会去验证最近一次对mock代替的方法的调用，传入的参数是预期的那样，否则会报错<code>AssertionError</code>。</p>
+
+<p>当然，MagicMock还有其他的一些功能，比如<code>side_effect</code>实现调用该方法执行一些额外操作等。</p>
+
+<h3 id="patch">Patch</h3>
+
+<p>除了MagicMock外，mock模块里另外一个经常用到的是patch。</p>
+
+<p>patch经常被用到的场景是结合with关键字使用，通常它可以用来在with作用域内mock一个或一组方法的调用。</p>
+
+<p>下面是一个mock <code>requests.get</code>返回值的例子：</p>
+<pre><code>import mock
+import requests
+import json
+import unittest
+
+
+def get_request():
+    req = requests.get("http://www.baidu.com")
+    # do sth...
+    return req.status_code == 200
+
+
+class TestClient(unittest.TestCase):
+    @mock.patch('requests.get')
+    def test_get_request(self, mock_request):
+        mock_request.return_value = mock.MagicMock(
+            status_code=200, response=json.dumps({'key': 'value'})
+        )
+        self.assertEqual(get_request(), True)
+
+
+if __name__ == '__main__':
+    unittest.main()</code></pre><pre><code># result
+$ python request_get_mock.py
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+OK</code></pre>
+<p>我们通过patch关键字成功mock了<code>requests.get</code>方法的调用！可以看到，使用patch的过程非常的Pythonic！</p>
+
+<h2 id="一个完整的单元测试">一个完整的单元测试</h2>
+
+<p>说了这么多，让我们一起看一个完整的例子来系统了解下现实世界里mock的用法吧！下面代码是一个完整的用来测试博客<code>Blog</code>类的<code>post</code>方法的测试用例，覆盖了成功、失败、重试等完整逻辑功能，可以从<a href="https://github.com/Colstuwjx/python-examples/tree/master/test/testcase">我的Github</a>找到可执行的源代码。</p>
+<pre><code># coding=utf-8
+
+import unittest
+import retrying
+import mock
+import requests
+import json
+
+
+class RequestError(Exception):
+    def __init__(self, server):
+        self.message = "Request failed to {}.".format(server)
+
+
+class Blog(object):
+    '''
+    Blog类包含一些博客文章相关的操作封装
+    类在初始化后，post方法提供对指定文章链接内容的获取并返回JSON的格式
+    '''
+    def __init__(self, name):
+        self.name = name
+
+    @retrying.retry(stop_max_attempt_number=3, wait_fixed=100)
+    def post(self, article_path):
+        '''
+        根据获取文章的内容
+        '''
+        response = requests.get("http://{name}/{path}".format(
+            name=self.name,
+            path=article_path))
+        if response.status_code >= 200 and response.status_code < 300:
+            return response.text
+        else:
+            raise RequestError(self.name)
+
+    def __repr__(self):
+        return '<Blog: {}>'.format(self.name)
+
+
+class TestBlog(unittest.TestCase):
+    '''
+    我们需要测试哪些内容？根据K大的http://docs.python-guide.org/en/latest/writing/tests/
+    我们关注本身的功能的覆盖，那么主要需要测试：
+    1. 正常请求时是否能获得正确的JSON数据
+    2. 异常返回时是否抛出RequestError异常
+    3. 遇到错误是否会重试
+    '''
+    @mock.patch('requests.get')
+    def test_blog_post(self, mock_get):
+        mocked_content = json.dumps({
+            'status': True, 'content': 'This is the post content'
+        })
+        mocked_success = mock.MagicMock(
+                status_code=200,
+                headers={'content-type': "application/json"},
+                text=mocked_content)
+        mock_get.return_value = mocked_success
+
+        # new blog instance and call `post`.
+        # confirm return value on succcess.
+        b = Blog(name="devopstarter.info")
+        content = b.post("three-years-later-test-mock")
+        self.assertEqual(content, mocked_content)
+
+        mock_get.reset_mock()  # reset mock, include called count etc.
+        mocked_error = mock.MagicMock(
+                status_code=500,
+                headers={'content-type': "application/json"},
+                text="Internal server error")
+        # confirm raise exception on failure.
+        # due to mock object return_value is always error, retry is also error.
+        mock_get.return_value = mocked_error
+        with self.assertRaises(RequestError):
+            b.post("three-years-later-test-mock")
+        # confirm the retry works in failure case, call_count exceeded 3!
+        self.assertEqual(mock_get.call_count, 3)
+
+        # confirm the retry works while ONLY one time failed.
+        # `side_effect` helped us complete this goal!
+        mock_get.reset_mock()  # reset mock, include called count etc.
+        mock_get.side_effect = [
+            requests.ConnectionError('Test error'),
+            mocked_success
+        ]
+        content = b.post("three-years-later-test-mock")
+        self.assertEqual(content, mocked_content)
+
+
+if __name__ == '__main__':
+    unittest.main()</code></pre>
+<p>关于测试用例如何覆盖，笔者强烈建议阅读k大的<a href="http://docs.python-guide.org/en/latest/writing/tests/">guide</a>。</p>
+
+<h2 id="mock模块的实现分析">mock模块的实现分析</h2>
+
+<h3 id="monkeypatch">MonkeyPatch</h3>
+
+<p>这么棒的模块究竟是怎么实现的呢？带着这样的好奇，我们不妨先考虑一下mock模块本身的需求，然后再通过阅读源码来确认实现原理。</p>
+
+<p>mock模块的需求，大致有下面这些：</p>
+
+<ul>
+<li>能够模拟模块里的类和方法，得到的mock实例应该与原有模块的方法&rdquo;动作&rdquo;一样；</li>
+<li>能够控制mock实例的返回值、调用情况、异常错误处理等；</li>
+<li>&hellip;</li>
+</ul>
+
+<p>在继续分析mock源码之前，我们先通过一个简单的例子讲解一下monkeypatch这一技巧。不妨假设我们有下面这样一个模块<code>mymodule</code>，里面实现了一个<code>Hello</code>方法。</p>
+<pre><code># mymodule.py
+def Hello():
+    print "Hello, Jacky!"</code></pre>
+<p>假设我们现在有N个（N&gt;&gt;100）代码文件里均调用了这一方法，而我们现在有一个需求，需要让Hello的行为发生变化，在不改变上述源码内容的情况下，有什么办法实现吗？答案当然是有啦！</p>
+
+<p>在动态语言里，例如Python，可以通过覆盖模块的方法对象来实现对方法的hack，不妨参考下面的代码：</p>
+<pre><code># monkeypatch.py
+
+import sys
+import mymodule
+
+
+# patched method `Hello`
+def Hello():
+    print "Hello, Monkey!"
+
+
+# monkey patch
+class monkeypatch(object):
+    def __init__(self):
+        mymod = self._get_global_module("mymodule")
+
+        # Methods to replace
+        self.methods = ('Hello', )
+        # Store the original methods
+        self.orig_methods = dict(
+            (m, mymod.__dict__[m]) for m in self.methods)
+        # Monkey patch
+        g = globals()
+        for m in self.methods:
+            # mymod's method has been replaced!
+            mymod.__dict__[m] = g[m]
+
+    def _get_global_module(self, mod):
+        return sys.modules[mod]
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        mymod = self._get_global_module("mymodule")
+        # restore the method
+        for m in self.methods:
+            mymod.__dict__[m] = self.orig_methods[m]
+
+
+if __name__ == '__main__':
+    monkeypatch()
+
+    # under this hood, mymodule's Hello has been monkeypatched.
+    mymodule.Hello()</code></pre><pre><code># actual call
+$ python monkeypatch.py
+Hello, Monkey!</code></pre>
+<p>我们看到了，最终我们在没有改动源码的情况下，实现了对Hello方法的hack！Success！</p>
+
+<p>上述例子即是一个monkeypatch（猴子补丁）的示范（完整例子可以转到<a href="https://github.com/Colstuwjx/python-examples/tree/master/test/monkey_patch">Github</a>），而通过实现<code>__enter__</code>,<code>__exit__</code>方法，monkeypatch的影响范围限制在本身实例方法的作用域（也让它可以用<code>with...</code>的方式调用）。</p>
+
+<p>一般来说，monkeypatch适用于无法很好地修改当前调用某个类库的方法，而需要在上层调用时动手脚的场景。（在此，感谢毛毛同学让我第一次知道monkeypatch这个技巧~）</p>
+
+<h3 id="get-child-mock">_get_child_mock</h3>
+
+<p>如果读者尝试过执行MagicMock方法，会发现这样的效果：</p>
+<pre><code>In [6]: import mock
+
+In [7]: m = mock.MagicMock()
+
+In [8]: isinstance(m, mock.MagicMock)
+Out[8]: True
+
+In [9]: isinstance(m.m, mock.MagicMock)
+Out[9]: True
+
+In [10]: isinstance(m.m.m, mock.MagicMock)
+Out[10]: True</code></pre>
+<p>啊咧，怎么会这样？！！
+别着急，细想一下，如果我们需要方便的模拟类里面内部甚至嵌套的任何一处调用，黑魔法似的MagicMock似乎正好可以帮助我们实现这样的效果！</p>
+
+<p>那么，它是怎么实现的呢？让我们正式开始阅读<a href="https://github.com/testing-cabal/mock/blob/master/mock/mock.py">mock源码</a>的旅行吧！</p>
+
+<p>我们不难发现，<code>MagicMock</code>类是继承<code>Mock</code>和<code>MagicMixin</code>。</p>
+
+<p>继续八下去，我们可以看到它有重载<code>__call__</code>和<code>__get__</code>方法（<code>__get__</code>是Python里面元类的一个方法，class.xxx，均是调用此方法获取的，重载它即修改了class.xxx的调用结果），每次都会调用<code>create_mock</code>方法，后面又调用了<code>_get_child_mock</code>方法：</p>
+<pre><code>...
+    def _get_child_mock(self, **kw):
+        """Create the child mocks for attributes and return value.
+        By default child mocks will be the same type as the parent.
+        Subclasses of Mock may want to override this to customize the way
+        child mocks are made.
+        For non-callable mocks the callable variant will be used (rather than
+        any custom subclass)."""
+...</code></pre>
+<p>根据代码docstring即可知晓，它便是MagicMock类实现上述黑魔法的依仗（Mock类的<code>__getattr__</code>同样调用了该方法~）。</p>
+
+<h3 id="callablemixin">CallableMixin</h3>
+
+<p>上述实现恐怕还不能够满足mock的需求，我们还需要实现模拟原模块方法的调用，那么<code>调用</code>怎么实现呢？</p>
+
+<p>同样从源码里，我们可以发现<code>MagicMock</code>是部分继承自<code>Mock</code>的，<code>Mock</code>有一个很有意思的父类，叫做<code>CallableMixin</code>，它即是模拟调用的核心实现。</p>
+
+<p>我们可以看到它有个<a href="https://github.com/testing-cabal/mock/blob/master/mock/mock.py#L1065">_mock_call</a>的实现，其内部又是调用<a href="https://github.com/testing-cabal/mock/blob/master/mock/mock.py#L2091">_Call</a>类来实现链式调用，具体的话，读者们可以细看下该类的完整实现~</p>
+
+<h3 id="一些黑科技">一些黑科技</h3>
+
+<p>mock模块里其他一些利用到的黑科技还包括以下这些：</p>
+<pre><code># https://github.com/testing-cabal/mock/blob/master/mock/mock.py#L1203
+# _importer 方法实现的即动态根据"class.module"引入相应的原始模块
+
+# https://github.com/testing-cabal/mock/blob/master/mock/mock.py#L1270
+# patch是通过猴子补丁实现方法和类的mock，没错，就是前面介绍到的monkeypatch，这也是mock模块的主要实现思想！
+
+# 其他一些代码也比较有趣，奈何功力有限，读的不是很清晰，就不误人子弟了，:)
+...</code></pre>
+<p>总的来说，mock模块通过简单的2k+代码实现了强大完善的模块类和方法的模拟，棒棒哒！</p>
+
+<h2 id="结语">结语</h2>
+
+<p>鄙人在这篇文章里介绍了mock的概念以及Python的mock模块提供的<code>MagicMock</code>、<code>patch</code>、<code>return_value</code>、<code>side_effect</code>等诸多方法，并简单分析了mock模块的源码实现。</p>
+
+<p>测试的领域同样浩瀚无边，如何验证自己的代码在各种各样的业务场景下的健壮性和可维护性，是一门很深的学问。希望这篇文章能够让更多的人了解mock的用法、意义以及它的实现原理。</p>
+
+<p>参考：</p>
+
+<ul>
+<li><p><a href="http://docs.python-guide.org/en/latest/writing/tests/">http://docs.python-guide.org/en/latest/writing/tests/</a></p></li>
+
+<li><p><a href="https://github.com/testing-cabal/mock/blob/master/mock/mock.py">https://github.com/testing-cabal/mock/blob/master/mock/mock.py</a></p></li>
+</ul>
+
+<p>引申阅读：</p>
+
+<ul>
+<li><p><a href="https://en.wikipedia.org/wiki/Test-driven_development">TDD</a></p></li>
+
+<li><p><a href="http://www.voidspace.org.uk/python/mock/mock.html">mock用法</a></p></li>
+
+<li><p>系列介绍mock的好文两篇： <a href="http://blog.thedigitalcatonline.com/blog/2016/03/06/python-mocks-a-gentle-introduction-part-1">python-mocks-a-gentle-introduction-part-1</a>、<a href="http://blog.thedigitalcatonline.com/blog/2016/09/27/python-mocks-a-gentle-introduction-part-2">python-mocks-a-gentle-introduction-part-2</a></p></li>
+</ul>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/talk/">talk</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/mock/">mock</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/devops/">devops</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/test/">test</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2018/01/%E4%BD%BF%E7%94%A8locust-boomer%E5%AE%9E%E7%8E%B0%E5%AF%B9%E9%9D%9Eweb%E7%BB%84%E4%BB%B6%E7%9A%84%E5%8E%8B%E6%B5%8B/" data-tooltip="使用locust &#43; boomer实现对非web组件的压测">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2017/09/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-just-for-fun/" data-tooltip="[ 读书笔记 ] Just for Fun">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2020 Powered by Hugo with tranquilpeak. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2018/01/%E4%BD%BF%E7%94%A8locust-boomer%E5%AE%9E%E7%8E%B0%E5%AF%B9%E9%9D%9Eweb%E7%BB%84%E4%BB%B6%E7%9A%84%E5%8E%8B%E6%B5%8B/" data-tooltip="使用locust &#43; boomer实现对非web组件的压测">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2017/09/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-just-for-fun/" data-tooltip="[ 读书笔记 ] Just for Fun">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+    
+    <h4 id="about-card-name">Jacky Wu (Colstuwjx)</h4>
+    
+      <div id="about-card-bio">DevOPS &amp; OpenSource Fans</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        DevOPS Engineer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    <div id="cover" style="background-image:url('https://res.cloudinary.com/ddhitj0ja/image/upload/v1581843208/pic_nfgplt.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://colstuwjx.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+
+
+
+
+    
+  </body>
+</html>
+

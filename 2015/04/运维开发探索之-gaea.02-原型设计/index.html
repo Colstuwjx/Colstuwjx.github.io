@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.64.1 with theme Tranquilpeak 0.4.7-BETA">
+<meta name="author" content="Jacky Wu (Colstuwjx)">
+<meta name="keywords" content="">
+<meta name="description" content="这篇文章是运维开发探索系列之Gaea篇的第二篇。">
+
+
+<meta property="og:description" content="这篇文章是运维开发探索系列之Gaea篇的第二篇。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="运维开发探索之&lt; Gaea.02 原型设计 &gt;">
+<meta name="twitter:title" content="运维开发探索之&lt; Gaea.02 原型设计 &gt;">
+<meta property="og:url" content="https://colstuwjx.github.io/2015/04/%E8%BF%90%E7%BB%B4%E5%BC%80%E5%8F%91%E6%8E%A2%E7%B4%A2%E4%B9%8B-gaea.02-%E5%8E%9F%E5%9E%8B%E8%AE%BE%E8%AE%A1/">
+<meta property="twitter:url" content="https://colstuwjx.github.io/2015/04/%E8%BF%90%E7%BB%B4%E5%BC%80%E5%8F%91%E6%8E%A2%E7%B4%A2%E4%B9%8B-gaea.02-%E5%8E%9F%E5%9E%8B%E8%AE%BE%E8%AE%A1/">
+<meta property="og:site_name" content="Colstuwjx&#39;s site">
+<meta property="og:description" content="这篇文章是运维开发探索系列之Gaea篇的第二篇。">
+<meta name="twitter:description" content="这篇文章是运维开发探索系列之Gaea篇的第二篇。">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2015-04-18T20:00:00">
+  
+  
+    <meta property="article:modified_time" content="2015-04-18T20:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="devops">
+    
+  
+  
+    
+      <meta property="article:tag" content="devops">
+    
+      <meta property="article:tag" content="thinking">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+  <meta property="twitter:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+
+
+    <title>运维开发探索之&lt; Gaea.02 原型设计 &gt;</title>
+
+    <link rel="icon" href="https://colstuwjx.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://colstuwjx.github.io/2015/04/%E8%BF%90%E7%BB%B4%E5%BC%80%E5%8F%91%E6%8E%A2%E7%B4%A2%E4%B9%8B-gaea.02-%E5%8E%9F%E5%9E%8B%E8%AE%BE%E8%AE%A1/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/comments.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://colstuwjx.github.io/">Colstuwjx&#39;s site</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://colstuwjx.github.io/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://colstuwjx.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">Jacky Wu (Colstuwjx)</h4>
+        
+          <h5 class="sidebar-profile-bio">DevOPS &amp; OpenSource Fans</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Colstuwjx" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-user"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      运维开发探索之&lt; Gaea.02 原型设计 &gt;
+    </h1>
+  
+  
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>这篇文章是运维开发探索系列之Gaea篇的第二篇。</p>
+
+<h4 id="前置导读">前置导读</h4>
+
+<p>如果你还未读过鄙人撰写的此系列文章的前面几篇的话，那么赶紧先去瞧一瞧吧：</p>
+
+<p>传送门：<a href="http://devopstarter.info/devops-discovering-series_01/">运维开发探索 开篇</a></p>
+
+<p>传送门：<a href="http://devopstarter.info/devops-discovering-series_02/">运维开发探索 Gaea.01</a></p>
+
+<p>这是运维开发探索系列之Gaea篇的第二篇，在这篇文章里，鄙人将会谈及关于运维平台工具开发的一些自己的见解以及具体的一些方法。</p>
+
+<h4 id="运维人员做开发">运维人员做开发?</h4>
+
+<p>在鄙人的一篇<a href="http://devopstarter.info/-fan-yi-qing-bu-yao-wang-ji-yun-wei-de-ben-zhi/">翻译文章</a>里，原文作者谈论到了“运维”的本职定位，在鄙人看来，运维的本职定位，不是救火队员，不是流程人员，而是“资源管理者”。那么，为了使得资源更好的被利用，更加高效的被调度，一些运维平台的开发便是难免需要的，这也正是很多企业划分出“框架研发”、“基础服务研发”、“DevOps团队”等组织的原因之所在。</p>
+
+<p>当运维尝试去做一些开发的时候，其实就是在实现一个“服务”的理念，他们是在为Developer或是自身Ops提供服务，这其实和研发人员面向业务的产品研发有着很大的差异。按照鄙人的见解和总结，运维工具应有以下几个特征：</p>
+
+<ul>
+<li>要求实用，实用，再实用；</li>
+</ul>
+
+<p>首先需要明白，它是一个<code>运维工具</code>，也就是说，它实际的用户量是非常有限的，因而你要考虑的，也许不是界面上的花哨，而更多的应该是实用性，也就是“它是否解决了你目前所遇到的一些矛盾”。</p>
+
+<ul>
+<li>需求很难定位；</li>
+</ul>
+
+<p>很多时候，运维人员只是意识到需要做一些开发任务来改变现状，但其实具体要做成什么样，自己也是含糊不清的。这就需要在动手之前首先做好原型设计，并且充分和自己的<code>用户</code>(可能是自己团队的成员，也可能是研发人员)沟通好需求和实现目标。在这里，鄙人推荐前期可以先使用Mindject + Axure RP实现一个思维导图 + 原型设计图，毕竟运维平台的开发不像产品开发，它不需要完全遵循业界软件工程所要求的那一系列步骤，然后据鄙人一些浅薄的经验看来，做一些需求的明确分析和UI设计还是非常有必要的。另外，为了更加明确需求以及提升其价值，快速的迭代开发以及不断的重新定位也是十分有必要的。</p>
+
+<ul>
+<li>不必<code>完美主义</code>；
+<br /></li>
+</ul>
+
+<p>这一点自不必多说，如果一个tricky的技术问题预计会花费你很多精力才能解决，而它其实并不是很影响整个工具的运转，那么也许你可以先抛到一边，让用户用起来再来迭代吧!</p>
+
+<h4 id="作业系统的实现思路">作业系统的实现思路</h4>
+
+<p>如何实现一个Job System? 我想你需要考虑以下几点：</p>
+
+<ul>
+<li>Job 是否具有原子性?
+<br /></li>
+</ul>
+
+<p>它是否有明确的成功、失败的判断依据，是否有第三状态（没成功，但也不算失败这种）。就Gaea来说，它实际上是Salt Job的封装，所以它和Salt Job一样，分为Timeout、Failed、Success三种状态，而这三种状态落到的都是最终机器的实体，可以说这个机器Timeout了，但是另外一个Minion是Success的。</p>
+
+<ul>
+<li>Job 是需要同步，异步还是分布式的 Run?</li>
+</ul>
+
+<p>理清这个的目的在于帮助设计后面运行Job的Daemon服务。首先，由于Gaea Job 是基于Salt实现的，而Salt-master可以不仅仅只落在单台机器上，所以它是<code>分布式</code>（Ps. 失控这本神作尤其推崇分布式的理念）的，另外，有些Job在于实时探测一些机器端口的健康性，有些Job需要抓取大量的机器的Metrics并收集起来，所以Gaea Job本身也是需要同时支持<code>同步</code>和<code>异步</code>特性的。</p>
+
+<p>所以，在这里，鄙人的技术选型是Celery + RabbitMQ，Celery支持分布式的异步任务下发，而RabbitMQ消息队列可以辅助实现Job的优先级、Job的状态追踪等功能。</p>
+
+<ul>
+<li>Job 的目标实体是什么? 如何满足用户的Target需求?</li>
+</ul>
+
+<p>一个Job的目标实体可能是一个Instance，也可能是一台机器，明确Job的Target是开发工具去满足用户Target需求的前提。以Gaea为例，它的目标实体，很显然，就是一台台服务器，那如何满足用户的Target需求呢，用户可能需要根据OS版本、IP网段甚至非常特殊化的特定过滤条件，那么Gaea最终的选择（参考了Puppet、Ansible的做法）是仅认可组的方式。</p>
+
+<p>这里组的概念分为物理组和逻辑组，物理组即以应用为视角，划分出来的组别，它们是相对稳定的，而逻辑组则是根据一些规则筛选出来的机器组成的组别，比如需要根据OS版本过滤? Ok，使用salt grains撰写一个规则作为group的定义即可，需要IP网段过滤? Ok，同样用salt grains写一个吧，需要联合几个物理组和逻辑组? 当然可以! 逻辑组还可以被用户主动刷新，来获取最新的满足规则的机器分组。</p>
+
+<ul>
+<li>Job 的执行结果如何展现? 用户关心怎样的Job Report?</li>
+</ul>
+
+<p>用户fire一个Job的最初动力便是想借助它实现一些目的。所以用户最关心的会是各个目标实体最终的Job状态，以Gaea为例，用户最希望呈现的效果应该是这样的：它需要能展现当前进行中、已完成、已失败、计划中的Job的概要情况；它需要能展现某个Job具体预备推送的目标机器，实际推送的情况，Job完成的明细和时间；它需要能展现一台机器的Job执行历史和具体完成时间；etc..</p>
+
+<ul>
+<li>怎么实现Job的中断、计划任务以及实时进度感知?</li>
+</ul>
+
+<p>如果一个Job Fire下去之后发现根本不应该执行，怎么办? 有时候，也许用户还需要定期的执行一些Job，或是了解当前Fired Job的实时进展。这些需求都是十分合理的，但是如何去实现呢? 以Gaea为例，Job的打断是通过Celery Task ID索要到任务信息，进一步发送Celery信号量来实现效果，而由于用户的Schedule Job是可以灵活多变的，所以Gaea选择了“以Celery为执行器，以Linux Cron.d控制下发逻辑”，是的，没有错，通过Gaea Job Template操控Cron执行内容，从而实现灵活的Cron配置，而Linux Cron的稳定性也是毋庸置疑的。那么，怎么实现实时Job进度更新呢? 答案是<a href="http://pengyao.org/saltstack_event_system_listen_events.html">Salt Event Watcher</a> + Redis + Key订阅 + <a href="http://www.the5fire.com/message-push-by-server-sent-event.html">EventSource</a>！！</p>
+
+<h4 id="且听下回分解">且听下回分解..</h4>
+
+<p>关于Gaea的一些Job System原型设计理念的分享就是这些，下一篇文章可能会是关于Gaea前端展示的一些Tech Point，敬请期待..</p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/devops/">devops</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/thinking/">thinking</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2015/04/%E7%BF%BB%E8%AF%91-%E8%AF%B7%E4%B8%8D%E8%A6%81%E5%BF%98%E8%AE%B0%E8%BF%90%E7%BB%B4/" data-tooltip="[ 翻译 ] 请不要忘记&#34;运维&#34;">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2015/04/it-%E5%B7%A5%E7%A8%8B%E5%B8%88%E6%96%87%E5%8C%96%E7%A2%8E%E7%A2%8E%E5%BF%B5/" data-tooltip="IT 工程师文化碎碎念">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2020 Powered by Hugo with tranquilpeak. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2015/04/%E7%BF%BB%E8%AF%91-%E8%AF%B7%E4%B8%8D%E8%A6%81%E5%BF%98%E8%AE%B0%E8%BF%90%E7%BB%B4/" data-tooltip="[ 翻译 ] 请不要忘记&#34;运维&#34;">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2015/04/it-%E5%B7%A5%E7%A8%8B%E5%B8%88%E6%96%87%E5%8C%96%E7%A2%8E%E7%A2%8E%E5%BF%B5/" data-tooltip="IT 工程师文化碎碎念">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+    
+    <h4 id="about-card-name">Jacky Wu (Colstuwjx)</h4>
+    
+      <div id="about-card-bio">DevOPS &amp; OpenSource Fans</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        DevOPS Engineer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    <div id="cover" style="background-image:url('https://res.cloudinary.com/ddhitj0ja/image/upload/v1581843208/pic_nfgplt.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://colstuwjx.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+
+
+
+
+    
+  </body>
+</html>
+

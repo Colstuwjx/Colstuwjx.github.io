@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>test on Colstuwjx&#39;s site</title>
+    <link>https://colstuwjx.github.io/categories/test/</link>
+    <description>Recent content in test on Colstuwjx&#39;s site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 20 Jan 2018 20:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://colstuwjx.github.io/categories/test/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>使用locust &#43; boomer实现对非web组件的压测</title>
+      <link>https://colstuwjx.github.io/2018/01/%E4%BD%BF%E7%94%A8locust-boomer%E5%AE%9E%E7%8E%B0%E5%AF%B9%E9%9D%9Eweb%E7%BB%84%E4%BB%B6%E7%9A%84%E5%8E%8B%E6%B5%8B/</link>
+      <pubDate>Sat, 20 Jan 2018 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/2018/01/%E4%BD%BF%E7%94%A8locust-boomer%E5%AE%9E%E7%8E%B0%E5%AF%B9%E9%9D%9Eweb%E7%BB%84%E4%BB%B6%E7%9A%84%E5%8E%8B%E6%B5%8B/</guid>
+      <description>&lt;p&gt;最近有在编写类似SkyDNS的面向服务间调用的智能DNS服务，开发完成后如何对DNS服务本身进行压测有点被难倒了。市面上对HTTP类请求的压测测试很多，然而对非Web组件的压测工具则非常少见&amp;hellip;&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>[ 三年后的杂谈 ] 测试之Mock</title>
+      <link>https://colstuwjx.github.io/2017/10/%E4%B8%89%E5%B9%B4%E5%90%8E%E7%9A%84%E6%9D%82%E8%B0%88-%E6%B5%8B%E8%AF%95%E4%B9%8Bmock/</link>
+      <pubDate>Sat, 14 Oct 2017 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/2017/10/%E4%B8%89%E5%B9%B4%E5%90%8E%E7%9A%84%E6%9D%82%E8%B0%88-%E6%B5%8B%E8%AF%95%E4%B9%8Bmock/</guid>
+      <description>&lt;p&gt;笔者最近开始补全测试方面的一些基础知识，由于也算是个人职业技能建设的一部分，权且也算作&amp;rdquo;三年小结&amp;rdquo;系列的一篇罢。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

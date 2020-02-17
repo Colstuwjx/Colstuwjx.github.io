@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>discovery on Colstuwjx&#39;s site</title>
+    <link>https://colstuwjx.github.io/tags/discovery/</link>
+    <description>Recent content in discovery on Colstuwjx&#39;s site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 30 Aug 2014 20:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://colstuwjx.github.io/tags/discovery/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>[ 翻译 ] 开源世界的&#34;服务发现&#34;</title>
+      <link>https://colstuwjx.github.io/2014/08/%E7%BF%BB%E8%AF%91-%E5%BC%80%E6%BA%90%E4%B8%96%E7%95%8C%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0/</link>
+      <pubDate>Sat, 30 Aug 2014 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/2014/08/%E7%BF%BB%E8%AF%91-%E5%BC%80%E6%BA%90%E4%B8%96%E7%95%8C%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0/</guid>
+      <description>&lt;p&gt;这里是对服务发现的一篇翻译，原文见：&lt;a href=&#34;http://jasonwilder.com/blog/2014/02/04/service-discovery-in-the-cloud/&#34;&gt;Open-Source Service Discovery&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

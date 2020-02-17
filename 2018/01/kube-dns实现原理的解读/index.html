@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.64.1 with theme Tranquilpeak 0.4.7-BETA">
+<meta name="author" content="Jacky Wu (Colstuwjx)">
+<meta name="keywords" content="">
+<meta name="description" content="最近一直在做类似skydns的dns服务发现相关的研究和代码实现，也就有了兴趣想解读下kube-dns的实现过程，学习和参考下社区的做法。">
+
+
+<meta property="og:description" content="最近一直在做类似skydns的dns服务发现相关的研究和代码实现，也就有了兴趣想解读下kube-dns的实现过程，学习和参考下社区的做法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kube-dns实现原理的解读">
+<meta name="twitter:title" content="kube-dns实现原理的解读">
+<meta property="og:url" content="https://colstuwjx.github.io/2018/01/kube-dns%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E7%9A%84%E8%A7%A3%E8%AF%BB/">
+<meta property="twitter:url" content="https://colstuwjx.github.io/2018/01/kube-dns%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E7%9A%84%E8%A7%A3%E8%AF%BB/">
+<meta property="og:site_name" content="Colstuwjx&#39;s site">
+<meta property="og:description" content="最近一直在做类似skydns的dns服务发现相关的研究和代码实现，也就有了兴趣想解读下kube-dns的实现过程，学习和参考下社区的做法。">
+<meta name="twitter:description" content="最近一直在做类似skydns的dns服务发现相关的研究和代码实现，也就有了兴趣想解读下kube-dns的实现过程，学习和参考下社区的做法。">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2018-01-20T20:00:00">
+  
+  
+    <meta property="article:modified_time" content="2018-01-20T20:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="cloud-native">
+    
+  
+  
+    
+      <meta property="article:tag" content="kubernetes">
+    
+      <meta property="article:tag" content="cloud-native">
+    
+      <meta property="article:tag" content="devops">
+    
+      <meta property="article:tag" content="sourcecode">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+  <meta property="twitter:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+
+
+    <title>kube-dns实现原理的解读</title>
+
+    <link rel="icon" href="https://colstuwjx.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://colstuwjx.github.io/2018/01/kube-dns%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E7%9A%84%E8%A7%A3%E8%AF%BB/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/comments.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://colstuwjx.github.io/">Colstuwjx&#39;s site</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://colstuwjx.github.io/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://colstuwjx.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">Jacky Wu (Colstuwjx)</h4>
+        
+          <h5 class="sidebar-profile-bio">DevOPS &amp; OpenSource Fans</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Colstuwjx" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-user"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      kube-dns实现原理的解读
+    </h1>
+  
+  
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>最近一直在做类似skydns的dns服务发现相关的研究和代码实现，也就有了兴趣想解读下kube-dns的实现过程，学习和参考下社区的做法。</p>
+
+<h4 id="源码结构">源码结构</h4>
+
+<p>如何从头开始阅读一份开源项目的源码呢？一般来说，我们会从执行入口顺腾摸瓜地依次八下去，这里强烈推荐难易大佬的<a href="http://dockone.io/article/895">k8s源码阅读笔记</a>，条理非常清晰，解读的方式也很值得学习，我们这里不妨也参考难易的方法进行kube-dns代码的阅读。</p>
+
+<p>我们首先需要从github仓库clone下来<a href="http://">kube-dns</a>的源代码。不难看到其代码入口cmd目录下除开测试组件，主要是dnsmasq、dns、sidecar这三块组件的代码：</p>
+
+<p><img src="https://colstuwjx.github.io/images/2018/Jan/dir.jpg" alt="kube-dns-dir" /></p>
+
+<p>OK，由此我们产生了第一个也是最核心的问题：</p>
+
+<blockquote>
+<p>Q1: kube-dns、dnsmasq-nanny、sidecar分别实现了什么功能?</p>
+</blockquote>
+
+<p>我们不妨先从kube-dns这块开始，接着往下读。</p>
+
+<h4 id="kube-dns">kube-dns</h4>
+
+<p>我们可以看到kube-dns的入口代码<a href="https://github.com/kubernetes/dns/blob/master/cmd/kube-dns/dns.go#L35">dns.go</a>，这里面的main函数具体内容如下：</p>
+<pre><code>...
+
+func main() {
+	config := options.NewKubeDNSConfig()
+	config.AddFlags(pflag.CommandLine)
+
+	flag.InitFlags()
+    ...
+
+	server := app.NewKubeDNSServerDefault(config)
+	server.Run()
+}</code></pre>
+<p>很显然，初始化kube-dns的配置然后根据命令行参数重载，并随后通过<code>NewKubeDNSServerDefault</code>方法拿到kube-dns server的实例，并运行它的<code>Run</code>方法。在这部分的阅读过程中，我们也产生了如下的疑问：</p>
+
+<blockquote>
+<p>Q2: <code>NewKubeDNSConfig</code>方法里有哪些具体可配置的参数？</p>
+
+<p>Q3: <code>NewKubeDNSServerDefault</code>方法做了哪些事情？</p>
+</blockquote>
+
+<p>戳进去<code>NewKubeDNSConfig</code>方法的<a href="https://github.com/kubernetes/dns/blob/master/cmd/kube-dns/app/options/options.go#L56">具体代码位置</a>：</p>
+<pre><code>func NewKubeDNSConfig() *KubeDNSConfig {
+	return &KubeDNSConfig{
+    	// NOTE(Colstuwjx): 集群域名的后缀，所有这类域名解析均由kube-dns管理和解析
+		ClusterDomain:      "cluster.local.",
+		HealthzPort:        8081,
+		DNSBindAddress:     "0.0.0.0",
+		DNSPort:            53,
+        
+        // ?
+		InitialSyncTimeout: 60 * time.Second,
+
+		Federations: make(map[string]string),
+
+		ConfigMapNs: api.NamespaceSystem,
+		ConfigMap:   "", // default to using command line flags
+
+		ConfigPeriod: 10 * time.Second,
+		ConfigDir:    "",
+
+		NameServers: "",
+	}
+}</code></pre>
+<p>鄙人不禁又产生了新的疑问：</p>
+
+<blockquote>
+<p>Q4: 为什么还有ConfigMap相关的配置以及同步参数？</p>
+
+<p>Q5: NameServers的配置会影响什么？</p>
+</blockquote>
+
+<p>OK，没关系，先放着这些问题，接着来看下<code>NewKubeDNSServerDefault</code>方法都做了啥：</p>
+<pre><code>func NewKubeDNSServerDefault(config *options.KubeDNSConfig) *KubeDNSServer {
+    ...
+
+	var configSync dnsconfig.Sync
+	switch {
+	case config.ConfigMap != "" && config.ConfigDir != "":
+    ...
+    }
+    
+	return &KubeDNSServer{
+		domain:         config.ClusterDomain,
+		healthzPort:    config.HealthzPort,
+		dnsBindAddress: config.DNSBindAddress,
+		dnsPort:        config.DNSPort,
+		nameServers:    config.NameServers,
+		kd:             dns.NewKubeDNS(kubeClient, config.ClusterDomain, config.InitialSyncTimeout, configSync),
+	}
+}</code></pre>
+<p>啊哈，前面的问题似乎有些眉目了。</p>
+
+<blockquote>
+<p>为什么还有ConfigMap相关的配置以及同步参数？</p>
+
+<p>A4: 原来如此，前面ConfigMap的配置是用来做kube-dns本身配置的动态同步</p>
+</blockquote>
+
+<p>那这具体执行的<code>NewKubeDNS</code>又是如何实现的呢？看看<a href="https://github.com/kubernetes/dns/blob/master/pkg/dns/dns.go#L123">代码</a>：</p>
+<pre><code>	kd := &KubeDNS{
+		kubeClient:          client,
+		domain:              clusterDomain,
+		cache:               treecache.NewTreeCache(),
+		cacheLock:           sync.RWMutex{},
+		nodesStore:          kcache.NewStore(kcache.MetaNamespaceKeyFunc),
+		reverseRecordMap:    make(map[string]*skymsg.Service),
+		clusterIPServiceMap: make(map[string]*v1.Service),
+		domainPath:          util.ReverseArray(strings.Split(strings.TrimRight(clusterDomain, "."), ".")),
+		initialSyncTimeout:  timeout,
+
+		configLock: sync.RWMutex{},
+		configSync: configSync,
+	}
+
+	kd.setEndpointsStore()
+	kd.setServicesStore()</code></pre>
+<p>咦，这里又不禁冒出来几个问题：</p>
+
+<blockquote>
+<p>Q6: 这里的cache是做什么的？</p>
+
+<p>Q7: 这里的<code>setEndpointsStore</code>、<code>setServicesStore</code>做了啥？</p>
+</blockquote>
+
+<p>我们继续看下各自的实现: <a href="https://github.com/kubernetes/dns/blob/master/pkg/dns/treecache/treecache.go#L26">TreeCache</a>、<a href="https://github.com/kubernetes/dns/blob/master/pkg/dns/dns.go#L227">setEndpointsStore</a>、<a href="https://github.com/kubernetes/dns/blob/master/pkg/dns/dns.go#L209">setServicesStore</a>，不难得出Q6和Q7的答案：</p>
+
+<blockquote>
+<p>这里的cache是做什么的？</p>
+
+<p>A6: 这里的cache通过一个公共的TreeCache结构维护，应该是充当本地cache的角色</p>
+
+<p>这里的<code>setEndpointsStore</code>、<code>setServicesStore</code>做了啥？</p>
+
+<p>A7: 这里的两个setXXXStore设置了对所有namespace的<code>services</code>及<code>endpoints</code>的list watch句柄，订阅相应的变化，并实现了对应的CURD callback：<code>handleEndpointAdd</code>、<code>handleEndpointUpdate</code>、<code>handleEndpointDelete</code>，Q6的本地cache也即是为了这些数据的本地缓存服务（包括上锁等）</p>
+</blockquote>
+
+<p>OK，回过头来，读完了<code>NewKubeDNSServerDefault</code>大致的调用过程，我们也就知道了：</p>
+
+<blockquote>
+<p><code>NewKubeDNSConfig</code>方法里有哪些具体可配置的参数？</p>
+
+<p>A2: 包括了集群域名、健康检查配置、DNS监听地址及端口、ConfigMap动态同步的参数、配置文件目录及upstream nameserver配置等</p>
+
+<p><code>NewKubeDNSServerDefault</code>方法做了哪些事情？</p>
+
+<p>A3: <code>NewKubeDNSServerDefault</code>初始化了dns配置的同步方式，通过执行<code>NewKubeDNS</code>实例化<code>KubeDNS</code>对象，包括本地cache的初始化等，最后返回一个<code>KubeDNSServer</code>的实例对象</p>
+</blockquote>
+
+<p>那么，<a href="https://github.com/kubernetes/dns/blob/master/cmd/kube-dns/app/server.go#L117"><code>Run</code>方法</a>具体又执行了哪些逻辑呢？</p>
+<pre><code>func (server *KubeDNSServer) Run() {
+	...
+	setupSignalHandlers()
+    
+	server.startSkyDNSServer()
+	server.kd.Start()
+	server.setupHandlers()
+
+	glog.V(0).Infof("Status HTTP port %v", server.healthzPort)
+	if server.nameServers != "" {
+		glog.V(0).Infof("Upstream nameservers: %s", server.nameServers)
+	}
+	glog.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", server.healthzPort), nil))
+}</code></pre>
+<p>从上面代码不难看出<code>Run</code>方法实现了如下逻辑：</p>
+
+<ul>
+<li><code>setupSignalHandlers</code>注册了收到信号量时的处理句柄；</li>
+<li><code>startSkyDNSServer</code>则应该是通过现有配置启动skydns服务，实现DNS解析的功能；</li>
+<li><code>kd.Start</code>则是执行了kube-dns自身控制器的启动，继续跟踪到<a href="https://github.com/kubernetes/dns/blob/master/pkg/dns/dns.go#L145">kube-dns pkg</a>里的实现部分，不难理解，这里即是启动了对<code>services</code>和<code>endpoints</code>变更监听及处理的controller，它们将会把变更的部分同步到本地cache，此外，还将执行configMap的<a href="https://github.com/kubernetes/dns/blob/master/pkg/dns/dns.go#L152">同步routine</a>，实现上面提到的kube-dns配置的动态同步和加载；</li>
+<li><code>setupHandlers</code>即启动了<code>/readiness</code>和<code>/cache</code>的endpoint，并监听在healthcheck配置的端口；</li>
+</ul>
+
+<p>我们不妨再深入看看<code>startSkyDNSServer</code>具体做了哪些事情：</p>
+<pre><code>func (d *KubeDNSServer) startSkyDNSServer() {
+	...
+	skydnsConfig := &server.Config{
+		Domain:  d.domain,
+		DnsAddr: fmt.Sprintf("%s:%d", d.dnsBindAddress, d.dnsPort),
+	}
+	if d.nameServers != "" {
+		for _, nameServer := range strings.Split(d.nameServers, ",") {
+			server, err := validateNameServer(nameServer)
+			if err != nil {
+				glog.Fatalf("nameserver '%s' is invalid: %v\n", nameServer, err)
+			}
+			skydnsConfig.Nameservers = append(skydnsConfig.Nameservers, server)
+		}
+	}
+	server.SetDefaults(skydnsConfig)
+	s := server.New(d.kd, skydnsConfig)
+	if err := metrics.Metrics(); err != nil {
+		glog.Fatalf("Skydns metrics error: %s", err)
+	} else if metrics.Port != "" {
+		glog.V(0).Infof("Skydns metrics enabled (%v:%v)", metrics.Path, metrics.Port)
+	} else {
+		glog.V(0).Infof("Skydns metrics not enabled")
+	}
+
+	go s.Run()
+}</code></pre>
+<p>还是蛮清晰的，这里根据kube-dns的配置生成<code>skydnsConfig</code>，并随后根据之前配置的nameserver配置skydns server启动时的upstream nameserver，这也就解答了Q5提出的问题。</p>
+
+<blockquote>
+<p>A5：<code>nameservers</code>配置了的话，在kube-dns启动时会设置upstream的nameserver列表，这里upstream nameserver的含义即当kube-dns(背后做事的即SkyDNS)发现非clusterDomain的dns解析时会递归到upstream nameserver</p>
+</blockquote>
+
+<p>此外，<code>server.New(d.kd, skydnsConfig)</code>实例化skydns  server的时候传入了<code>d.kd</code>作为其backend，我们深挖下去不难发现，skydns里<a href="https://github.com/kubernetes/dns/blob/master/vendor/github.com/skynetservices/skydns/server/backend.go#L9">这块</a>是定义了一个统一的backend interface，抽象了需要实现的方法<code>Records</code>和<code>ReverseRecord</code>，回过头来看kubedns这块的代码，确实是实现了这两个接口：</p>
+<pre><code>func (kd *KubeDNS) Records(name string, exact bool) (retval []skymsg.Service, err error) {
+	...
+
+	path := util.ReverseArray(segments)
+	records, err := kd.getRecordsForPath(path, exact)
+
+	if err != nil {
+		return nil, err
+	}
+
+    ...
+}
+
+...</code></pre>
+<p>而且这里面调用的方法<code>getRecordsForPath</code>，其方法体里执行的<code>kd.cache.GetEntry</code>这行正是消费之前定义的本地cache，也即是读取实时维护的本地cache来得到dns记录解析的数据依据：</p>
+<pre><code>func (kd *KubeDNS) getRecordsForPath(path []string, exact bool) ([]skymsg.Service, error) {
+	...
+
+	...
+		kd.cacheLock.RLock()
+		defer kd.cacheLock.RUnlock()
+		if record, ok := kd.cache.GetEntry(key, path[:len(path)-1]...); ok {
+			glog.V(3).Infof("Exact match %v for %v received from cache", record, path[:len(path)-1])
+			return []skymsg.Service{*(record.(*skymsg.Service))}, nil
+		}
+
+		...
+	}
+
+	...
+}</code></pre>
+<p>回到上面执行的skydns启动部分，还有一块是实例化metrics对象，进而调用的是pkg/dnsmasq/metric.go里面的代码，如下这部分即获取metric的核心部分：</p>
+<pre><code>func (mc *metricsClient) getSingleMetric(name string) (int64, error) {
+	msg := new(dns.Msg)
+	msg.Id = dns.Id()
+	msg.RecursionDesired = false
+	msg.Question = make([]dns.Question, 1)
+	msg.Question[0] = dns.Question{
+		Name:   name,
+		Qtype:  dns.TypeTXT,
+		Qclass: dns.ClassCHAOS,
+	}
+
+	in, _, err := mc.dnsClient.Exchange(msg, mc.addrPort)
+	if err != nil {
+		return 0, err
+	}
+
+	if len(in.Answer) != 1 {
+		return 0, fmt.Errorf("invalid number of Answer records for %s: %d",
+			name, len(in.Answer))
+	}
+
+	if t, ok := in.Answer[0].(*dns.TXT); ok {
+		glog.V(4).Infof("Got valid TXT response %+v for %s", t, name)
+		if len(t.Txt) != 1 {
+			return 0, fmt.Errorf("invalid number of TXT records for %s: %d",
+				name, len(t.Txt))
+		}
+
+		value, err := strconv.ParseInt(t.Txt[0], 10, 64)
+		if err != nil {
+			return 0, err
+		}
+
+		return value, nil
+	}
+
+	return 0, fmt.Errorf("missing TXT record for %s", name)
+}</code></pre>
+<p>看上去是通过dnsClient请求dnsmasq server的形式采集到一些dns请求的metric，这部分我们留到dnsmasq和sidecar组件的解读部分再来细说。</p>
+
+<p>至此，我们初略读完了kube-dns部分的启动过程，并基本解答了除开Q1以外的所有疑问，总结一下的话kube-dns基本上是这样的启动流程：</p>
+
+<ul>
+<li>通过执行<code>options.NewKubeDNSConfig</code>方法和命令行传参初始化Kube-DNS配置；</li>
+<li>然后通过执行<code>app.NewKubeDNSServerDefault(config)</code>初始化配置文件的配置方式（配置文件形式或者从ConfigMap动态配置），并通过<code>kd.setEndpointsStore()</code>、<code>kd.setServicesStore()</code>方法初始化<code>endpoints</code>和<code>services</code>的本地cache（本地cache是通过构造TreeCache这样的结构体来实现维护的）；</li>
+<li>最终，通过执行<code>server.Run()</code>方法，初始化信号量的处理句柄，启动skydns服务器并以kube-dns的实现作为backend（数据消费自之前构建和持续维护的本地cache），里面还启动了一个metric endpoint，暴露出dnsmasq上DNS请求相关的监控指标。随后，启动endpoints和services的变更监听及callback处理的controller从而实时维护本地cache数据的准确性，并通过执行<code>kd.startConfigMapSync</code>方法，在配置了ConfigMap的情况下实现kube-dns配置的动态加载</li>
+</ul>
+
+<h4 id="dnsmasq-sidecar">dnsmasq、sidecar</h4>
+
+<p>kube-dns整体的逻辑理顺了，剩下的dnsmasq和sidecar部分实现了怎样的逻辑自然也很好解读。</p>
+
+<p><code>nanny</code>，顾名思义，即是保姆的意思，因此cmd目录下的<a href="https://github.com/kubernetes/dns/blob/master/cmd/dnsmasq-nanny/main.go#L80">dnsmasq部分</a>很显然即是包装了dnsmasq运行时的组件，管理和维护dnsmasq作为kube-dns前置的dns缓存。</p>
+
+<p>我们不妨跟上文解读kube-dns类似，来看看代码入口做了哪些事情：</p>
+<pre><code>func main() {
+	parseFlags()
+	glog.V(0).Infof("opts: %v", opts)
+
+	sync := config.NewFileSync(opts.configDir, opts.syncInterval)
+
+	dnsmasq.RunNanny(sync, opts.RunNannyOpts)
+}</code></pre>
+<p>代码挺简单的，很显然，<code>config.NewFileSync</code>即是通过读取ConfigMap的数据，动态同步并生成dnsmasq对应的配置文件，并根据配置参数确认是否需要重启生效。而如下所示的<code>dnsmasq.RunNanny</code>方法：</p>
+<pre><code>// RunNanny runs the nanny and handles configuration updates.
+func RunNanny(sync config.Sync, opts RunNannyOpts) {
+	defer glog.Flush()
+
+	currentConfig, err := sync.Once()
+	if err != nil {
+		glog.Errorf("Error getting initial config, using default: %v", err)
+		currentConfig = config.NewDefaultConfig()
+	}
+
+	nanny := &Nanny{Exec: opts.DnsmasqExec}
+	nanny.Configure(opts.DnsmasqArgs, currentConfig)
+	if err := nanny.Start(); err != nil {
+		glog.Fatalf("Could not start dnsmasq with initial configuration: %v", err)
+	}
+
+	configChan := sync.Periodic()
+
+	for {
+		select {
+		case status := <-nanny.ExitChannel:
+			glog.Flush()
+			glog.Fatalf("dnsmasq exited: %v", status)
+			break
+		case currentConfig = <-configChan:
+			if opts.RestartOnChange {
+				glog.V(0).Infof("Restarting dnsmasq with new configuration")
+				nanny.Kill()
+				nanny = &Nanny{Exec: opts.DnsmasqExec}
+				nanny.Configure(opts.DnsmasqArgs, currentConfig)
+				nanny.Start()
+			} else {
+				glog.V(2).Infof("Not restarting dnsmasq (--restartDnsmasq=false)")
+			}
+			break
+		}
+	}
+}</code></pre>
+<p>即是同步dnsmasq的配置并通过<code>nanny.Start()</code>启动dnsmasq服务。<code>nanny.Start()</code>方法内容则比较清晰，便是通过<code>exec</code>启动dnsmasq，这里需要指出的是，dnsmasq启动时上游nameserver的配置，正是根据ConfigMap里是否配置了<a href="https://github.com/kubernetes/dns/blob/master/pkg/dnsmasq/nanny.go#L70">config.StubDomains</a>以及<a href="https://github.com/kubernetes/dns/blob/master/pkg/dnsmasq/nanny.go#L79">config.UpstreamNameservers</a>来生成相应的配置。</p>
+
+<p><a href="https://kubernetes.io/docs/tasks/administer-cluster/dns-custom-nameservers/">K8S官方文档</a>里讲述的指定一组特定的<code>StubDomains</code>由xxx nameserver解析以及配置上游nameserver的功能均由dnsmasq这块的配置实际落地生效！</p>
+
+<p>至此，dnsmasq便成功启动了，它作为kube-dns的前置部分，担任dns缓存和其他非cluster domain的解析请求的转发工作。</p>
+
+<p>那么，我们再来看看sidecar做了什么事情。</p>
+<pre><code>func main() {
+	options := sidecar.NewOptions()
+    configureFlags(options, pflag.CommandLine)
+
+	...
+
+	server := sidecar.NewServer()
+	server.Run(options)
+}</code></pre>
+<p>同样是读取配置参数，并启动了一个sidecar的server。而查看<code>server.Run(options)</code>的具体实现：</p>
+<pre><code>// Run the server (does not return)
+func (s *server) Run(options *Options) {
+	s.options = options
+	glog.Infof("Starting server (options %+v)", *s.options)
+
+	for _, probeOption := range options.Probes {
+		probe := &dnsProbe{DNSProbeOption: probeOption}
+		s.probes = append(s.probes, probe)
+		probe.Start(options)
+	}
+
+	s.runMetrics(options)
+}</code></pre>
+<p>这里根据配置的<a href="https://github.com/kubernetes/dns/blob/master/pkg/sidecar/options.go#L36">options</a>指定需要对哪些endpoint执行探测，options的配置也很简单，通过传入的命令行参数指定，执行<code>configureFlags</code>实例化得到：</p>
+<pre><code>...
+	flagSet.Var(
+		(*probeOptions)(&opt.Probes), "probe",
+		"probe the given DNS server with the DNS name and export probe"+
+			" metrics and healthcheck URI. Specified as"+
+			" <label>,<server>,<dns name>[,<interval_seconds>][,<type>]."+
+			" Healthcheck url will be exported under /healthcheck/<label>."+
+			" interval_seconds is optional."+
+			" This option may be specified multiple times to check multiple servers."+
+			" <type> is one of ANY, A, AAAA, SRV."+
+			" Example: 'mydns,127.0.0.1:53,example.com,10,A'.")</code></pre>
+<p>最后，即通过<code>runMetrics</code>方法里的<a href="https://github.com/kubernetes/dns/blob/master/pkg/sidecar/metrics.go#L91">InitializeMetrics</a>方法，实例化并启动一个prometheus的metrics端点，提供相应dns记录解析的监控指标。</p>
+
+<p>至此，我们也终于能回答第一个问题了：</p>
+
+<blockquote>
+<p>kube-dns、dnsmasq-nanny、sidecar分别实现了什么功能?</p>
+
+<p>A1：</p>
+
+<p>（1）kube-dns包装了skydns server的启动，并通过监听services和endpoints的变更事件且同步到本地cache的形式，实现了一个实时级别的k8s集群内service和pod等端点的DNS服务发现；</p>
+
+<p>（2）dnsmasq-nanny则是通过包装dnsmasq，实现了kube-dns前置的dns缓存，并通过监听ConfigMap动态生成配置，将配置了的StubDomains转发给指定的nameservers，将其他域名的解析递归到配置好的Upstream nameservers；</p>
+
+<p>（3）sidecar部分代码则是实现了可配置的DNS探测，并采集对应的监控指标暴露出来供prometheus消费</p>
+</blockquote>
+
+<p>上述的解析过程和<a href="https://kubernetes.io/docs/tasks/administer-cluster/dns-custom-nameservers/">kubedns文档</a>里描述的也正是不谋而合：</p>
+
+<p><img src="https://colstuwjx.github.io/images/2018/Jan/dns.png" alt="kube-dns" /></p>
+
+<p>完。</p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/kubernetes/">kubernetes</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/cloud-native/">cloud-native</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/devops/">devops</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/sourcecode/">sourcecode</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2018/02/%E5%8E%9F%E5%88%9B-%E5%B0%8F%E5%B0%9Dcontainerd%E4%B8%80/" data-tooltip="[ 原创 ] 小尝containerd（一）">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2018/01/%E4%BD%BF%E7%94%A8locust-boomer%E5%AE%9E%E7%8E%B0%E5%AF%B9%E9%9D%9Eweb%E7%BB%84%E4%BB%B6%E7%9A%84%E5%8E%8B%E6%B5%8B/" data-tooltip="使用locust &#43; boomer实现对非web组件的压测">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2020 Powered by Hugo with tranquilpeak. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2018/02/%E5%8E%9F%E5%88%9B-%E5%B0%8F%E5%B0%9Dcontainerd%E4%B8%80/" data-tooltip="[ 原创 ] 小尝containerd（一）">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2018/01/%E4%BD%BF%E7%94%A8locust-boomer%E5%AE%9E%E7%8E%B0%E5%AF%B9%E9%9D%9Eweb%E7%BB%84%E4%BB%B6%E7%9A%84%E5%8E%8B%E6%B5%8B/" data-tooltip="使用locust &#43; boomer实现对非web组件的压测">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+    
+    <h4 id="about-card-name">Jacky Wu (Colstuwjx)</h4>
+    
+      <div id="about-card-bio">DevOPS &amp; OpenSource Fans</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        DevOPS Engineer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    <div id="cover" style="background-image:url('https://res.cloudinary.com/ddhitj0ja/image/upload/v1581843208/pic_nfgplt.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://colstuwjx.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+
+
+
+
+    
+  </body>
+</html>
+

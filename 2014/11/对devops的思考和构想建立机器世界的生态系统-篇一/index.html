@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.64.1 with theme Tranquilpeak 0.4.7-BETA">
+<meta name="author" content="Jacky Wu (Colstuwjx)">
+<meta name="keywords" content="">
+<meta name="description" content="最近一直看一些思想和概念性质的文章，略有感想，不敢私藏，愿分享之。">
+
+
+<meta property="og:description" content="最近一直看一些思想和概念性质的文章，略有感想，不敢私藏，愿分享之。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="对Devops的思考和构想——建立机器世界的生态系统 (篇一)">
+<meta name="twitter:title" content="对Devops的思考和构想——建立机器世界的生态系统 (篇一)">
+<meta property="og:url" content="https://colstuwjx.github.io/2014/11/%E5%AF%B9devops%E7%9A%84%E6%80%9D%E8%80%83%E5%92%8C%E6%9E%84%E6%83%B3%E5%BB%BA%E7%AB%8B%E6%9C%BA%E5%99%A8%E4%B8%96%E7%95%8C%E7%9A%84%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F-%E7%AF%87%E4%B8%80/">
+<meta property="twitter:url" content="https://colstuwjx.github.io/2014/11/%E5%AF%B9devops%E7%9A%84%E6%80%9D%E8%80%83%E5%92%8C%E6%9E%84%E6%83%B3%E5%BB%BA%E7%AB%8B%E6%9C%BA%E5%99%A8%E4%B8%96%E7%95%8C%E7%9A%84%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F-%E7%AF%87%E4%B8%80/">
+<meta property="og:site_name" content="Colstuwjx&#39;s site">
+<meta property="og:description" content="最近一直看一些思想和概念性质的文章，略有感想，不敢私藏，愿分享之。">
+<meta name="twitter:description" content="最近一直看一些思想和概念性质的文章，略有感想，不敢私藏，愿分享之。">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2014-11-26T20:00:00">
+  
+  
+    <meta property="article:modified_time" content="2014-11-26T20:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="devops">
+    
+  
+  
+    
+      <meta property="article:tag" content="devops">
+    
+      <meta property="article:tag" content="thinking">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+  <meta property="twitter:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+
+
+    <title>对Devops的思考和构想——建立机器世界的生态系统 (篇一)</title>
+
+    <link rel="icon" href="https://colstuwjx.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://colstuwjx.github.io/2014/11/%E5%AF%B9devops%E7%9A%84%E6%80%9D%E8%80%83%E5%92%8C%E6%9E%84%E6%83%B3%E5%BB%BA%E7%AB%8B%E6%9C%BA%E5%99%A8%E4%B8%96%E7%95%8C%E7%9A%84%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F-%E7%AF%87%E4%B8%80/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/comments.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://colstuwjx.github.io/">Colstuwjx&#39;s site</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://colstuwjx.github.io/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://colstuwjx.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">Jacky Wu (Colstuwjx)</h4>
+        
+          <h5 class="sidebar-profile-bio">DevOPS &amp; OpenSource Fans</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Colstuwjx" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-user"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      对Devops的思考和构想——建立机器世界的生态系统 (篇一)
+    </h1>
+  
+  
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>最近一直看一些思想和概念性质的文章，略有感想，不敢私藏，愿分享之。</p>
+
+<p>鄙人窃以为作为运维，不应该仅仅只是搬机器的，不应该仅仅只是排障救火的，也不应该仅仅只是去维护自己支持的应用而已，而更应该着眼于一些更高层次的东西，比如我所领悟的，考虑将企业的IT系统改造成一个由一台台机器设备组成的自运转的IT生态系统。</p>
+
+<h4 id="什么是it生态系统">什么是IT生态系统?</h4>
+
+<p>所谓生态系统，在wiki的定义是：生态系统(Ecosystem)是指在一个特定环境内，其間的所有生物和此一环境的統稱。其中，值得一提的是，生态系统内的所有生物体应该是具有自然能量上的交互关系，而且相互之间能够形成一个有机的整体。</p>
+
+<p>那么，让我们再来回顾下IT技术的发展过程，就机器的资源分配技术而言，从最早的大型机——X86物理机——虚拟机——Docker容器，正是一个不断将物理资源抽象的过程，下面鄙人借用代码的方式描述一下IT生态系统的抽象定义~</p>
+<pre><code>var Machines = "土地资源";
+var Networks = "风、水、阳光等流动性资源";
+
+/*
+  这里可能会造成一些困惑；
+  为什么OS代表自然界法则?
+  实际上也容易理解，OS即完成一些资源的调度；
+  而这在自然界的体现便是一些常识性的自然规律；
+  比如水的流动，土地的演变，树木的生长；
+  一切的迭代变换都是遵循自然界的普遍规律自然而然的运转；
+
+  相应的，OS承载的应用便是一个个的生物体，它们只能通过特定的自然规律去摄取大自然的营
+  养，正如应用只能直接或间接地通过OS（或者类似的存在，诸如数据库这样的系统应用其实也要
+  通过一个中间层来消费硬件资源）来消费计算、缓存、网络等资源那样。
+*/
+var APP = "生物体";
+
+function OS(){
+    //代表自然规律；
+    //调度自然界的资源；
+}
+
+//大家应该想到了，其实这上述的代码应该用class nature{ ... } 来包含的，现实世界便是这样class的一个实例。
+//Ps. 这便是面向对象的魅力所在吧 :)</code></pre>
+<h4 id="the-key-orchestration-configmanagement-流程编排-配置管理">The Key: Orchestration &amp; Configmanagement(流程编排 &amp; 配置管理)</h4>
+
+<p>好吧，上面一节提到了IT生态系统的抽象概念，那么有了这个概念之后，再尝试谈些具象的东西吧。实现IT生态系统的基石是什么? 鄙人认为是Infrastructure!</p>
+
+<p>所谓的Infrastructure包含对服务资源的池化管理（不仅仅是服务器，也可以是Memcached，MySQLDB等资源）、服务的注册和管理（Etcd的概念?）以及这里需要谈及的Orchestration &amp; Configmanagement。</p>
+
+<p>Configmanagement即配置管理，通俗讲，就是按照所定义的那样使得一台设备处于某种特定的配置状态。本来也想写点个人的见解，但是由于这块涉及很多具体的技术细节，而且网络上存在很多技术先驱分享的见解，暂且这里先跳过。</p>
+
+<p>再说orchestration，顾名思义，便是一个流程的编排，一般来说是和配置管理相对独立而又紧密结合的一个概念。鄙人依稀记得在某个技术博客网站上看到这样的话：“Almost everyone tried to setup its own orchestration system.”(Ps. 不大记得原话了，大致是这个意思..)</p>
+
+<p>那么， 根据鄙人个人理解，Orchestration用通俗的话讲，便是“编排一个做事的流程，做好一件事情并且可以追溯和回滚”，具体的，Orchestration又可以分为三块：</p>
+
+<ul>
+<li>对IT服务请求处理（上线申请机器、申请各种权限、申请各种组件的服务、etc..）的流程编排；</li>
+<li>对IT组件变更处理（集群的迁移、机器的扩容等变更性操作）的流程编排；</li>
+<li>对IT故障事件处理（突发的集群节点故障、硬件故障、网络故障等）的流程编排；</li>
+</ul>
+
+<p>其中，服务请求和组件变更应该是最容易实现自动化的（也即是近些年来大多数企业运维自动化的主要着力点），因为它们很多时候具有普遍的重复性和可API化的特点。</p>
+
+<p>那么，问题来了……
+实现自动化能改变什么?</p>
+
+<p>实际上，鄙人认为，自动化便是由人去拨动Orchestration的发起点，而后面的事情，由机器之间的自主交互完成，换句话说，从“生态系统”的视角来看，不正是让生态系统内的各个生物体充分建立交互关系，从而使得他们相互成一个生态平衡吗? 在这里面，运维充当的角色是“造物主”，是掌控生物体命运起点和终点的全能的“上帝”。</p>
+
+<h4 id="实例-建立应用数据流向可视化的构想">实例——建立应用数据流向可视化的构想</h4>
+
+<p>尝试把每台机器看做live的生命体，把整个IT系统看做是一个由人推动运转的生态系统，也许可以有诸多的创意和灵感迸发。</p>
+
+<p>鄙人最近有所感悟的一个idea便是：尝试抓取某个机器或者某个应用的对应数据流向（网络层面或者OS层面，Whatever），并从而建立一个对应数据流向的示意图。（用生态系统的角度解读，便是探寻一个生物体的活动范围和影响对象）</p>
+
+<p>举例来说，鄙人搭建了一个Tomcat Web应用，它对外提供服务，并将一些数据通过网络吐到后台的其他组件用作数据库存档以及数据分析，那么通过建立一个机制，探索这个应用本身的数据流向，确定其流入源、流出源等，便可以解答以下几个问题：</p>
+
+<ul>
+<li>该应用停止服务会对整个IT系统产生何种变化和影响? （通过上下游的连锁探寻，便可以确定应用当机的波及范围和大致影响）</li>
+<li>该应用在整个IT系统中所处的位置? (据此，来评估该应用的weight，也即是对整个IT系统的重要程度)</li>
+</ul>
+
+<h4 id="进一步-建立整个企业it系统的可视化">进一步——建立整个企业IT系统的可视化</h4>
+
+<p>进一步的，假使我们已经对IT系统内部的全部组件均做到了数据流向可视化，那么描绘出整个IT系统的架构图便不再是梦，这也即是描绘出整个生态系统的“社交关系网”。（用社交也许不大恰当? 哈哈）</p>
+
+<p>这其实存在一个显而易见的好处，那便是：</p>
+
+<blockquote>
+<p>对整体架构的直观展示 &amp; 考量 &amp; 反思</p>
+</blockquote>
+
+<p>而且，我们可以和Orchestration System结合起来，每次流程编排的动作对整个体系产生的震荡理论上来说都可以记载下来（生物体命运轨迹的描绘?）。</p>
+
+<h4 id="理想化的机器世界">理想化的机器世界</h4>
+
+<p>To be continue..</p>
+
+<h4 id="个人的感想">个人的感想</h4>
+
+<p>实际上，现实世界才是我们最值得学习的对象，有人说，艺术源于生活，而又高于生活，我觉得，科技也是如此。飞机也好，计算机也好，一切一切的发明与创造都是源自对伟大的自然世界的发掘和学习。</p>
+
+<p>感恩生活！</p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/devops/">devops</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/thinking/">thinking</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2015/01/%E5%AF%B9devops%E7%9A%84%E6%80%9D%E8%80%83%E5%92%8C%E6%9E%84%E6%83%B3%E5%BB%BA%E7%AB%8B%E6%9C%BA%E5%99%A8%E4%B8%96%E7%95%8C%E7%9A%84%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F-%E7%BB%93%E5%B1%80%E7%AF%87/" data-tooltip="对Devops的思考和构想——建立机器世界的生态系统 (结局篇)">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2014/09/%E8%AE%B0%E4%B8%80%E6%AC%A1vps%E6%8C%82%E9%A9%AC%E7%9A%84%E7%BB%8F%E5%8E%86/" data-tooltip="记一次vps挂马的经历">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2020 Powered by Hugo with tranquilpeak. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2015/01/%E5%AF%B9devops%E7%9A%84%E6%80%9D%E8%80%83%E5%92%8C%E6%9E%84%E6%83%B3%E5%BB%BA%E7%AB%8B%E6%9C%BA%E5%99%A8%E4%B8%96%E7%95%8C%E7%9A%84%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F-%E7%BB%93%E5%B1%80%E7%AF%87/" data-tooltip="对Devops的思考和构想——建立机器世界的生态系统 (结局篇)">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2014/09/%E8%AE%B0%E4%B8%80%E6%AC%A1vps%E6%8C%82%E9%A9%AC%E7%9A%84%E7%BB%8F%E5%8E%86/" data-tooltip="记一次vps挂马的经历">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+    
+    <h4 id="about-card-name">Jacky Wu (Colstuwjx)</h4>
+    
+      <div id="about-card-bio">DevOPS &amp; OpenSource Fans</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        DevOPS Engineer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    <div id="cover" style="background-image:url('https://res.cloudinary.com/ddhitj0ja/image/upload/v1581843208/pic_nfgplt.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://colstuwjx.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+
+
+
+
+    
+  </body>
+</html>
+

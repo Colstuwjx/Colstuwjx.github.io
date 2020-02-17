@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>mock on Colstuwjx&#39;s site</title>
+    <link>https://colstuwjx.github.io/tags/mock/</link>
+    <description>Recent content in mock on Colstuwjx&#39;s site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 14 Oct 2017 20:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://colstuwjx.github.io/tags/mock/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>[ 三年后的杂谈 ] 测试之Mock</title>
+      <link>https://colstuwjx.github.io/2017/10/%E4%B8%89%E5%B9%B4%E5%90%8E%E7%9A%84%E6%9D%82%E8%B0%88-%E6%B5%8B%E8%AF%95%E4%B9%8Bmock/</link>
+      <pubDate>Sat, 14 Oct 2017 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/2017/10/%E4%B8%89%E5%B9%B4%E5%90%8E%E7%9A%84%E6%9D%82%E8%B0%88-%E6%B5%8B%E8%AF%95%E4%B9%8Bmock/</guid>
+      <description>&lt;p&gt;笔者最近开始补全测试方面的一些基础知识，由于也算是个人职业技能建设的一部分，权且也算作&amp;rdquo;三年小结&amp;rdquo;系列的一篇罢。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

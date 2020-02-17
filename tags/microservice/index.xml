@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>microservice on Colstuwjx&#39;s site</title>
+    <link>https://colstuwjx.github.io/tags/microservice/</link>
+    <description>Recent content in microservice on Colstuwjx&#39;s site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 20 Jan 2020 20:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://colstuwjx.github.io/tags/microservice/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>[ 翻译 ] 微服务架构及设计模式</title>
+      <link>https://colstuwjx.github.io/2020/01/%E7%BF%BB%E8%AF%91-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E5%8F%8A%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</link>
+      <pubDate>Mon, 20 Jan 2020 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/2020/01/%E7%BF%BB%E8%AF%91-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E5%8F%8A%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</guid>
+      <description>&lt;p&gt;本文介绍了主流常见的微服务模式。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>[ 翻译 ] 微服务不是终点站</title>
+      <link>https://colstuwjx.github.io/2019/07/%E7%BF%BB%E8%AF%91-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8D%E6%98%AF%E7%BB%88%E7%82%B9%E7%AB%99/</link>
+      <pubDate>Fri, 26 Jul 2019 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/2019/07/%E7%BF%BB%E8%AF%91-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8D%E6%98%AF%E7%BB%88%E7%82%B9%E7%AB%99/</guid>
+      <description>&lt;p&gt;重要的是要记住微服务不是终点站。 对于寻求在软件主导的世界中生存的数字业务而言，微服务只是星辰大海的一部分。&lt;a href=&#34;https://content.pivotal.io/blog/containers-tech-digital-transformation&#34;&gt;升级您的文化与升级您的工具一样重要&lt;/a&gt;。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

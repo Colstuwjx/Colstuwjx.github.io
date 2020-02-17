@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.64.1 with theme Tranquilpeak 0.4.7-BETA">
+<meta name="author" content="Jacky Wu (Colstuwjx)">
+<meta name="keywords" content="">
+<meta name="description" content="鄙人从2014年正式转正，参加工作以来已有三年，可以说，这三年，是鄙人在计算机行业最开始的入门阶段的三年，鄙人也由此萌生了总结这三年经验收获的想法，权且产出一些文章，内容上如有不准确之处，欢迎批评指正，邮箱：wjx_colstu@hotmail.com">
+
+
+<meta property="og:description" content="鄙人从2014年正式转正，参加工作以来已有三年，可以说，这三年，是鄙人在计算机行业最开始的入门阶段的三年，鄙人也由此萌生了总结这三年经验收获的想法，权且产出一些文章，内容上如有不准确之处，欢迎批评指正，邮箱：wjx_colstu@hotmail.com">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[ 三年后的杂谈 ] 浅谈配置管理 [ 篇一 ]">
+<meta name="twitter:title" content="[ 三年后的杂谈 ] 浅谈配置管理 [ 篇一 ]">
+<meta property="og:url" content="https://colstuwjx.github.io/2017/08/%E4%B8%89%E5%B9%B4%E5%90%8E%E7%9A%84%E6%9D%82%E8%B0%88-%E6%B5%85%E8%B0%88%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86-%E7%AF%87%E4%B8%80/">
+<meta property="twitter:url" content="https://colstuwjx.github.io/2017/08/%E4%B8%89%E5%B9%B4%E5%90%8E%E7%9A%84%E6%9D%82%E8%B0%88-%E6%B5%85%E8%B0%88%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86-%E7%AF%87%E4%B8%80/">
+<meta property="og:site_name" content="Colstuwjx&#39;s site">
+<meta property="og:description" content="鄙人从2014年正式转正，参加工作以来已有三年，可以说，这三年，是鄙人在计算机行业最开始的入门阶段的三年，鄙人也由此萌生了总结这三年经验收获的想法，权且产出一些文章，内容上如有不准确之处，欢迎批评指正，邮箱：wjx_colstu@hotmail.com">
+<meta name="twitter:description" content="鄙人从2014年正式转正，参加工作以来已有三年，可以说，这三年，是鄙人在计算机行业最开始的入门阶段的三年，鄙人也由此萌生了总结这三年经验收获的想法，权且产出一些文章，内容上如有不准确之处，欢迎批评指正，邮箱：wjx_colstu@hotmail.com">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2017-08-06T20:00:00">
+  
+  
+    <meta property="article:modified_time" content="2017-08-06T20:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="talk">
+    
+  
+  
+    
+      <meta property="article:tag" content="talk">
+    
+      <meta property="article:tag" content="configuration-management">
+    
+      <meta property="article:tag" content="devops">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+  <meta property="twitter:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+
+
+    <title>[ 三年后的杂谈 ] 浅谈配置管理 [ 篇一 ]</title>
+
+    <link rel="icon" href="https://colstuwjx.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://colstuwjx.github.io/2017/08/%E4%B8%89%E5%B9%B4%E5%90%8E%E7%9A%84%E6%9D%82%E8%B0%88-%E6%B5%85%E8%B0%88%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86-%E7%AF%87%E4%B8%80/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/comments.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://colstuwjx.github.io/">Colstuwjx&#39;s site</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://colstuwjx.github.io/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://colstuwjx.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">Jacky Wu (Colstuwjx)</h4>
+        
+          <h5 class="sidebar-profile-bio">DevOPS &amp; OpenSource Fans</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Colstuwjx" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-user"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      [ 三年后的杂谈 ] 浅谈配置管理 [ 篇一 ]
+    </h1>
+  
+  
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>鄙人从2014年正式转正，参加工作以来已有三年，可以说，这三年，是鄙人在计算机行业最开始的入门阶段的三年，鄙人也由此萌生了总结这三年经验收获的想法，权且产出一些文章，内容上如有不准确之处，欢迎批评指正，邮箱：wjx_colstu@hotmail.com</p>
+
+<h2 id="配置管理">配置管理</h2>
+
+<p>配置管理（Configuration Management），其实可以说是一个工业界的<a href="https://zh.wikipedia.org/wiki/%E7%B5%84%E6%85%8B%E7%AE%A1%E7%90%86">术语</a>，而在IT领域，这一概念可以解释成&rdquo;为了保证一组服务器上的软件服务都能处在事先约定好的一个配置状态&rdquo;（例如，nginx服务器上的nginx配置，乃至于系统配置，都是按照运维工程师期望的那样进行配置并且稳定运行）。</p>
+
+<p>究其本质，配置管理，可以说实际上是工程师们在维护承载软件服务运行的基础设施的过程中，提出的一个最佳实践和标准。它也经历了几个时代的发展和更迭。</p>
+
+<h3 id="刀耕火种的shell时代">刀耕火种的shell时代</h3>
+
+<p>在最开始的时候，大家可没有什么Puppet、Saltstack、Ansible来帮你干活，他们有的，只是shell。当然，shell的确也是异常强大的，它坚毅地接下了这一重担，为工程师们完成各项配置管理的任务（上线装配、下线清理、运行时的配置维护，等等）。我们不妨举个实际的例子：</p>
+<pre><code># AllinOne.sh是一个每台机器装机初始化时的配置脚本
+# 1k多行的shell命令，涵盖了配置Yum/Apt, 配置系统参数，安装ntp、cron、zabbix等等所有机器的通用作业
+
+# 笔者注：感谢华哥帮忙提供以前的执行命令
+# 我们需要对一组装好操作系统的服务器推送AllinOne脚本并且执行它
+# 初始化一系列的基础配置
+# for ip in `cat ip.txt`;do ssh $ip "wget -o AllinOne.sh http://mirror/AllinOne.sh; bash AllinOne.sh";done</code></pre>
+<p>由于机器最开始初始化操作系统均是标准装配的（这块当然最开始也是脚本作业，当然，它自然也算是配置管理的一部分），AllinOne也得以完成它上线初始化配置的任务。</p>
+
+<p>但是，这里面存在非常多的问题：</p>
+
+<ul>
+<li>逻辑非常复杂，维护成本会越来越高；</li>
+<li>如果需要更新发行版的版本，要花很多精力支持；</li>
+<li>由于是shell命令的形式，重试、超时等错误处理都存在不确定性，所以一般批量执行下来有一定概率需要个别机器手工处理；</li>
+<li>AllinOne只是负责上线初始化的工作，而后面的运行时状态，乃至于下线清理都没有维护，比如运行时ntp服务器的更正或者zabbix配置的更新等等</li>
+</ul>
+
+<p>问题这么多，那该怎么办呢？聪明的工程师们自然是有办法的，这也就开启了配置管理的第二个时代 —— 配置管理工具的时代。</p>
+
+<h3 id="文明开端的配置管理工具时代">文明开端的配置管理工具时代</h3>
+
+<p>聪明的工程师们在经历了用shell脚本管理服务器的痛苦过程后，终于痛定思痛，并且想出了用配置管理工具来维护服务器这样一个绝妙的创新方案。这个时代下，一些代表作品便是像Puppet、Saltstack、Ansible、Chef这样的配置管理工具。而这一时代，可以说至今仍在延续，窃以为值得花大量笔墨来讲一讲。下面笔者将就Ansible这款工具谈谈配置管理工具给我们带来的一些“变化”。</p>
+
+<h4 id="声明式配置-命令式操作">声明式配置 &gt; 命令式操作</h4>
+
+<p>这个理念其实不仅仅局限于基础设施领域，在前端界同样如此，从Angularjs、Vue时代兴起的数据绑定即是推崇“声明式配置”来编写代码，而非传统的JQuery命令式的行为。命令式行为有着诸多的问题和缺陷：</p>
+
+<ul>
+<li><p>它不是完备的，举个例子，我们说“房间有5盏灯“，现在，我们执行”关掉其中一盏”，恰巧这个时候，可能另外一个thread并不知道这点，并且也执行了“关掉其中一盏”，那么状态便会出现不一致的情况，而声明式配置则不然，“房间里有5盏灯，改成只有4盏灯亮着”，很显然，声明式的配置，行为是幂等的，这也增强了基础设施配置状态的稳定性；</p></li>
+
+<li><p>实现的方式可能存在多种，用户可能会被繁杂的多样性给绑架，比如发行版的包管理器apt和yum，如果是用shell来实现，系统管理员将不得不考虑这些差异，并且深陷于“这个yum的配置和apt的配置需要根据发行版的不同而配置不同的内容”，“redhat系的服务脚本是initd、systemd，而debian系则是upstart、systemd，我们得用不同的方式来启动服务”，等等；</p></li>
+</ul>
+
+<p>换成声明式配置来管理基础设施的话我们便可以巧妙地借助配置管理工具本身实现的封装而免受这些困扰，下面是一个用Ansible来配置ntp服务的例子：</p>
+<pre><code>- hosts: redhat-servers
+  vars:
+    # 可以根据发行版的不同，
+    # 为ntp_daemon定义不同的值
+    ntp_daemon: ntpd
+  
+  # 安装软件和启动服务从未如此简单！
+  tasks:
+    - name: install ntp
+      # package是ansible提供的一个module
+      # 它帮助用户封装了安装软件包的细节
+      # 用户只需要配置module的参数即可实现软件包的安装
+      package: name=ntp state=present
+    - name: ensure ntp is running and enabled
+      # ansible支持通过“模板语言+变量渲染”的方式实现动态配置
+      service: name={{ ntp_daemon }} state=started enabled=yes</code></pre>
+<p>总而言之，Ansible关注的是这组服务器上ntp这个组件的“状态”，它实现的，是约定这组服务器上声明配置的状态，并保持一致。</p>
+
+<h4 id="标准化">标准化</h4>
+
+<p>在实现了通过一组配置语言约定一组服务器上软件的配置和运行状态后，我们也迎来了标准化的浪潮。这实际上是一个良性的过程。</p>
+
+<p>所谓标准化，包括两块，一块是基础设施层面的标准化，即应用的安装，均通过标准的apt或者yum工具，应用的服务均是通过initd或者systemd这样的方式进行托管，日志均用ELK进行采集，并且遵循约定的格式等等，另外一块则是流程的标准化，应用服务的上线是通过流程系统进行编排，域名的注册是通过审批、生效到DNS系统这样的方式，并且有约定好的标准，比如必须是&rdquo;&lt;应用&gt;.corp_name.co&rdquo;。</p>
+
+<p>而Ansible这样的配置管理工具正是可以帮助我们实现基础设施层面标准化的具体执行者。它为我们提供了一整套完备的“状态声明 - 差异抽象（变量和判断）— 事件响应（handler实现了配置状态变化时执行的行为，比如重启服务）”的配置模式，与此同时，Ansible也是站在巨人的肩膀上，它有机地将操作系统层面的一些工具和组件调度起来：安装软件包时Ansible仍然用的是apt、yum，配置日志切割时我们推崇用logrotate，定时任务的配置仍然是由Crontab来具体实现和执行，<code>Ansible其实没有做太多的事情，它只是提出了一套标准，然后让大家加入进来罢了。</code>这也遵循了“简单、小而美“的Unix哲学。</p>
+
+<p>只有实现基础设施的标准化，才能真正发挥配置管理的效果，也即是实现”一组服务器上的软件服务都能处在事先约定好的一个配置状态“这样一个愿望。如何实现”标准化+配置管理“是有一个最佳实践的。它对我们的基础设施提出了一些要求，并且需要一些配套的组件来配合配置管理工具。</p>
+
+<h4 id="服务树">服务树</h4>
+
+<p>我们知道Ansible对于服务器的分组是使用<code>Inventory</code>这个概念来区分，而跟服务器分组关联的一些元数据则叫做<code>Facts</code>，仍然以上面的ntp为例，我们如果想在不同发行版上安装和运行ntp，则必须配置<code>ntp_daemon</code>这一变量（因为debian系和redhat系上服务的名称是不同的，debian上是ntp，redhat则是ntpd），这一变量我们便可以理解为是这组服务器的元数据之一，也即是<code>Facts</code>的一部分。</p>
+
+<p>幸运的是，Ansible默认为我们提供了setup这个module来采集服务器上一些常见的<code>Facts</code>（其他配置管理工具也有类似的做法），我们也得以统一地用一套role（Ansible里面用来称呼一套配置状态集合的术语）实现对ntp的配置。然而，有时候我们可能需要一些额外的元数据来帮助判断，比如，我们需要根据服务器所属IDC的不同，写入不同的ntp server配置，上述例子可能修改为：</p>
+<pre><code># main.yml
+- hosts: redhat-servers
+  vars:
+    # 可以根据发行版的不同，
+    # 为ntp_daemon定义不同的值
+    ntp_daemon: ntpd
+    # 需要额外的idc字段，并且得出服务器适配的ntp server列表
+    idc: sha_idc01
+    idc_ntp_servers: {"sha_idc01": ["ntp_server01", "ntp_server02"]}
+    servers: idc_ntp_servers[idc]
+  
+  # 安装软件和启动服务从未如此简单！
+  tasks:
+    - name: install ntp
+      # package是ansible提供的一个module
+      # 它帮助用户封装了安装软件包的细节
+      # 用户只需要配置module的参数即可实现软件包的安装
+      package: name=ntp state=present 
+
+    - name: Generate ntp.conf file
+      template: src=ntp.conf.j2 dest=/etc/ntp.conf
+
+    - name: ensure ntp is running and enabled
+      # ansible支持通过“模板语言+变量渲染”的方式实现动态配置
+      service: name={{ ntp_daemon }} state=started enabled=yes</code></pre><pre><code># ntp.conf.j2
+
+...
+
+# pool.ntp.org maps to about 1000 low-stratum NTP servers.  Your server will
+# pick a different set every time it starts up.  Please consider joining the
+# pool: <http://www.pool.ntp.org/join.html>
+# 这里是重点，我们将用ansible的模板来渲染该文件
+# 并且根据ntp_servers这一变量来配置ntp server的指向
+{% for svr in servers %}
+server {{ svr }} iburst
+{% endfor %}
+
+...</code></pre>
+<p>那么问题来了，如何获取服务器所属IDC的信息呢？业内自然也有标准的最佳实践：维护所谓的服务树和CMDB，将应用和所属服务器进行归类，并维护对应的服务元数据，比如一台服务器是担任何种角色（Nginx实现的SLB或者Django web等），它坐落于哪个IDC，归属于哪个环境（prod、uat、dev等），通过服务树的层级式结构，以及挂载点的方式来实现服务器资源和应用、服务元数据的关联绑定及管理。关于服务树的一些实践和玩法，鄙人推荐阅读小米的一篇分享：<a href="http://noops.me/?p=693">http://noops.me/?p=693</a></p>
+
+<p>有了服务树之后，通过Ansible的<a href="http://docs.ansible.com/ansible/latest/intro_dynamic_inventory.html">Dynamic Inventory技术</a>将服务树的元数据集成到Ansible，我们便知道一台服务器”理应有什么样的配置，处于什么样的状态“，然后再通过配置管理工具来具象地在基础设施上实现和维护。如此，我们的配置管理达到了新的高度，我们可以通过下面的流程管控到应用的整个生命周期：</p>
+<pre><code>通过工单流程系统将新应用的元数据录入到服务树 ->
+配置管理工具实现基础设施层面的装配 -> 
+发布系统调度代码服务的发布 -> 
+配置管理工具根据服务树的元数据，
+进行配置巡检和状态保持，
+确保服务器上应用环境状态的稳定和一致 -> 
+应用服务器从工单流程系统下线并更新服务树的元数据 -> 
+配置管理工具实现对机器下线时的清理作业，
+机器资源回收</code></pre>
+<p>可以看到，配置管理工具在这里面和服务树的联动起到了非常好的效果，而且通过实现配置巡检及状态保持（以ansible为例的话便是定期执行ansible playbook以保持状态，或者ansible pull模式从远端的版本管理系统，如Git，获取软件理应保持的配置状态），所谓的<a href="http://searchitoperations.techtarget.com/definition/immutable-infrastructure">”不可变基础设施“</a>初现端倪。</p>
+
+<h4 id="infrastructure-as-code">Infrastructure as Code</h4>
+
+<p>配置管理工具这个时代带来的另一个变化便是我们有了N套对基础设施约定的配置状态，也即是一套套的ansible playbook，我们可以将其放到Git这样的版本控制系统，除了上述提到的配置巡检和状态保持，更深远的一个意义便是，大家可以通过协同编辑ansible的playbook，从而实现维护和迭代基础设施的配置状态。</p>
+
+<p>举个例子，工程师A需要对SLB上一些server的vhost配置做一些修改然后生效到部分服务器，而工程师B则需要对SLB上一些upstream做一些变更。当然，我们可以通过流程系统工单的形式将这些变更做成可审计的过程，而使用Git来维护这些配置的话，我们将能收获一个巨大的额外价值：基础设施的变更通过维护Ansible的playbook配置，是完全可审计并且可生效的。我们完全可以通过”分支+合并审计“的模式，实现对基础设施层面”代码“（也即是ansible的配置指令）的审计。</p>
+
+<p>除此之外，一些新型的面向Cloud和Baremetal的，像terraform、packer这样的工具，也将基础设施层面可定义的配置状态推向了一个新的高度，<a href="https://en.wikipedia.org/wiki/Infrastructure_as_Code">&ldquo;Infrastructure_as_Code&rdquo;</a>的概念也由此兴起。</p>
+
+<h4 id="堡垒机和去ssh">堡垒机和去ssh</h4>
+
+<p>需要明确的一点是，即便有配置管理工具为我们接管了众多已经标准化的事务，实际上仍然存在各种各样的需求导致系统管理员们不得不登陆机器来执行一些临时性的操作。</p>
+
+<blockquote>
+<p>”我们的确是想去ssh的，但是现实情况是我们仍然得登陆机器做一些事情。“         —— 来自众多辛勤工作的系统管理员们的心声</p>
+</blockquote>
+
+<p>如此，业内也就有了各种各样的堡垒机方案，原理大都相似，即是通过为每台机器埋入堡垒机的ssh key，然后约束系统管理员们仅通过堡垒机ssh跳转登陆机器和执行命令。</p>
+
+<p>针对这一点，鄙人认为是反配置管理模式的，日志、监控可以通过外部的系统（ELK、Zabbix、Grafana）来查看，一些ad-hoc的一次性命令可以通过Ansible来批量操作（甚至可以跟堡垒机结合起来，鄙人所在的厂子便是这样，堡垒机集成了Ansible的配置管理和命令执行功能），应用的配置则是通过Ansible的playbook来维持状态，似乎我们不用再ssh登陆机器了？</p>
+
+<p>可惜，理想很丰满，现实却很骨感。配置管理工具的时代为我们带来了标准化和声明式配置的革命，却仍然存在一些问题，这也即是堡垒机需求不绝，no-ssh无法达成的真正原因所在。</p>
+
+<h4 id="理想和现实-配置管理工具时代的短板">理想和现实 —— 配置管理工具时代的短板</h4>
+
+<p>为什么仍然无法摆脱登陆机器的繁杂琐事，鄙人认为这是这个时代必然存在的一个问题，个人觉得有以下原因：</p>
+
+<ul>
+<li><p>标准化和平台化的程度不够，比如日志没有接管到ELK这样的平台，那么自然还需要登陆机器查看日志，比如没有cache的统一运维平台，那么自然无法维护服务树里cache应用的元数据，监控和排障条件的不完善，也导致你不得不登陆机器来完成一些操作，比如Java应用没有建立完善的调用链路、JVM性能参数监控、故障时堆栈dump等，那么也自然需要在故障时登陆机器来操作；</p></li>
+
+<li><p>仍然有”操作系统“和”机器“的存在，我们仍然没有抽象掉底层的资源，配置管理工具本身只是做到了对这些资源的配置状态的约定和维护而已；</p></li>
+
+<li><p>完全的标准化本身是”反人类“的，愚蠢的人类总是习惯于一些东西，并且怠于改变，在建设标准化的过程中，对工程师们本身是有要求的，我们需要有团队来建设基础设施的标准化，也需要系统管理员们配合适应新的节奏并且积极推荐基础设施的改变，而这些，实际能实现的在业内也是寥寥，有技术原因，也有工程模式和流程方面的因素。</p></li>
+</ul>
+
+<p>除了无法摆脱登陆机器的困扰之外，配置管理工具的时代仍然存在其他的很多不足之处，它并没有管理到应用服务的整个生命周期，我们可以从“服务树”那一节里的生命周期里发现像代码的发布、故障恢复、机器资源的隔离和池化等需求实际没能通过配置管理工具达成或没有完全把控（当然，这样的需求，发布、故障恢复、资源管理等等仍然有其他的方案来实现，只是这样仍未打造成一个完整有机的闭环生态罢了），这也是这个时代的局限性所在。</p>
+
+<p>当然，聪明的工程师们从来不会满足于此，他们乐于创新，并由此开辟了新的容器时代。</p>
+
+<p>&ndash; 未完待续。</p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/talk/">talk</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/configuration-management/">configuration-management</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/devops/">devops</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2017/08/%E6%9D%82%E8%B0%88-%E4%B8%89%E5%B9%B4%E5%90%8E/" data-tooltip="[ 杂谈 ] 三年后">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2017/07/easy-your-life-by-using-the-snmp-exporter-generator/" data-tooltip="Easy your life by using the snmp-exporter generator">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2020 Powered by Hugo with tranquilpeak. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2017/08/%E6%9D%82%E8%B0%88-%E4%B8%89%E5%B9%B4%E5%90%8E/" data-tooltip="[ 杂谈 ] 三年后">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2017/07/easy-your-life-by-using-the-snmp-exporter-generator/" data-tooltip="Easy your life by using the snmp-exporter generator">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+    
+    <h4 id="about-card-name">Jacky Wu (Colstuwjx)</h4>
+    
+      <div id="about-card-bio">DevOPS &amp; OpenSource Fans</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        DevOPS Engineer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    <div id="cover" style="background-image:url('https://res.cloudinary.com/ddhitj0ja/image/upload/v1581843208/pic_nfgplt.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://colstuwjx.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+
+
+
+
+    
+  </body>
+</html>
+

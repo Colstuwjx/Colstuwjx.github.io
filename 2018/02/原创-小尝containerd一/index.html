@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.64.1 with theme Tranquilpeak 0.4.7-BETA">
+<meta name="author" content="Jacky Wu (Colstuwjx)">
+<meta name="keywords" content="">
+<meta name="description" content="containerd是一个开源的container runtime实现，也是docker背后管理容器生命周期的功臣，借着周末的一些时间，鄙人也小小把玩了一下containerd，有任何不对的地方欢迎指正。">
+
+
+<meta property="og:description" content="containerd是一个开源的container runtime实现，也是docker背后管理容器生命周期的功臣，借着周末的一些时间，鄙人也小小把玩了一下containerd，有任何不对的地方欢迎指正。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[ 原创 ] 小尝containerd（一）">
+<meta name="twitter:title" content="[ 原创 ] 小尝containerd（一）">
+<meta property="og:url" content="https://colstuwjx.github.io/2018/02/%E5%8E%9F%E5%88%9B-%E5%B0%8F%E5%B0%9Dcontainerd%E4%B8%80/">
+<meta property="twitter:url" content="https://colstuwjx.github.io/2018/02/%E5%8E%9F%E5%88%9B-%E5%B0%8F%E5%B0%9Dcontainerd%E4%B8%80/">
+<meta property="og:site_name" content="Colstuwjx&#39;s site">
+<meta property="og:description" content="containerd是一个开源的container runtime实现，也是docker背后管理容器生命周期的功臣，借着周末的一些时间，鄙人也小小把玩了一下containerd，有任何不对的地方欢迎指正。">
+<meta name="twitter:description" content="containerd是一个开源的container runtime实现，也是docker背后管理容器生命周期的功臣，借着周末的一些时间，鄙人也小小把玩了一下containerd，有任何不对的地方欢迎指正。">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2018-02-05T20:00:00">
+  
+  
+    <meta property="article:modified_time" content="2018-02-05T20:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="cloud-native">
+    
+  
+  
+    
+      <meta property="article:tag" content="cloud-native">
+    
+      <meta property="article:tag" content="containerd">
+    
+      <meta property="article:tag" content="docker">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+  <meta property="twitter:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+
+
+    <title>[ 原创 ] 小尝containerd（一）</title>
+
+    <link rel="icon" href="https://colstuwjx.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://colstuwjx.github.io/2018/02/%E5%8E%9F%E5%88%9B-%E5%B0%8F%E5%B0%9Dcontainerd%E4%B8%80/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/comments.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://colstuwjx.github.io/">Colstuwjx&#39;s site</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://colstuwjx.github.io/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://colstuwjx.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">Jacky Wu (Colstuwjx)</h4>
+        
+          <h5 class="sidebar-profile-bio">DevOPS &amp; OpenSource Fans</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Colstuwjx" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-user"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      [ 原创 ] 小尝containerd（一）
+    </h1>
+  
+  
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p><a href="https://containerd.io/">containerd</a>是一个开源的container runtime实现，也是docker背后管理容器生命周期的功臣，借着周末的一些时间，鄙人也小小把玩了一下containerd，有任何不对的地方欢迎指正。</p>
+
+<h4 id="架构">架构</h4>
+
+<p>containerd和runc、docker的关系其实比较复杂，我们不妨简单地理解成，containerd是一个纯粹的，面向容器工业标准的一个容器管理运行时，runc是一个包装了libcontainer的满足OCI标准的类库，docker则更像是一个承载容器而又不想只做容器引擎的一个复杂产物。下图展示了containerd在容器生命周期里扮演的角色：</p>
+
+<p><img src="https://colstuwjx.github.io/images/2018/Feb/layout-1.png" alt="layout" /></p>
+
+<p>不难发现，containerd本身负责管理容器整个的生命周期，从镜像拉取，到挂载fs，再到启动，销毁等，它对外提供grpc形式的API，对内通过调用runc等类库来创建满足OCI标准的容器，并且屏蔽了底层的实现细节。</p>
+
+<p>在架构设计和实现方面，官方的核心开发人员在他们的<a href="https://blog.docker.com/2017/12/containerd-ga-features-2/">博客</a>里也提到了，通过<a href="https://blog.mobyproject.org/where-are-containerds-graph-drivers-145fc9b7255">反思graphdriver的实现</a>，他们将containerd设计成了snapshotter的模式，这也使得containerd对于overlay文件系统/快照文件系统的支持均称得上是不错。其具体的架构实现如下：</p>
+
+<p><img src="https://colstuwjx.github.io/images/2018/Feb/architecture-1.png" alt="arch" /></p>
+
+<p>storage、metadata和runtime的三大块划分非常清晰，通过抽象出events的设计，containerd也得以将网络层面的复杂度交给了上层处理，仅提供对network ns的一些添加接口和配置等操作的API。这样做的好处无疑是巨大的，保留最小功能集合的纯粹和高效，而将更多的复杂性及灵活性交给了插件及上层系统。</p>
+
+<h4 id="试玩">试玩</h4>
+
+<p>要运行containerd的话，我们需要从github下载containerd的release版本，这里鄙人测试使用的是<a href="https://github.com/containerd/containerd/releases/download/v1.0.1/containerd-1.0.1.linux-amd64.tar.gz">v1.0.1</a>，</p>
+
+<p>可以看到，里面有几个binary，它们分别实现了如下功能：</p>
+
+<ul>
+<li><p>containerd即容器的运行时，以GRPC的形式提供满足OCI标准的API；</p></li>
+
+<li><p>containerd-release和containerd-stress则分别是containerd项目的发行版发布工具以及压力测试工具，以后有时间再来八；</p></li>
+
+<li><p>ctr是一个简单的CLI接口，用作containerd本身的一些调试用途，投入生产使用时还是应该配合docker或者cri-containerd部署；</p></li>
+
+<li><p>containerd-shim是每一个容器的运行时载体，我们在docker宿主机上看到的shim也正是代表着一个个通过调用containerd启动的docker容器。</p></li>
+</ul>
+
+<p>containerd需要以daemon方式运行在宿主机上，我们可以轻松地在github仓库里找到官方编写的<a href="https://github.com/containerd/containerd/blob/master/containerd.service">systemd service</a>文件，而containerd的配置文件为<code>/etc/containerd/config.toml</code>，内容如下：</p>
+<pre><code>subreaper = true
+oom_score = -999
+
+[debug]
+ level = “debug”
+
+[metrics]
+ address = “127.0.0.1:1338”
+
+[plugins.linux]
+ runtime = “runc”
+ shim_debug = true</code></pre>
+<p>我们先卖个关子，在后面文章里讲解这里配置参数的含义。通过熟悉的<code>systemctl start containerd</code>，如下图所示，containerd启动了！</p>
+
+<p><img src="https://colstuwjx.github.io/images/2018/Feb/containerd.jpg" alt="containerd-service" /></p>
+
+<h5 id="ctr-cli">ctr cli</h5>
+
+<p>下面，我们不妨用官方提供的ctr这一简单的CLI工具小小试玩一下用containerd来运行容器。</p>
+<pre><code># containerd支持的镜像格式有多种，这里我们不妨试一试用docker导出一个镜像tar，然后用runc配置oci标准所需的参数，然后再用ctr启动之，参考：https://github.com/projectatomic/containerd/blob/master/docs/bundle.md
+
+# step 1. mkdir && pull image
+mkdir -p redis/rootfs && docker pull redis
+
+# step 2. create the container with a temp name so that we can export it
+docker create --name tempredis redis
+
+# step 3. export it into the rootfs directory
+docker export tempredis | tar -C redis/rootfs -xf -
+
+# step 4. remove the container now that we have exported
+docker rm tempredis
+
+# step 5. prepare runc from https://github.com/opencontainers/runc and cd to redis dir.
+cd redis && runc spec
+
+# 现在我们即得到了如下结构的文件
+#/redis
+#├── config.json
+#└── rootfs/
+# step 6. 和这里(https://github.com/projectatomic/containerd/blob/master/docs/bundle.md#edits)描述的一样，我们修改config.json里启动命令等参数选项，并将network ns去掉（这类似于net=host的效果），config.json的规格定义参考：https://github.com/opencontainers/runtime-spec/blob/master/config.md
+
+# step 7. 和上面的官方文档有所出入的是，container 1.0启动容器的操作有所变化
+# 我们需要用run命令来操作(需要将ctr升级到最新的master分支然后编译).
+ctr run -t -d --config /root/redis/config.json --rootfs /root/redis/rootfs redis</code></pre>
+<p>接下来就是非常眼熟的一些操作了，比如：</p>
+<pre><code>root@k8s-01:~/redis# ctr containers ls
+CONTAINER    IMAGE    RUNTIME
+redis        -        io.containerd.runtime.v1.linux</code></pre>
+<p>时间问题暂时先写到这里，后面再补充。</p>
+
+<h4 id="参考">参考</h4>
+
+<ul>
+<li><p><a href="https://github.com/containerd/containerd">https://github.com/containerd/containerd</a></p></li>
+
+<li><p><a href="https://blog.mobyproject.org/getting-started-with-containerd-a81fa090982f">https://blog.mobyproject.org/getting-started-with-containerd-a81fa090982f</a></p></li>
+
+<li><p><a href="https://www.slideshare.net/Docker/containerd-building-a-container-supervisor-by-michael-crosby">https://www.slideshare.net/Docker/containerd-building-a-container-supervisor-by-michael-crosby</a></p></li>
+
+<li><p><a href="https://container42.com/2017/10/14/containerd-deep-dive-intro/">https://container42.com/2017/10/14/containerd-deep-dive-intro/</a></p></li>
+
+<li><p><a href="https://blog.docker.com/2017/12/containerd-ga-features-2/">https://blog.docker.com/2017/12/containerd-ga-features-2/</a></p></li>
+
+<li><p><a href="https://blog.mobyproject.org/where-are-containerds-graph-drivers-145fc9b7255">https://blog.mobyproject.org/where-are-containerds-graph-drivers-145fc9b7255</a></p></li>
+
+<li><p><a href="https://github.com/containerd/containerd/blob/master/docs/ops.md">https://github.com/containerd/containerd/blob/master/docs/ops.md</a></p></li>
+
+<li><p><a href="https://blog.docker.com/2017/09/kubernetes-containerd-integration/">https://blog.docker.com/2017/09/kubernetes-containerd-integration/</a></p></li>
+</ul>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/cloud-native/">cloud-native</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/containerd/">containerd</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/docker/">docker</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2018/06/%E7%BF%BB%E8%AF%91-thanos%E5%A4%A7%E8%A7%84%E6%A8%A1prometheus%E9%9B%86%E7%BE%A4%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" data-tooltip="[ 翻译 ] Thanos：大规模prometheus集群解决方案">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2018/01/kube-dns%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E7%9A%84%E8%A7%A3%E8%AF%BB/" data-tooltip="kube-dns实现原理的解读">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2020 Powered by Hugo with tranquilpeak. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2018/06/%E7%BF%BB%E8%AF%91-thanos%E5%A4%A7%E8%A7%84%E6%A8%A1prometheus%E9%9B%86%E7%BE%A4%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/" data-tooltip="[ 翻译 ] Thanos：大规模prometheus集群解决方案">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2018/01/kube-dns%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E7%9A%84%E8%A7%A3%E8%AF%BB/" data-tooltip="kube-dns实现原理的解读">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+    
+    <h4 id="about-card-name">Jacky Wu (Colstuwjx)</h4>
+    
+      <div id="about-card-bio">DevOPS &amp; OpenSource Fans</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        DevOPS Engineer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    <div id="cover" style="background-image:url('https://res.cloudinary.com/ddhitj0ja/image/upload/v1581843208/pic_nfgplt.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://colstuwjx.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+
+
+
+
+    
+  </body>
+</html>
+

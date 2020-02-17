@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>snmp-exporter on Colstuwjx&#39;s site</title>
+    <link>https://colstuwjx.github.io/tags/snmp-exporter/</link>
+    <description>Recent content in snmp-exporter on Colstuwjx&#39;s site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 01 Jul 2017 20:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://colstuwjx.github.io/tags/snmp-exporter/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Easy your life by using the snmp-exporter generator</title>
+      <link>https://colstuwjx.github.io/2017/07/easy-your-life-by-using-the-snmp-exporter-generator/</link>
+      <pubDate>Sat, 01 Jul 2017 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/2017/07/easy-your-life-by-using-the-snmp-exporter-generator/</guid>
+      <description>&lt;p&gt;This is a post for explaining how to use snmp exporter generator&amp;hellip;&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

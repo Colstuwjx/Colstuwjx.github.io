@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>book on Colstuwjx&#39;s site</title>
+    <link>https://colstuwjx.github.io/tags/book/</link>
+    <description>Recent content in book on Colstuwjx&#39;s site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 30 Sep 2017 20:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://colstuwjx.github.io/tags/book/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>[ 读书笔记 ] Just for Fun</title>
+      <link>https://colstuwjx.github.io/2017/09/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-just-for-fun/</link>
+      <pubDate>Sat, 30 Sep 2017 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/2017/09/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-just-for-fun/</guid>
+      <description>&lt;p&gt;写在前面：阅读完Linus的自传《Just for Fun》，不敢私藏，分享一些个人的读书收获。
+Colstuwjx
+2017.09.30&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>[ 广告帖 ] 鄙人参与翻译的书籍《Docker生产环境实践指南》推广</title>
+      <link>https://colstuwjx.github.io/2016/06/%E5%B9%BF%E5%91%8A%E5%B8%96-%E9%84%99%E4%BA%BA%E5%8F%82%E4%B8%8E%E7%BF%BB%E8%AF%91%E7%9A%84%E4%B9%A6%E7%B1%8Ddocker%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E5%AE%9E%E8%B7%B5%E6%8C%87%E5%8D%97%E6%8E%A8%E5%B9%BF/</link>
+      <pubDate>Thu, 02 Jun 2016 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/2016/06/%E5%B9%BF%E5%91%8A%E5%B8%96-%E9%84%99%E4%BA%BA%E5%8F%82%E4%B8%8E%E7%BF%BB%E8%AF%91%E7%9A%84%E4%B9%A6%E7%B1%8Ddocker%E7%94%9F%E4%BA%A7%E7%8E%AF%E5%A2%83%E5%AE%9E%E8%B7%B5%E6%8C%87%E5%8D%97%E6%8E%A8%E5%B9%BF/</guid>
+      <description>&lt;p&gt;由梁晓勇大哥和鄙人一起翻译的Docker技术书籍《Docker生产环境实践指南》（原书：&lt;a href=&#34;http://shop.oreilly.com/product/9781939902184.do&#34;&gt;《Docker in production》&lt;/a&gt;）已经开始预售。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
