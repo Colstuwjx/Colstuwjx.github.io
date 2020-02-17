@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.64.1 with theme Tranquilpeak 0.4.7-BETA">
+<meta name="author" content="Jacky Wu (Colstuwjx)">
+<meta name="keywords" content="">
+<meta name="description" content="使用Saltstack也有段时间，期间踩了不少坑，有的解决了，有的解决不了便避开了。本文便是一些排障经验的归纳和使用体验的总结，纯属个人经验，不喜勿喷。">
+
+
+<meta property="og:description" content="使用Saltstack也有段时间，期间踩了不少坑，有的解决了，有的解决不了便避开了。本文便是一些排障经验的归纳和使用体验的总结，纯属个人经验，不喜勿喷。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Salt 自动化系统碎碎念">
+<meta name="twitter:title" content="Salt 自动化系统碎碎念">
+<meta property="og:url" content="https://colstuwjx.github.io/2014/07/salt-%E8%87%AA%E5%8A%A8%E5%8C%96%E7%B3%BB%E7%BB%9F%E7%A2%8E%E7%A2%8E%E5%BF%B5/">
+<meta property="twitter:url" content="https://colstuwjx.github.io/2014/07/salt-%E8%87%AA%E5%8A%A8%E5%8C%96%E7%B3%BB%E7%BB%9F%E7%A2%8E%E7%A2%8E%E5%BF%B5/">
+<meta property="og:site_name" content="Colstuwjx&#39;s site">
+<meta property="og:description" content="使用Saltstack也有段时间，期间踩了不少坑，有的解决了，有的解决不了便避开了。本文便是一些排障经验的归纳和使用体验的总结，纯属个人经验，不喜勿喷。">
+<meta name="twitter:description" content="使用Saltstack也有段时间，期间踩了不少坑，有的解决了，有的解决不了便避开了。本文便是一些排障经验的归纳和使用体验的总结，纯属个人经验，不喜勿喷。">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2014-07-28T20:00:00">
+  
+  
+    <meta property="article:modified_time" content="2014-07-28T20:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="salt">
+    
+  
+  
+    
+      <meta property="article:tag" content="devops">
+    
+      <meta property="article:tag" content="salt">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+  <meta property="twitter:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+
+
+    <title>Salt 自动化系统碎碎念</title>
+
+    <link rel="icon" href="https://colstuwjx.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://colstuwjx.github.io/2014/07/salt-%E8%87%AA%E5%8A%A8%E5%8C%96%E7%B3%BB%E7%BB%9F%E7%A2%8E%E7%A2%8E%E5%BF%B5/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/comments.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://colstuwjx.github.io/">Colstuwjx&#39;s site</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://colstuwjx.github.io/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://colstuwjx.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">Jacky Wu (Colstuwjx)</h4>
+        
+          <h5 class="sidebar-profile-bio">DevOPS &amp; OpenSource Fans</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Colstuwjx" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-user"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      Salt 自动化系统碎碎念
+    </h1>
+  
+  
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>使用Saltstack也有段时间，期间踩了不少坑，有的解决了，有的解决不了便避开了。本文便是一些排障经验的归纳和使用体验的总结，纯属个人经验，不喜勿喷。</p>
+
+<h4 id="开启debug模式">开启Debug模式</h4>
+
+<p>最好的排障手段莫过于直接重现故障（salt里一般是可以重现的，其他应用就未必了，可能就只能通过日志和代码来层层拨丝抽茧了），使用<code>salt-master -l debug</code> 或者 <code>salt-minion -l debug</code>的方式来开启debug级别的日志输出，并尝试重现故障，这样便可以找到引发报错或异常的症结所在。</p>
+
+<h4 id="定位到代码级别">定位到代码级别</h4>
+
+<p>引发问题的所在最终肯定是某行代码的逻辑方式不对，或者一些不恰当的使用方式导致的。鄙人个人就曾遇到过这样的情况，在使用Salt gitfs特性时遇到一些不支持的情况，最后定位到Salt源码层面，通过修改源码来满足需求。实际上，在遇到异常情况时完全可以通过上面提到的debug模式来定位报错代码行数和位置，并着手阅读源码，从而寻找问题所在。</p>
+
+<h4 id="辅助的job归档">辅助的Job归档</h4>
+
+<p>Salt本身提供Returner的方式将job执行数据很好的归档到指定目标数据源，不过鄙人更倾向于使用绿肥神提供的 <a href="http://pengyao.org/saltstack_master_retuner_over_event_system.html">event returner方式</a>，即直接从Zeromq消息总线抓取Job反馈信息，并做相应的归档，这样的一个优势在于“数据是绝对新鲜的”，很明显，它们都是第一时间反馈到消息总线时被抓取归档的。</p>
+
+<p>实际上，这样的归档是完全必要，并十分有意义的。试想一下，如果将Salt Job数据落到比如Mysql数据库里，那么便可以做一些额外的数据分析和数据展示，并且在出现异常时给予一定的助力。</p>
+
+<p>比如Master突然对Minion Timeout，那么便可以直接使用SQL语句获取最后一次下发的Salt job执行内容，以及返回情况，响应时间等。</p>
+
+<h4 id="重装-降级-升级">重装、降级、升级</h4>
+
+<p>同很多软件一样，鄙人遇到的很多Salt的报错都是可以通过卸载重装或者删key重启服务，甚至降级、升级等方式去解决。</p>
+
+<p>可不要小瞧这样的模式，鄙人曾听位大神说 “在Windows中，80%的问题都是可以通过重启来解决”，如果重装这样一个简单粗暴的方式能够解决问题，为什么不采用它呢？</p>
+
+<h4 id="尽量遵循标准">尽量遵循标准</h4>
+
+<p>在鄙人的使用环境里，也曾遇到自定义的应用service脚本(init.d下的服务脚本)无法被Salt很好的支持的情况，后来通过查看源码得知Salt也是简单的通过ps命令来获取相关信息，并且在执行脚本后判断exitcode是否正常，如果不按照这样的一个标准逻辑走的话，很显然，便会遇到一些莫名其妙的问题。</p>
+
+<p>所以，在这里建议使用Salt部署环境时尽量遵循已有的标准，这样会减少出错几率。</p>
+
+<h4 id="对salt整体有一定程度了解和规划后再上线">对Salt整体有一定程度了解和规划后再上线</h4>
+
+<p>对于一个新的软件，尽量不要大规模的去使用它，除非你真的很了解它。（鄙人暂时还不敢说自己很了解Salt的运行机制，尤其对于认证和消息分发模块尤为模糊，也希望更多的大神去分享这方面的经验。）</p>
+
+<p>关于Salt，个人认为首先要掌握一些必要的排障手段，然后熟悉大部分的state编写及现有modules、Returner\Reactor\Schedule等等特性，最后等到这些都有一定了解的时候再去考虑生产环境的大范围使用。</p>
+
+<h4 id="处理逻辑尽量简洁-优雅">处理逻辑尽量简洁、优雅</h4>
+
+<p>实际上，不单是配置管理，编写代码也应该如此，所有的代码处理逻辑都应该简单明了、优雅可读，这样的程序才便于维护和更新迭代。</p>
+
+<p>在salt的使用过程中，编写sls或许占很大比重。鄙人这里建议sls编写遵循以下几个准则：</p>
+
+<ul>
+<li>内部逻辑尽量简单易读，order和require机制尽量少用;</li>
+<li>每个独立的应用都应该做成一个Salt formulas;</li>
+<li>复杂的流程处理考虑使用Salt Orchestration系统;</li>
+<li>尽可能少的在sls里出现cmd.run;</li>
+<li>恰当的使用pillar和grains、mine来规划、分类主机;</li>
+<li>足够多、足够广的测试;</li>
+</ul>
+
+<h4 id="升级前做好新版本的测试">升级前做好新版本的测试</h4>
+
+<p>个人感觉Salt 2014.1.x 坑非常多，之前也在测试环境做过很多功能性的测试，但是苦于Salt本身的认证关系，不能使用已有的tcpcopy方式去测试大规模使用下的性能。</p>
+
+<p>不过，嘿嘿，鄙人没事喜欢挖挖github上的salt源码，竟然有些意外的收获，那便是MinionSwarm 和 MasterSwarm ( ? 还没有测试，是最近Salt官方开发人员加上去的)，具体参见源码：<a href="https://github.com/saltstack/salt/blob/develop/tests/minionswarm.py">MinionSwarm</a></p>
+
+<p>使用方法也比较简单，Python 脚本带上简单的参数就可以直接执行，效果便是终端下动态虚拟出指定数量的minion 实例，以供测试使用，大家用了就知道了 :)</p>
+
+<h4 id="向他人求助">向他人求助</h4>
+
+<p>曾经，在完全不懂salt的情况下遇到各种奇怪问题，自己又不太懂内部运行机制，也不会什么排障手段，最终结果便是整个自动化系统的不可用。而在这样的尴尬情况下，最好还是求助于大神吧，也希望力所能及的大神们都能抽出点时间来帮忙看看，毕竟&rdquo;授人玫瑰，手留余香&rdquo;嘛。</p>
+
+<h4 id="总结">总结</h4>
+
+<p>最后，鄙人想说的是，一个自动化系统的构建和完善都是需要耗费大量的时间和脑力的，Salt只是一个工具，怎么去用好它还是得看自己，也许你要会点Python，也许你要做很多前期的规划，也许你得在大规模故障面前有足够的应对能力，也许你可以做的更好……</p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/devops/">devops</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/salt/">salt</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2014/07/python%E5%BC%80%E5%8F%91%E4%B9%8B%E5%87%A0%E4%B8%AA%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0%E7%9A%84%E4%BB%8B%E7%BB%8D/" data-tooltip="Python开发之几个内联函数的介绍">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2014/07/%E6%AC%A2%E8%BF%8E%E5%8A%A0%E5%85%A5linux%E6%8A%80%E6%9C%AF%E4%BA%A4%E6%B5%81%E7%BE%A4/" data-tooltip="欢迎加入Linux技术交流群">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2020 Powered by Hugo with tranquilpeak. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2014/07/python%E5%BC%80%E5%8F%91%E4%B9%8B%E5%87%A0%E4%B8%AA%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0%E7%9A%84%E4%BB%8B%E7%BB%8D/" data-tooltip="Python开发之几个内联函数的介绍">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2014/07/%E6%AC%A2%E8%BF%8E%E5%8A%A0%E5%85%A5linux%E6%8A%80%E6%9C%AF%E4%BA%A4%E6%B5%81%E7%BE%A4/" data-tooltip="欢迎加入Linux技术交流群">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+    
+    <h4 id="about-card-name">Jacky Wu (Colstuwjx)</h4>
+    
+      <div id="about-card-bio">DevOPS &amp; OpenSource Fans</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        DevOPS Engineer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    <div id="cover" style="background-image:url('https://res.cloudinary.com/ddhitj0ja/image/upload/v1581843208/pic_nfgplt.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://colstuwjx.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+
+
+
+
+    
+  </body>
+</html>
+

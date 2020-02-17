@@ -1,7 +1,7 @@
 ---
 title: "[ 翻译 ] salt 新通信架构——salt raet（Github篇）"
 date: 2014-07-06T20:00:00+08:00
-tags: ["devops", "salt"]
+tags: ["devops", "salt", "translate"]
 categories: ["salt"]
 comments: false
 showMeta: false

@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.64.1 with theme Tranquilpeak 0.4.7-BETA">
+<meta name="author" content="Jacky Wu (Colstuwjx)">
+<meta name="keywords" content="">
+<meta name="description" content="【编者的话】PaaS并不是一个陌生的话题，在新兴的容器世界里，我们如何看待运维和PaaS的关系呢? 又如何重新思考Dev与Ops的定位呢? 本文作者就此分享了自己的一些独特见解。">
+
+
+<meta property="og:description" content="【编者的话】PaaS并不是一个陌生的话题，在新兴的容器世界里，我们如何看待运维和PaaS的关系呢? 又如何重新思考Dev与Ops的定位呢? 本文作者就此分享了自己的一些独特见解。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[ 翻译 ] 请不要忘记&#34;运维&#34;">
+<meta name="twitter:title" content="[ 翻译 ] 请不要忘记&#34;运维&#34;">
+<meta property="og:url" content="https://colstuwjx.github.io/2015/04/%E7%BF%BB%E8%AF%91-%E8%AF%B7%E4%B8%8D%E8%A6%81%E5%BF%98%E8%AE%B0%E8%BF%90%E7%BB%B4/">
+<meta property="twitter:url" content="https://colstuwjx.github.io/2015/04/%E7%BF%BB%E8%AF%91-%E8%AF%B7%E4%B8%8D%E8%A6%81%E5%BF%98%E8%AE%B0%E8%BF%90%E7%BB%B4/">
+<meta property="og:site_name" content="Colstuwjx&#39;s site">
+<meta property="og:description" content="【编者的话】PaaS并不是一个陌生的话题，在新兴的容器世界里，我们如何看待运维和PaaS的关系呢? 又如何重新思考Dev与Ops的定位呢? 本文作者就此分享了自己的一些独特见解。">
+<meta name="twitter:description" content="【编者的话】PaaS并不是一个陌生的话题，在新兴的容器世界里，我们如何看待运维和PaaS的关系呢? 又如何重新思考Dev与Ops的定位呢? 本文作者就此分享了自己的一些独特见解。">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2015-04-18T20:00:00">
+  
+  
+    <meta property="article:modified_time" content="2015-04-18T20:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="devops">
+    
+  
+  
+    
+      <meta property="article:tag" content="talk">
+    
+      <meta property="article:tag" content="ctrip">
+    
+      <meta property="article:tag" content="it">
+    
+      <meta property="article:tag" content="translate">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+  <meta property="twitter:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+
+
+    <title>[ 翻译 ] 请不要忘记&#34;运维&#34;</title>
+
+    <link rel="icon" href="https://colstuwjx.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://colstuwjx.github.io/2015/04/%E7%BF%BB%E8%AF%91-%E8%AF%B7%E4%B8%8D%E8%A6%81%E5%BF%98%E8%AE%B0%E8%BF%90%E7%BB%B4/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/comments.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://colstuwjx.github.io/">Colstuwjx&#39;s site</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://colstuwjx.github.io/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://colstuwjx.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">Jacky Wu (Colstuwjx)</h4>
+        
+          <h5 class="sidebar-profile-bio">DevOPS &amp; OpenSource Fans</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Colstuwjx" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-user"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      [ 翻译 ] 请不要忘记&#34;运维&#34;
+    </h1>
+  
+  
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>【编者的话】PaaS并不是一个陌生的话题，在新兴的容器世界里，我们如何看待运维和PaaS的关系呢? 又如何重新思考Dev与Ops的定位呢? 本文作者就此分享了自己的一些独特见解。</p>
+
+<h4 id="是否还记得paas何时兴起">是否还记得PaaS何时兴起?</h4>
+
+<p>在五到六年前，那时候PaaS的概念才刚刚兴起，当时有很多人（包括我自己）认为运维这个职业将会因此走向消亡。当你可以将整件事情外包出去并因此专注于你所擅长的工作的时候，谁又会愿意再去干那些和机器打交道的基础服务方面的杂活呢?</p>
+
+<p>现在，六年过去了，我们最终看到的是PaaS大量失败的案例，我开始<a href="http://blog.cloud66.com/show-me-the-money-whats-wrong-with-public-paas/">意识到我是错的</a>，PaaS 并不是我想要的未来，它并不能够完全解决基础服务方面的一些头痛问题，而仅仅<a href="http://blog.cloud66.com/paas-is-hurting-you-here-is-why/">只是让这些问题稍有缓和罢了</a>。</p>
+
+<p>和一般产品需要外包人员在项目的最早期阶段便介入其中不同，PaaS 服务提供商每个月投入数百到数千美金的经费和资源培养客户，而最后只能眼睁睁看着他们离开，然后投入到云服务提供商的怀抱。</p>
+
+<p>眼下的现实情况便是公共的PaaS服务已经沦为一些入门菜鸟在他们刚入门时练习初级用例的地方，而那些游戏的胜利者们已经抛弃了PaaS，而选择在众多的云服务平台上搭建自己的服务器去承载他们的服务。</p>
+
+<p>我之前曾经写过一篇文章，讲述了我为什么认为如此创新和流行的公共PaaS服务不能完全征服世界的一些见解，所以在这边便不再赘述，但是这里有一个论点我想再深入强调一下，就是我个人认为我们也许又犯了一个同样的错误，那就是“运维这个职业即将消亡”的这个预测。</p>
+
+<p>相信从公共PaaS服务到开发者们所做的每件需要运维（我能称之为DevOps吗?）参与的事情里我们看到的和解读到的，你可以感觉到“运维”其实离我们并不是很遥远，然而它始终处在一个即将消亡的风口浪尖。我想这种“运维即将消亡”的思想多数来自于我们之中那些幸运的没有去到一个大型或者老牌企业工作过的朋友，或者是单纯以技术角度去看待这个问题而不是企业的角度。</p>
+
+<p>任何企业都将依然需要运维的工作。如果他们并非如此的话，那么他们一定是把这些事情重新定义了一下（就比如开发穿上了运维的帽子，然后干起了搬机器的活）或者是临时的把这些事情外包给了一些公共PaaS服务提供商，就像现在很多企业实际所做的那样。</p>
+
+<p>这并不是简单的技术架构问题，也和业务结构有一定关系。在业务逻辑里，对于创新（Dev）和保持稳定收益（Ops）有各自不同的生命周期，而我们有充分的理由告诉那些想用所研发的技术在大的方向上使得企业腾飞的开发者们大可不必承担所有的事情，而他们也必须认识到这一点。</p>
+
+<p>在这里，就我个人来说，我觉得公共PaaS没能真正兴盛的最大原因在于：随着业务规模的增长，企业们需要规范和简化他们的运维而这就造成了运维人员重新从外部PaaS服务提供商接管过来本就属于运维的活（或者，更恰当的说，是这些企业会将开发者们安排到不同的业务周期）。</p>
+
+<p>反之，这也就是为什么像Cloudfoundry这样的私有PaaS服务比他们的公共服务兄弟做的更出彩的原因之所在：他们是运维人员的工具，也同样迎合开发人员的需求。他们之所以如此成功是因为他们认识到了运维真正的存在价值：他们充当的是一个为运维人员提供服务的资源管理工具集而不是一个发明出来用以替代“运维”的工具。</p>
+
+<h4 id="让我们不要再忘了运维">让我们不要再忘了运维</h4>
+
+<p>然而，我感觉我们在这个新兴的容器世界也许又会再次犯下我们之前在公共PaaS所犯过的同样的错误。大多数用于在生产环境运行和管理容器的解决方案显得过于以开发为中心了。他们并没有一个清晰的界限指明应用应该如何规范的停止服务，基础服务的一些需求应该怎样去实现。</p>
+
+<p>类似<a href="https://github.com/docker/swarm/">Docker Swarm</a>这样的工具是在概念的层次上指明开发和运维如何在最初从各自的角度去使用这些工具集的很好的例子，然而在应用规范方面我们仍然有大量的工作需要去做：怎样去定义服务的概念，他们如何去跟其他的实体交互，在与其他实体交互时他们应该使用什么样的协议，等等。这些都是应用层面规范的问题。</p>
+
+<p>接下来我们需要面对的是一系列的运维方面的问题：怎样把资源装载到我们的基础架构，如何构建我们所需要的实体，如何约束每个服务的服务范畴以及他们如何定位其他反映基础服务配置的实体（译者注：比如说定位到同一个IDC或网络通信质量高的服务实体，而不是随机选择），等等。</p>
+
+<p>当我关注到类似Swarm和Compose这样从不同的功能清晰划分的工具集时内心备受鼓舞。然而他们并没有在他们的API里对开发和运维做很大的区分。举个例子，<a href="https://github.com/docker/compose">Compose</a>（持续工作中的）倾向于支持所有的Docker CLI命令行选项参数，而大部分（也许不是全部）的Docker CLI 命令行参数是纯粹的以开发为中心设计的。</p>
+
+<p>Docker 最棒的一点在于它为开发和运维划分了一个清晰的界线：任何在容器内部的都是开发所关注的，而外部则是运维的天下。当前版本的Compose API以及开发的 Swarm 在某种程度上来说反而是模糊了这个划分的边界。</p>
+
+<p>我们正在努力试图让这个划分变得更清晰并且体现到实际的企业生产业务中。
+manifest.yml 和 services.yml 的划分或是我们UI的构建方式都是一些我们试图推动这一愿景的最初的尝试。关于这些，我们非常欢迎得到您的一些想法和反馈。</p>
+<pre><code>Khash Sajadi
+Khash是Cloud 66的创始人以及首席执行官，致力于提供一个全栈式的容器管理服务。</code></pre>
+<p>原文链接：<a href="http://blog.cloud66.com/news-of-ops-death-has-been-greatly-exaggerated/">Let&rsquo;s not forget about Ops</a>
+（翻译：吴佳兴）</p>
+
+<p>DockerOne 链接：<a href="http://www.dockerone.com/article/322">http://www.dockerone.com/article/322</a></p>
+
+<p>＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝</p>
+
+<p>译者介绍：Colstuwjx，现就职于一家在线OTA，有点文艺，有点技术控，有点偏执。</p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/talk/">talk</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/ctrip/">ctrip</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/it/">it</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/translate/">translate</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2015/04/%E8%BF%90%E7%BB%B4%E5%BC%80%E5%8F%91%E6%8E%A2%E7%B4%A2%E4%B9%8B-gaea.03-%E5%89%8D%E7%AB%AF/" data-tooltip="运维开发探索之&lt; Gaea.03 前端 &gt;">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2015/04/%E8%BF%90%E7%BB%B4%E5%BC%80%E5%8F%91%E6%8E%A2%E7%B4%A2%E4%B9%8B-gaea.02-%E5%8E%9F%E5%9E%8B%E8%AE%BE%E8%AE%A1/" data-tooltip="运维开发探索之&lt; Gaea.02 原型设计 &gt;">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2020 Powered by Hugo with tranquilpeak. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2015/04/%E8%BF%90%E7%BB%B4%E5%BC%80%E5%8F%91%E6%8E%A2%E7%B4%A2%E4%B9%8B-gaea.03-%E5%89%8D%E7%AB%AF/" data-tooltip="运维开发探索之&lt; Gaea.03 前端 &gt;">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2015/04/%E8%BF%90%E7%BB%B4%E5%BC%80%E5%8F%91%E6%8E%A2%E7%B4%A2%E4%B9%8B-gaea.02-%E5%8E%9F%E5%9E%8B%E8%AE%BE%E8%AE%A1/" data-tooltip="运维开发探索之&lt; Gaea.02 原型设计 &gt;">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+    
+    <h4 id="about-card-name">Jacky Wu (Colstuwjx)</h4>
+    
+      <div id="about-card-bio">DevOPS &amp; OpenSource Fans</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        DevOPS Engineer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    <div id="cover" style="background-image:url('https://res.cloudinary.com/ddhitj0ja/image/upload/v1581843208/pic_nfgplt.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://colstuwjx.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+
+
+
+
+    
+  </body>
+</html>
+

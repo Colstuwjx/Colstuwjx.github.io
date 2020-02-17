@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>configuration-management on Colstuwjx&#39;s site</title>
+    <link>https://colstuwjx.github.io/tags/configuration-management/</link>
+    <description>Recent content in configuration-management on Colstuwjx&#39;s site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sun, 06 Aug 2017 20:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://colstuwjx.github.io/tags/configuration-management/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>[ 三年后的杂谈 ] 浅谈配置管理 [ 篇一 ]</title>
+      <link>https://colstuwjx.github.io/2017/08/%E4%B8%89%E5%B9%B4%E5%90%8E%E7%9A%84%E6%9D%82%E8%B0%88-%E6%B5%85%E8%B0%88%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86-%E7%AF%87%E4%B8%80/</link>
+      <pubDate>Sun, 06 Aug 2017 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/2017/08/%E4%B8%89%E5%B9%B4%E5%90%8E%E7%9A%84%E6%9D%82%E8%B0%88-%E6%B5%85%E8%B0%88%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86-%E7%AF%87%E4%B8%80/</guid>
+      <description>&lt;p&gt;鄙人从2014年正式转正，参加工作以来已有三年，可以说，这三年，是鄙人在计算机行业最开始的入门阶段的三年，鄙人也由此萌生了总结这三年经验收获的想法，权且产出一些文章，内容上如有不准确之处，欢迎批评指正，邮箱：wjx_colstu@hotmail.com&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

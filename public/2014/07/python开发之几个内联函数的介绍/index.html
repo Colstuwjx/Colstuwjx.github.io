@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.64.1 with theme Tranquilpeak 0.4.7-BETA">
+<meta name="author" content="Jacky Wu (Colstuwjx)">
+<meta name="keywords" content="">
+<meta name="description" content="Python本身有很多内置的函数供开发人员使用，其中有几个感觉挺有学习价值，在这里记录一下。">
+
+
+<meta property="og:description" content="Python本身有很多内置的函数供开发人员使用，其中有几个感觉挺有学习价值，在这里记录一下。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python开发之几个内联函数的介绍">
+<meta name="twitter:title" content="Python开发之几个内联函数的介绍">
+<meta property="og:url" content="https://colstuwjx.github.io/2014/07/python%E5%BC%80%E5%8F%91%E4%B9%8B%E5%87%A0%E4%B8%AA%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0%E7%9A%84%E4%BB%8B%E7%BB%8D/">
+<meta property="twitter:url" content="https://colstuwjx.github.io/2014/07/python%E5%BC%80%E5%8F%91%E4%B9%8B%E5%87%A0%E4%B8%AA%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0%E7%9A%84%E4%BB%8B%E7%BB%8D/">
+<meta property="og:site_name" content="Colstuwjx&#39;s site">
+<meta property="og:description" content="Python本身有很多内置的函数供开发人员使用，其中有几个感觉挺有学习价值，在这里记录一下。">
+<meta name="twitter:description" content="Python本身有很多内置的函数供开发人员使用，其中有几个感觉挺有学习价值，在这里记录一下。">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2014-07-28T20:00:00">
+  
+  
+    <meta property="article:modified_time" content="2014-07-28T20:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="python">
+    
+  
+  
+    
+      <meta property="article:tag" content="devops">
+    
+      <meta property="article:tag" content="python">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+  <meta property="twitter:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+
+
+    <title>Python开发之几个内联函数的介绍</title>
+
+    <link rel="icon" href="https://colstuwjx.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://colstuwjx.github.io/2014/07/python%E5%BC%80%E5%8F%91%E4%B9%8B%E5%87%A0%E4%B8%AA%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0%E7%9A%84%E4%BB%8B%E7%BB%8D/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/comments.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://colstuwjx.github.io/">Colstuwjx&#39;s site</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://colstuwjx.github.io/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://colstuwjx.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">Jacky Wu (Colstuwjx)</h4>
+        
+          <h5 class="sidebar-profile-bio">DevOPS &amp; OpenSource Fans</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Colstuwjx" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-user"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      Python开发之几个内联函数的介绍
+    </h1>
+  
+  
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>Python本身有很多内置的函数供开发人员使用，其中有几个感觉挺有学习价值，在这里记录一下。</p>
+
+<ul>
+<li>lambda</li>
+<li>zip</li>
+<li>filter</li>
+<li>map</li>
+<li>reduce</li>
+</ul>
+
+<h4 id="lambda">lambda</h4>
+
+<p>Python允许单行快速定义一个最小函数，这便是lambda函数。比如，原本使用常规的函数去定义，它可能是如下形式：</p>
+<pre><code>def add(x,y):
+    return x+y</code></pre>
+<p>而使用lambda函数的语法形式，它可以轻松简化为单行代码：</p>
+<pre><code>add_by_lambda = lambda x,y: x+y</code></pre>
+<p>其中，x,y便是函数入口参数，而后面则是具体的函数体，默认lambda可以返回一个函数对象，相应的调用效果类似：</p>
+<pre><code>print add(1, 1)
+print add_by_lambda(1, 1)</code></pre>
+<p>甚至还可以直接在后面追加实参来直接获取返回值，比如<code>lambda x,y : x+y, 1, 1</code>返回结果就是2</p>
+
+<p>lambda函数使得Python代码可以变得更加优雅、简洁。</p>
+
+<h4 id="zip">zip</h4>
+
+<p>Python内置的zip函数接受任意多个list作为参数，并把相同索引的元素组合成tuple，最后形成一个新的list，新的list长度以传入参数的最小值为准。比如：</p>
+<pre><code>x = [ 1, 2, 3]
+y = [ 'a', 'b', 'aa', 'bb']
+z = [ 'A', 'B', 'C']
+
+# zip them!
+print zip(x,y,z)
+
+# (*) 是 zip的反函数
+print zip(*zip(x,y,z))
+print zip(*([(1, 'a', 'aa'), (2, 'b', 'bb'), (3, 'c', 'cc')]))</code></pre>
+<h4 id="filter">filter</h4>
+
+<p>filter函数接受两个参数，func和list，而经过过滤后返回一个list，其中func函数对象只能有一个传入参数。原理便是根据列表list中所有元素作为参数传递给函数func，返回可以令func返回真的元素的列表，如果func为None，那么会使用默认的Python内置的identity函数直接判断元素的True or False。</p>
+
+<p>例如：</p>
+<pre><code>a = [1,2,3,4,5,6,7]
+b=filter(lambda x:x>2, a)
+print b
+
+#过滤奇数集
+a = [1,2,3,4,5,6,7]
+b=filter(lambda x:x%2, a)
+print b</code></pre>
+<h4 id="map">map</h4>
+
+<p>map函数是一个很强大的一个映射函数，其传入两个参数，一个是func，一个是list，而功效便是func作用于给定序列的每个元素，并用一个列表来提供返回值。例如：</p>
+<pre><code>a=[0,1,2,3,4,5,6,7]
+map(lambda x:x+3, a)
+
+a=[1,2,3]
+b=[4,5,6]
+map(lambda x,y:x+y, a,b)</code></pre><pre><code>#my_map函数实现
+def my_map(func, *args):
+	   return [ func(arg) for arg in args ]</code></pre>
+<p>上面的代码假使通过for循环方式实现的话，不仅代码行数变多，而且可能多层if判断，结构冗余，完全没有map方式来得简洁、优雅。</p>
+
+<h4 id="reduce">reduce</h4>
+
+<p>reduce函数传入参数为func和list，其遍历list元素，并调用func函数实现累积，具体效果便是：</p>
+
+<p><code>reduce(f, [x1, x2, x3, x4]) = f ( f ( f ( x1,  x2 ),  x3 ), x4 )</code></p>
+
+<p>使用范例如下：</p>
+<pre><code>#str to int
+def str2int(s):
+       return reduce(lambda x,y: x*10+y, map(int, s))</code></pre>
+<h4 id="一些妙用">一些妙用</h4>
+
+<p>以上简单介绍了五个强大简洁的Python内置函数的用法，下面附上一些小巧精妙的例子，以飨读者。</p>
+<pre><code>#两个list，取(x - y) + (y - x)
+x=[{'a': 1, 'b': 2}, {'c': 3}, {'d': 4}]
+y=[{'a': 1}, {'c': 3}, {'e': 5}]
+
+filter(lambda z: (x+y).count(z)<2, (x+y))</code></pre><pre><code>#flatten out nested sublist
+#result: [ 1, 2, 3, 4, 5 ]
+import operator
+reduce( operator.concat, [ [ 1, 2 ], [ 3, 4 ], [ ], [ 5 ] ], [ ] ) </code></pre><pre><code>#多项式求和
+import operator
+def evaluate (a, x):
+       xi = map( lambda i: x**i, range( 0, len(a)))
+	   axi = map(operator.mul, a, xi)
+       return reduce( operator.add, axi, 0 )</code></pre><pre><code>#数据库SQL
+reduce( max, map( Camera.pixels, filter( 
+        lambda c: c.brand() == "Nikon", cameras ) ) )
+
+#maybe equals
+SELECT max(pixels) 
+FROM cameras
+WHERE brand = “Nikon”
+
+#There.
+#cameras is a sequence
+#where clause is a filter
+#pixels is a map
+#max is a reduce</code></pre><pre><code>#一行并发
+import urllib2
+from multiprocessing.dummy import Pool as ThreadPool
+
+urls = [
+           'http://www.python.org',
+           'http://www.google.com',
+           'http://www.baidu.com',
+           'http://www.python.org/community/',
+           'http://www.saltstack.com'
+           ]
+
+#pool = ThreadPool()
+pool = ThreadPool(4) # Sets the pool size to 4
+
+result = pool.map(urllib2.urlopen, urls)
+pool.close()
+pool.join()</code></pre>
+<p>上述的代码实现相较普通的for循环等实现方式是不是特别的简洁、优雅呢? 尝试着使用它们吧!</p>
+
+<p>========================================================</p>
+
+<p>参考： <a href="http://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-005-elements-of-software-construction-fall-2011/lecture-notes/MIT6_005F11_lec15.pdf">MIT Lecture</a> 、<a href="http://www.oschina.net/translate/python-parallelism-in-one-line">Python 的一行并发</a></p>
+
+<p>========================================================</p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/devops/">devops</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/python/">python</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2014/07/%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BBsaltstack%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E4%B9%8Bjob-runtime/" data-tooltip="源码解读Saltstack运行机制之Job Runtime">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2014/07/salt-%E8%87%AA%E5%8A%A8%E5%8C%96%E7%B3%BB%E7%BB%9F%E7%A2%8E%E7%A2%8E%E5%BF%B5/" data-tooltip="Salt 自动化系统碎碎念">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2020 Powered by Hugo with tranquilpeak. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2014/07/%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BBsaltstack%E8%BF%90%E8%A1%8C%E6%9C%BA%E5%88%B6%E4%B9%8Bjob-runtime/" data-tooltip="源码解读Saltstack运行机制之Job Runtime">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2014/07/salt-%E8%87%AA%E5%8A%A8%E5%8C%96%E7%B3%BB%E7%BB%9F%E7%A2%8E%E7%A2%8E%E5%BF%B5/" data-tooltip="Salt 自动化系统碎碎念">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+    
+    <h4 id="about-card-name">Jacky Wu (Colstuwjx)</h4>
+    
+      <div id="about-card-bio">DevOPS &amp; OpenSource Fans</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        DevOPS Engineer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    <div id="cover" style="background-image:url('https://res.cloudinary.com/ddhitj0ja/image/upload/v1581843208/pic_nfgplt.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://colstuwjx.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+
+
+
+
+    
+  </body>
+</html>
+

@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.64.1 with theme Tranquilpeak 0.4.7-BETA">
+<meta name="author" content="Jacky Wu (Colstuwjx)">
+<meta name="keywords" content="">
+<meta name="description" content="This is a post for explaining how to use snmp exporter generator&hellip;">
+
+
+<meta property="og:description" content="This is a post for explaining how to use snmp exporter generator&hellip;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Easy your life by using the snmp-exporter generator">
+<meta name="twitter:title" content="Easy your life by using the snmp-exporter generator">
+<meta property="og:url" content="https://colstuwjx.github.io/2017/07/easy-your-life-by-using-the-snmp-exporter-generator/">
+<meta property="twitter:url" content="https://colstuwjx.github.io/2017/07/easy-your-life-by-using-the-snmp-exporter-generator/">
+<meta property="og:site_name" content="Colstuwjx&#39;s site">
+<meta property="og:description" content="This is a post for explaining how to use snmp exporter generator&hellip;">
+<meta name="twitter:description" content="This is a post for explaining how to use snmp exporter generator&hellip;">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2017-07-01T20:00:00">
+  
+  
+    <meta property="article:modified_time" content="2017-07-01T20:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="monitoring">
+    
+  
+  
+    
+      <meta property="article:tag" content="snmp-exporter">
+    
+      <meta property="article:tag" content="prometheus">
+    
+      <meta property="article:tag" content="generator">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+  <meta property="twitter:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+
+
+    <title>Easy your life by using the snmp-exporter generator</title>
+
+    <link rel="icon" href="https://colstuwjx.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://colstuwjx.github.io/2017/07/easy-your-life-by-using-the-snmp-exporter-generator/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/comments.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://colstuwjx.github.io/">Colstuwjx&#39;s site</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://colstuwjx.github.io/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://colstuwjx.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">Jacky Wu (Colstuwjx)</h4>
+        
+          <h5 class="sidebar-profile-bio">DevOPS &amp; OpenSource Fans</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Colstuwjx" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-user"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      Easy your life by using the snmp-exporter generator
+    </h1>
+  
+  
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>This is a post for explaining how to use snmp exporter generator&hellip;</p>
+
+<p><a href="https://github.com/prometheus">Prometheus</a> is a great monitoring system, and our devops engineer team has been using it in production for months. When it came to network monitoring, we choose to use the <a href="https://github.com/prometheus/snmp_exporter">snmp-exporter</a> to collect the metrics from the network switches.</p>
+
+<p>snmp-exporter is also a great tool to do such snmp walk and collect the metrics we need. We could also take this a step further, make our life much easier by using the snmp-exporter <a href="https://github.com/prometheus/snmp_exporter/tree/master/generator">generator</a>.Yes, that is what I want to share in this article.</p>
+
+<h3 id="mib-oid">MIB &amp; OID</h3>
+
+<blockquote>
+<p>TIPS: you can skip this section if you already know the SNMP protocol, and understand the meaning of the MIB and OID.</p>
+</blockquote>
+
+<p>First of all, we should understand two terms in the snmp protocol —— MIB and OID.</p>
+
+<h4 id="mib">MIB</h4>
+
+<p><a href="https://en.wikipedia.org/wiki/Management_information_base">MIB</a>, a short for management information base, it is a database used for managing the entities in a communication network. The database is hierarchical (tree-structured) and each entry is addressed through an object identifier (<a href="https://en.wikipedia.org/wiki/Object_identifier">OID</a>).</p>
+
+<p>It is often used to refer to as MIB-module in the snmp monitoring. And in a MIB module, it usually has some <code>DEFINITIONS</code> at the beginning, said which vendor defined it, and the last update date, the dependency modules etc. The mainly content in the MIB module is the MIB object.</p>
+
+<p>A MIB object (sometimes called a managed object, an object, or a MIB) is one of any number of specific characteristics of a managed device. Managed objects are made up of one or more object instances (identified by their OIDs), which are essentially variables.There are two types of managed objects exist:</p>
+
+<ul>
+<li>Scalar objects define a single object instance.</li>
+<li>Tabular objects define multiple related object instances that are grouped in MIB tables.</li>
+</ul>
+
+<h4 id="oid">OID</h4>
+
+<p>We have mentioned the <code>OID</code> for many times at the before. An <a href="https://en.wikipedia.org/wiki/Object_identifier">OID</a> corresponds to a node in the &ldquo;OID tree&rdquo; or MIB hierarchy, maybe you can just think about the IP address in the TCP/IP protocol.</p>
+
+<p>Each OID node in the tree is represented by a series of integers separated by periods, corresponding to the path from the root through the series of ancestor nodes, to the node. Thus, an OID denoting Intel Corporation appears as follows,</p>
+
+<p><code>1.3.6.1.4.1.343</code></p>
+
+<p>and corresponds to the following path through the OID tree:</p>
+<pre><code>1 ISO
+1.3 identified-organization,
+1.3.6 dod,
+1.3.6.1 internet,
+1.3.6.1.4 private,
+1.3.6.1.4.1 IANA enterprise numbers,
+1.3.6.1.4.1.343 Intel Corporation</code></pre>
+<p>An OID node comes with a specified data type. The first version of the SMI (SMIv1) specifies the use of a number of SMI-specific data types, which are divided into two categories:</p>
+
+<ul>
+<li>Simple data types, such as integer, Octet strings etc;</li>
+<li>Application-wide data types, such as the Network addresses, Counters, Gauges etc.</li>
+</ul>
+
+<p>Refer to the wiki: <a href="https://en.wikipedia.org/wiki/Object_identifier">https://en.wikipedia.org/wiki/Object_identifier</a> and <a href="https://en.wikipedia.org/wiki/Management_information_base">https://en.wikipedia.org/wiki/Management_information_base</a> for the details.</p>
+
+<h4 id="mib-object-sample">MIB Object sample</h4>
+
+<p>The following is a short MIB object sample:</p>
+<pre><code># MIB Object name is ifNumber
+# and the data type is Integer32
+# and it is read-only
+# ...
+ifNumber  OBJECT-TYPE
+    SYNTAX      Integer32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION
+            "The number of network interfaces (regardless of their
+            current state) present on this system."
+    ::= { interfaces 1 }</code></pre>
+<p>By defining the MIB and OID, a MIB module announces the managed objects for the device, thus, we could do some admin works or monitor tasks towards the snmp-enabled devices via the snmp protocol.</p>
+
+<h3 id="snmp-yml">snmp.yml</h3>
+
+<blockquote>
+<p>TIPS:
+we could find out the <code>SNMP exporter Get Started</code> page from here: <a href="https://github.com/prometheus/snmp_exporter/blob/master/README.md">https://github.com/prometheus/snmp_exporter/blob/master/README.md</a></p>
+</blockquote>
+
+<p>As the name said, <code>snmp-exporter</code> collect the metrics via snmp protocol. Thus, it needs the OIDs as its walk target. It&rsquo;s not easy to get the OIDs from the MIB module, so we need to find out the OIDs, and maybe the result is just like the following case:</p>
+<pre><code># let's said that we need the metrics from the `hwCpuDevTable`.
+# So I need to find out the OIDs for each item by manually.
+# `hwCpuDevIndex`, `hwCpuDevDuty`, ..., it really makes my life much harder...
+# we won't cover the detail configs below, 
+# refer to the snmp-exporter official repository for details: https://github.com/prometheus/snmp_exporter
+huawei:
+  walk:
+  - 1.3.6.1.4.1.2011.6.3.4
+  metrics:
+  - name: hwCpuDevIndex
+    oid: 1.3.6.1.4.1.2011.6.3.4.1.1
+    type: gauge
+    indexes:
+    - labelname: hwFrameIndex
+      type: gauge
+    - labelname: hwSlotIndex
+      type: gauge
+    - labelname: hwCpuDevIndex
+      type: gauge
+  - name: hwCpuDevDuty
+    oid: 1.3.6.1.4.1.2011.6.3.4.1.2
+    type: gauge
+    indexes:
+    - labelname: hwFrameIndex
+      type: gauge
+    - labelname: hwSlotIndex
+      type: gauge
+    - labelname: hwCpuDevIndex
+      type: gauge
+  - name: hwAvgDuty1min
+    oid: 1.3.6.1.4.1.2011.6.3.4.1.3
+    type: gauge
+    indexes:
+    - labelname: hwFrameIndex
+      type: gauge
+    - labelname: hwSlotIndex
+      type: gauge
+    - labelname: hwCpuDevIndex
+      type: gauge
+  - name: hwAvgDuty5min
+    oid: 1.3.6.1.4.1.2011.6.3.4.1.4
+    type: gauge
+    indexes:
+    - labelname: hwFrameIndex
+      type: gauge
+    - labelname: hwSlotIndex
+      type: gauge
+    - labelname: hwCpuDevIndex
+      type: gauge</code></pre>
+<p>We got the <code>snmp.yml</code> right now, and we could use it as the snmp-exporter config, start to collect the <code>hwCpuDevDuty</code>, <code>hwAvgDuty1min</code>,&hellip; metrics into the prometheus.</p>
+
+<p>Wait&hellip; we still need to find out the OIDs from the MIB module by manually, is there any easier way?</p>
+
+<h3 id="snmp-exporter-generator">snmp-exporter generator</h3>
+
+<p>Of Course! Prometheus team built an amazing <a href="https://github.com/prometheus/snmp_exporter/tree/master/generator">generator</a> to easy our life!</p>
+
+<p>SNMP generator needs a configuration file <code>generator.yml</code>, and uses NetSNMP to parse MIBs, and then generates <code>snmp.yml</code> config for the snmp_exporter using them.</p>
+
+<h4 id="build-it">build it</h4>
+
+<p>Firstly, we need to build the <code>generator</code> binary:</p>
+<pre><code>sudo apt-get install build-essential libsnmp-dev snmp-mibs-downloader  # Debian-based distros
+go get github.com/prometheus/snmp_exporter/generator
+cd ${GOPATH-$HOME/go}/src/github.com/prometheus/snmp_exporter/generator
+go build</code></pre>
+<h4 id="preparing-mibs">preparing MIBs</h4>
+
+<p>We must prepare some MIB modules which indicates the metrics we need. In our case, it was <code>hwCpuDevTable</code>, and we could find the MIB module <a href="https://github.com/librenms/librenms/blob/master/mibs/huawei/HUAWEI-CPU#L26">here</a>.</p>
+
+<blockquote>
+<p>TIPS: we could find the MIBs in many ways, one of them is that refering to <a href="https://github.com/librenms/librenms/blob/master/mibs">https://github.com/librenms/librenms/blob/master/mibs</a></p>
+</blockquote>
+
+<p>As the MIB shown, <code>hwCpuDevTable</code> has some imports, they&rsquo;re:</p>
+
+<ul>
+<li><code>hwDev</code> from <code>HUAWEI-MIB</code>;</li>
+<li><code>hwFrameIndex</code>, <code>hwSlotIndex</code> from <code>HUAWEI-DEVICE-MIB</code>;</li>
+<li><code>OBJECT-GROUP</code>, <code>MODULE-COMPLIANCE</code> from <code>SNMPv2-CONF</code>;</li>
+<li><code>Gauge</code>, <code>OBJECT-TYPE</code>, <code>MODULE-IDENTITY</code> from <code>SNMPv2-SMI</code>.</li>
+</ul>
+
+<p>Dependencies could be found in <a href="https://github.com/librenms/librenms/blob/master/mibs/huawei/HUAWEI-MIB">HUAWEI-MIB</a>, <a href="https://github.com/librenms/librenms/blob/master/mibs/huawei/HUAWEI-DEVICE">HUAWEI-DEVICE-MIB</a>, <a href="https://github.com/librenms/librenms/blob/master/mibs/IF-MIB">IF-MIB</a>(as SNMPv2-SMI, SNMPv2-CONF is from that). BTW, don&rsquo;t forget the <code>HUAWEI-CPU</code> MIB itself.</p>
+
+<p>Put the <code>HUAWEI-MIB</code>, <code>HUAWEI-DEVICE-MIB</code>, <code>IF-MIB</code>, <code>HUAWEI-CPU</code> in a location NetSNMP can read them from. <code>$HOME/.snmp/mibs</code> is one option.</p>
+
+<h4 id="preparing-generator-yml">preparing generator.yml</h4>
+
+<p>As we need to scrape <code>hwCpuDevTable</code>, our <code>generator.yml</code> would be:</p>
+<pre><code>modules:
+# we need to generate hwCpuDevTable metrics.
+# and the module name in the `snmp.yml` will be `huawei`.
+  huawei:
+    walk: [hwCpuDevTable]</code></pre>
+<h4 id="generate-it">generate it!</h4>
+
+<p>Put the configured <code>generator.yml</code> with the <code>generator</code> binary together, and run <code>generator</code> with the following instruction:</p>
+<pre><code>./generator generate</code></pre>
+<p>The generator reads in from <code>generator.yml</code> and writes to <code>snmp.yml</code>. In our case, the output <code>snmp.yml</code> would be:</p>
+<pre><code>huawei:
+  walk:
+  - 1.3.6.1.4.1.2011.6.3.4
+  metrics:
+  - name: hwCpuDevIndex
+    oid: 1.3.6.1.4.1.2011.6.3.4.1.1
+    type: gauge
+    indexes:
+    - labelname: hwFrameIndex
+      type: gauge
+    - labelname: hwSlotIndex
+      type: gauge
+    - labelname: hwCpuDevIndex
+      type: gauge
+  - name: hwCpuDevDuty
+    oid: 1.3.6.1.4.1.2011.6.3.4.1.2
+    type: gauge
+    indexes:
+    - labelname: hwFrameIndex
+      type: gauge
+    - labelname: hwSlotIndex
+      type: gauge
+    - labelname: hwCpuDevIndex
+      type: gauge
+  - name: hwAvgDuty1min
+    oid: 1.3.6.1.4.1.2011.6.3.4.1.3
+    type: gauge
+    indexes:
+    - labelname: hwFrameIndex
+      type: gauge
+    - labelname: hwSlotIndex
+      type: gauge
+    - labelname: hwCpuDevIndex
+      type: gauge
+  - name: hwAvgDuty5min
+    oid: 1.3.6.1.4.1.2011.6.3.4.1.4
+    type: gauge
+    indexes:
+    - labelname: hwFrameIndex
+      type: gauge
+    - labelname: hwSlotIndex
+      type: gauge
+    - labelname: hwCpuDevIndex
+      type: gauge</code></pre>
+<p>Yes, we got the <code>snmp.yml</code>, same with the previous one, but it is automatically generated by snmp-exporter <code>generator</code> at this time!</p>
+
+<h3 id="happy-ending">happy ending</h3>
+
+<p>Aha, our life becomes much easier by using the snmp-exporter generator to automatically generate the snmp-exporter configs, happy to see it!</p>
+
+<h3 id="references">references</h3>
+
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Management_information_base">https://en.wikipedia.org/wiki/Management_information_base</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Object_identifier">https://en.wikipedia.org/wiki/Object_identifier</a></li>
+<li><a href="https://github.com/librenms/librenms/tree/master/mibs">https://github.com/librenms/librenms/tree/master/mibs</a></li>
+<li><a href="http://net-snmp.sourceforge.net/dev/agent/parse_8h_source.html">http://net-snmp.sourceforge.net/dev/agent/parse_8h_source.html</a></li>
+<li><a href="https://github.com/prometheus/snmp_exporter">https://github.com/prometheus/snmp_exporter</a></li>
+
+<li><p><a href="https://github.com/prometheus/snmp_exporter/pull/158">https://github.com/prometheus/snmp_exporter/pull/158</a></p>
+<pre><code>Enjoy!
+Colstuwjx
+2017.07.01</code></pre></li>
+</ul>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/snmp-exporter/">snmp-exporter</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/prometheus/">prometheus</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/generator/">generator</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2017/08/%E4%B8%89%E5%B9%B4%E5%90%8E%E7%9A%84%E6%9D%82%E8%B0%88-%E6%B5%85%E8%B0%88%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86-%E7%AF%87%E4%B8%80/" data-tooltip="[ 三年后的杂谈 ] 浅谈配置管理 [ 篇一 ]">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2017/06/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%A4%B1%E8%B4%A5%E7%9A%84docker%E6%8E%92%E9%9A%9C%E7%BB%8F%E5%8E%86/" data-tooltip="记一次失败的docker排障经历">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2020 Powered by Hugo with tranquilpeak. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2017/08/%E4%B8%89%E5%B9%B4%E5%90%8E%E7%9A%84%E6%9D%82%E8%B0%88-%E6%B5%85%E8%B0%88%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86-%E7%AF%87%E4%B8%80/" data-tooltip="[ 三年后的杂谈 ] 浅谈配置管理 [ 篇一 ]">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2017/06/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%A4%B1%E8%B4%A5%E7%9A%84docker%E6%8E%92%E9%9A%9C%E7%BB%8F%E5%8E%86/" data-tooltip="记一次失败的docker排障经历">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+    
+    <h4 id="about-card-name">Jacky Wu (Colstuwjx)</h4>
+    
+      <div id="about-card-bio">DevOPS &amp; OpenSource Fans</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        DevOPS Engineer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    <div id="cover" style="background-image:url('https://res.cloudinary.com/ddhitj0ja/image/upload/v1581843208/pic_nfgplt.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://colstuwjx.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+
+
+
+
+    
+  </body>
+</html>
+

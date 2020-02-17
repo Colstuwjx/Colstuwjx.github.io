@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.64.1 with theme Tranquilpeak 0.4.7-BETA">
+<meta name="author" content="Jacky Wu (Colstuwjx)">
+<meta name="keywords" content="">
+<meta name="description" content="最近有在编写类似SkyDNS的面向服务间调用的智能DNS服务，开发完成后如何对DNS服务本身进行压测有点被难倒了。市面上对HTTP类请求的压测测试很多，然而对非Web组件的压测工具则非常少见&hellip;">
+
+
+<meta property="og:description" content="最近有在编写类似SkyDNS的面向服务间调用的智能DNS服务，开发完成后如何对DNS服务本身进行压测有点被难倒了。市面上对HTTP类请求的压测测试很多，然而对非Web组件的压测工具则非常少见&hellip;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用locust &#43; boomer实现对非web组件的压测">
+<meta name="twitter:title" content="使用locust &#43; boomer实现对非web组件的压测">
+<meta property="og:url" content="https://colstuwjx.github.io/2018/01/%E4%BD%BF%E7%94%A8locust-boomer%E5%AE%9E%E7%8E%B0%E5%AF%B9%E9%9D%9Eweb%E7%BB%84%E4%BB%B6%E7%9A%84%E5%8E%8B%E6%B5%8B/">
+<meta property="twitter:url" content="https://colstuwjx.github.io/2018/01/%E4%BD%BF%E7%94%A8locust-boomer%E5%AE%9E%E7%8E%B0%E5%AF%B9%E9%9D%9Eweb%E7%BB%84%E4%BB%B6%E7%9A%84%E5%8E%8B%E6%B5%8B/">
+<meta property="og:site_name" content="Colstuwjx&#39;s site">
+<meta property="og:description" content="最近有在编写类似SkyDNS的面向服务间调用的智能DNS服务，开发完成后如何对DNS服务本身进行压测有点被难倒了。市面上对HTTP类请求的压测测试很多，然而对非Web组件的压测工具则非常少见&hellip;">
+<meta name="twitter:description" content="最近有在编写类似SkyDNS的面向服务间调用的智能DNS服务，开发完成后如何对DNS服务本身进行压测有点被难倒了。市面上对HTTP类请求的压测测试很多，然而对非Web组件的压测工具则非常少见&hellip;">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2018-01-20T20:00:00">
+  
+  
+    <meta property="article:modified_time" content="2018-01-20T20:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="test">
+    
+  
+  
+    
+      <meta property="article:tag" content="benchmark">
+    
+      <meta property="article:tag" content="devops">
+    
+      <meta property="article:tag" content="test">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+  <meta property="twitter:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+
+
+    <title>使用locust &#43; boomer实现对非web组件的压测</title>
+
+    <link rel="icon" href="https://colstuwjx.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://colstuwjx.github.io/2018/01/%E4%BD%BF%E7%94%A8locust-boomer%E5%AE%9E%E7%8E%B0%E5%AF%B9%E9%9D%9Eweb%E7%BB%84%E4%BB%B6%E7%9A%84%E5%8E%8B%E6%B5%8B/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/comments.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://colstuwjx.github.io/">Colstuwjx&#39;s site</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://colstuwjx.github.io/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://colstuwjx.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">Jacky Wu (Colstuwjx)</h4>
+        
+          <h5 class="sidebar-profile-bio">DevOPS &amp; OpenSource Fans</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Colstuwjx" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-user"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      使用locust &#43; boomer实现对非web组件的压测
+    </h1>
+  
+  
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>最近有在编写类似SkyDNS的面向服务间调用的智能DNS服务，开发完成后如何对DNS服务本身进行压测有点被难倒了。市面上对HTTP类请求的压测测试很多，然而对非Web组件的压测工具则非常少见&hellip;</p>
+
+<h4 id="前言">前言</h4>
+
+<p>在努力翻阅互联网上的开源项目后，终于找到了这样一款压测工具<a href="https://github.com/locustio/locust">locust</a>，它是用Python实现的一款可以自己编写task进行测试的压测框架，并且提供友好的UI。本文即是简单总结一下体验该款压测工具的过程，BTW，笔者对测试没有什么经验，如有谬误，欢迎互联网上的大佬们一起交流、指教。</p>
+
+<h4 id="架构设计">架构设计</h4>
+
+<p>下面，我们不妨来简单看看locust的架构。</p>
+
+<p><code>locust</code>本身设计的非常简单轻量，经典的压测架构 master -&gt; slave的形式，master只负责数据的收集和消息的广播等操作，task的执行均由slave执行。</p>
+
+<p>分发task的话需要编写对应的<a href="https://docs.locust.io/en/latest/writing-a-locustfile.html">locustfile</a>，文件内容里即指定task和相应的执行数量、权重、限制并发数等。locust原生的slave是通过gevent来实现高并发的测试请求，而这里我们也可以使用<a href="https://github.com/myzhan/boomer">boomer</a>，
+这是一款Github上开源的Golang版实现的slave，完全兼容locust的协议！</p>
+
+<p>值得一提的是，这位开源boomer的大佬貌似是服务端测试领域的专家，里面一些提供的用例也非常值得挖掘，比如针对UDP服务实施的<a href="https://github.com/myzhan/boomer/blob/b669e7600ff989ccbafaa434641efce69ac52235/examples/udp_perf_proxy.go#L12">udptest</a>，完成对UDP请求的copy和分析上报。</p>
+
+<h4 id="dns测试">dns测试</h4>
+
+<p>马不停蹄，下面我们赶紧编写一个dns的测试用例，看看效果！<a href="https://github.com/myzhan/boomer">boomer</a>的文档还是很清晰的，直接套上官方的样例，实现一个<code>test_dns</code>:</p>
+<pre><code>...
+
+func test_dns() {
+	/*
+		一个简单的 DNS查询操作
+		TODO: complicated dns query using https://github.com/miekg/exdns/blob/master/q/q.go
+	*/
+	startTime := now()
+	addrs, err := net.LookupHost("www.baidu.com")
+	endTime := now()
+
+	log.Println(float64(endTime - startTime))
+	if err != nil {
+		boomer.Events.Publish("request_failure", "dns", "udp", 0.0, err.Error())
+	} else {
+		boomer.Events.Publish("request_success", "dns", "udp", float64(endTime-startTime), int64(len(addrs)))
+	}
+}
+
+...</code></pre>
+<p>上面这个例子即是利用本地的dns解析<code>www.baidu.com</code>，如果解析成功则上报一次success，否则即上报一次failure。这里的上报机制即是通过locust本身提供的event bus，slave可以将自己的测试结果上报到服务端，也可以广播一些message给master，比如声明slave节点的在线离线等。</p>
+
+<p>我们不妨通过本地执行该task验证下测试用例是否可行，这里笔者编写了一个<a href="https://github.com/Colstuwjx/golang-examples/tree/master/src/test/boomer"><code>boomer.go</code></a>，可以通过如下命令测试dns的用例：</p>
+<pre><code># go build -o a.out boomer.go
+# ./a.out --run-tasks dns
+
+2018/01/20 14:16:39 Running dns
+2018/01/20 14:16:39 resolving www.baidu.com.. cost time:  2</code></pre>
+<h4 id="locust-boomer进行压测">locust+boomer进行压测</h4>
+
+<p>实际用locust做dns服务的压测也比较简单，首先安装并启动locust master（这里dummy.py即占位的fake脚本，我们用boomer来充当实际的task声明和执行者）：</p>
+<pre><code># pip install locust
+# locust -f dummy.py --master --master-bind-host=127.0.0.1 --master-bind-port=5557</code></pre>
+<p>然后启动boomer充当slave，并连接locust master：</p>
+<pre><code>go run boomer.go --master-host=127.0.0.1 --master-port=5557</code></pre>
+<p>如此一来，我们便可以在locust的管理UI上下发压测任务：</p>
+
+<p><img src="https://colstuwjx.github.io/images/2018/Jan/locust.jpg" alt="locust" /></p>
+
+<p>Em.. 简单在笔者的mac笔记本测试效果还不是很理想&hellip; 可能和机器本身性能也有关系：</p>
+
+<p><img src="https://colstuwjx.github.io/images/2018/Jan/result.jpg" alt="result" /></p>
+
+<p>Em.. DNS的测试维度还比较单一，测试slave也需要分布在不同机器和网络单元，量级也需要根据请求处理的增长和处理趋势判断出瓶颈，下周搞搞..</p>
+
+<p>就酱！</p>
+
+<h4 id="参考">参考</h4>
+
+<p><a href="http://myzhan.github.io/2016/03/01/write-a-load-testing-tool-in-golang/">http://myzhan.github.io/2016/03/01/write-a-load-testing-tool-in-golang/</a></p>
+
+<p><a href="https://github.com/myzhan/boomer">https://github.com/myzhan/boomer</a></p>
+
+<p><a href="https://github.com/locustio/locust">https://github.com/locustio/locust</a></p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/benchmark/">benchmark</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/devops/">devops</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/test/">test</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2018/01/kube-dns%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E7%9A%84%E8%A7%A3%E8%AF%BB/" data-tooltip="kube-dns实现原理的解读">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2017/10/%E4%B8%89%E5%B9%B4%E5%90%8E%E7%9A%84%E6%9D%82%E8%B0%88-%E6%B5%8B%E8%AF%95%E4%B9%8Bmock/" data-tooltip="[ 三年后的杂谈 ] 测试之Mock">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2020 Powered by Hugo with tranquilpeak. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2018/01/kube-dns%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E7%9A%84%E8%A7%A3%E8%AF%BB/" data-tooltip="kube-dns实现原理的解读">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2017/10/%E4%B8%89%E5%B9%B4%E5%90%8E%E7%9A%84%E6%9D%82%E8%B0%88-%E6%B5%8B%E8%AF%95%E4%B9%8Bmock/" data-tooltip="[ 三年后的杂谈 ] 测试之Mock">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+    
+    <h4 id="about-card-name">Jacky Wu (Colstuwjx)</h4>
+    
+      <div id="about-card-bio">DevOPS &amp; OpenSource Fans</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        DevOPS Engineer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    <div id="cover" style="background-image:url('https://res.cloudinary.com/ddhitj0ja/image/upload/v1581843208/pic_nfgplt.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://colstuwjx.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+
+
+
+
+    
+  </body>
+</html>
+

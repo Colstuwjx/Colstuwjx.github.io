@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.64.1 with theme Tranquilpeak 0.4.7-BETA">
+<meta name="author" content="Jacky Wu (Colstuwjx)">
+<meta name="keywords" content="">
+<meta name="description" content="这是一次失败的排障经历&hellip;">
+
+
+<meta property="og:description" content="这是一次失败的排障经历&hellip;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="记一次失败的docker排障经历">
+<meta name="twitter:title" content="记一次失败的docker排障经历">
+<meta property="og:url" content="https://colstuwjx.github.io/2017/06/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%A4%B1%E8%B4%A5%E7%9A%84docker%E6%8E%92%E9%9A%9C%E7%BB%8F%E5%8E%86/">
+<meta property="twitter:url" content="https://colstuwjx.github.io/2017/06/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%A4%B1%E8%B4%A5%E7%9A%84docker%E6%8E%92%E9%9A%9C%E7%BB%8F%E5%8E%86/">
+<meta property="og:site_name" content="Colstuwjx&#39;s site">
+<meta property="og:description" content="这是一次失败的排障经历&hellip;">
+<meta name="twitter:description" content="这是一次失败的排障经历&hellip;">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2017-06-03T20:00:00">
+  
+  
+    <meta property="article:modified_time" content="2017-06-03T20:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="cloud-native">
+    
+  
+  
+    
+      <meta property="article:tag" content="docker">
+    
+      <meta property="article:tag" content="hang">
+    
+      <meta property="article:tag" content="troubleshooting">
+    
+      <meta property="article:tag" content="containerd">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+  <meta property="twitter:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+
+
+    <title>记一次失败的docker排障经历</title>
+
+    <link rel="icon" href="https://colstuwjx.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://colstuwjx.github.io/2017/06/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%A4%B1%E8%B4%A5%E7%9A%84docker%E6%8E%92%E9%9A%9C%E7%BB%8F%E5%8E%86/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/comments.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://colstuwjx.github.io/">Colstuwjx&#39;s site</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://colstuwjx.github.io/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://colstuwjx.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">Jacky Wu (Colstuwjx)</h4>
+        
+          <h5 class="sidebar-profile-bio">DevOPS &amp; OpenSource Fans</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Colstuwjx" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-user"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      记一次失败的docker排障经历
+    </h1>
+  
+  
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>这是一次失败的排障经历&hellip;</p>
+
+<p>掐指头一算，从14年年中GL总介绍Docker这个项目以来，鄙人实际开始玩Docker也有2年多了，说是玩，其实对它本身的一些原理性质的东西还不够清晰，而且也没做到“玩转”的水平（业内其实有很多玩Docker的案例了，比如<a href="http://www.dalang.one/post/dev-logs/simulate-razor-node-in-docker">大浪同学玩转razor with docker</a>，还有谷歌大神 <a href="https://blog.jessfraz.com/post/docker-containers-on-the-desktop/">All in Docker</a>）等等。</p>
+
+<p>Okay，闲话不多说，本文即是介绍鄙人最近（2017.06.03）对docker daemon无故hang住问题的一次排障经历。这一问题其实存在已久，因为没有足够的精力，对Docker也不够熟悉（其实还是惰性使然，这种排障投入产出比太低了，所以很多时候倾向于workaround），因此直到这回才真正深入挖掘了一下，当然，见于标题所述，其实这回也是一次失败的尝试 :(</p>
+
+<blockquote>
+<p>版本信息</p>
+</blockquote>
+
+<p><img src="https://colstuwjx.github.io/images/2017/Jun/docker-info.png" alt="docker-info" /></p>
+
+<h3 id="背景">背景</h3>
+
+<p>我们线上是物理机，Debian 8 jessie，xfs文件系统，然后内核升级到了4.4.27，
+并且docker用的是<code>overlay2</code>，我们使用<a href="https://github.com/google/cadvisor">cadvisor</a> + <a href="https://github.com/prometheus/prometheus">prometheus</a>对docker宿主机、容器做了监控和告警。</p>
+
+<p>这次故障的现象即是运行一段时间的docker daemon会出现hang住的情况，任何命令，<code>docker info</code>，<code>docker ps</code>均不可用，容器也陷于假死状态，直接重启docker daemon无法恢复.</p>
+
+<h3 id="workaround方案">Workaround方案</h3>
+
+<p>我们遇到这样的问题，是出现在版本升级到docker 1.12.3之后（当然，也是因为其他的bug导致我们升级到这个版本的，手动捂脸），鄙人组长随即立马给出了一个workaround方案：</p>
+<pre><code># rm -rf /var/lib/docker/libcontainerd/*</code></pre>
+<p>以上命令看似暴力，实则简单有效，每次停掉docker daemon之后，清理该文件夹下面的内容，随即便可以正常启动docker daemon。</p>
+
+<p>当然，这只是workaround，每次这么搞，由于docker daemon本身上面跑了很多应用业务的容器，挂一次也是有宕机成本的。这也就引发了这一次的debug之旅。</p>
+
+<h3 id="思路要清晰">思路要清晰</h3>
+
+<p>对一个基础组件进行排障时，排障思路一定得清晰。首先，我们得对Docker本身的请求-处理架构有所了解：</p>
+
+<p><img src="https://colstuwjx.github.io/images/2017/Jun/docker-arch.svg" alt="dock-arch" /></p>
+
+<h4 id="debug-log-strace-it">debug log &amp; strace it!</h4>
+
+<p>很显然，在命令行敲下来的docker命令会首先通过docker client发送给docker daemon，那么是不是docker daemon自身代码出问题了呢？似乎不像，毕竟如果是这样的话，重启应该能恢复，查看docker daemon的log为：</p>
+<pre><code>Jun  3 10:38:24 docker-06 dockerd[19722]: time="2017-06-03T10:38:24.167081096+08:00" level=info 
+msg="libcontainerd: new containerd process, pid: 21057"
+Jun  3 10:38:24 docker-06 dockerd[19722]: time="2017-06-03T10:38:24.186999855+08:00" level=debug 
+msg="containerd: read past events" count=0
+Jun  3 10:38:24 docker-06 dockerd[19722]: time="2017-06-03T10:38:24.18737577+08:00" 
+level=fatal msg=EOF</code></pre>
+<p>Okay，不妨用<code>strace</code>确认一下系统调用：</p>
+<pre><code># strace -ff -o log -v docker ps</code></pre>
+<p>抓取到的部分日志如下:</p>
+<pre><code>getsockname(3, {sa_family=AF_LOCAL, NULL}, [2]) = 0
+getpeername(3, {sa_family=AF_LOCAL, sun_path="/var/run/docker.sock"}, [23]) = 0
+futex(0xc820046908, FUTEX_WAKE, 1)      = 1
+read(3, 0xc82036c000, 4096)             = -1 EAGAIN (Resource temporarily unavailable)
+epoll_wait(4, {}, 128, 0)               = 0
+epoll_wait(4, 7ffd0297d8c0, 128, -1)    = -1 EINTR (Interrupted system call)
+--- SIGWINCH {si_signo=SIGWINCH, si_code=SI_KERNEL} ---
+rt_sigreturn()                          = -1 EINTR (Interrupted system call)
+epoll_wait(4, 7ffd0297d8c0, 128, -1)    = -1 EINTR (Interrupted system call)</code></pre><pre><code>futex(0xc820046908, FUTEX_WAIT, 0, NULL) = -1 EAGAIN (Resource temporarily unavailable)
+futex(0xc820046908, FUTEX_WAIT, 0, NULL) = 0
+select(0, NULL, NULL, NULL, {0, 100})   = 0 (Timeout)
+futex(0xc820046908, FUTEX_WAIT, 0, NULL) = 0
+epoll_wait(4, {{EPOLLOUT, {u32=1706739960, u64=140219504052472}}}, 128, 0) = 1
+futex(0xc820046d08, FUTEX_WAKE, 1)      = 1
+mmap(NULL, 262144, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f8765b5e000
+write(3, "GET /v1.24/containers/json HTTP/"..., 95) = 95
+futex(0xc820046d08, FUTEX_WAKE, 1)      = 1
+futex(0xc820046908, FUTEX_WAIT, 0, NULL <unfinished ...></code></pre>
+<p>查了一下，<code>FUTEX_WAIT</code>简单说就是当前线程正在等待其他人完成一件事情然后给它反馈，但是很可惜，并没有等到。</p>
+
+<blockquote>
+<p>BTW, strace命令本身也值得掌握，对于排障很实用，可以参考：<a href="http://hokstad.com/5-simple-ways-to-troubleshoot-using-strace">这篇文章</a>，也很感谢以前Thomas和俊哥让我学到这条命令。</p>
+</blockquote>
+
+<h4 id="goroutine-dump">goroutine dump?</h4>
+
+<p>OKay，那么有没有其他办法呢？docker本质上也是一款golang编写的系统软件，那是不是可以做一些堆栈级别的dump来分析呢？谷歌了一下，发现还真有，而且还是<a href="https://docs.docker.com/engine/admin/#enable-debugging">官方文档</a>写的（最近莫名其妙收了一个徒弟，我也跟这位同学经常强调，多看官方文档，想不到自己也中招&hellip;）！</p>
+
+<p>试试看：</p>
+<pre><code># kill -SIGUSR1 $(pidof dockerd)</code></pre>
+<p>fu**&hellip; 没能在docker的daemon log里看到任何额外的输出，鄙人甚至以为是自己姿势错了，找了一台正常的docker daemon试了下，的确是有<code>=== BEGIN goroutine stack dump...</code>这样类似的输出，找了下<a href="https://github.com/moby/moby/pull/10786/files#diff-4c7f4f4c7c296eae93bba88adfaae397R63">代码</a>，似乎也就是利用golang的runtime包dump出堆栈。</p>
+
+<p>但是，为啥连stack都无法dump呢？而且鄙人在重试重启docker daemon的时候卡在启动过程，而且发送<code>SIGUSR1</code>也无法做dump，what the fuck???</p>
+
+<p>诸般方案都失败的情况下，那还能咋办？鄙人回忆起了最开始看到的docker daemon的log输出，这里再贴一下：</p>
+<pre><code>Jun  3 10:38:24 docker-06 dockerd[19722]: time="2017-06-03T10:38:24.167081096+08:00" level=info 
+msg="libcontainerd: new containerd process, pid: 21057"
+Jun  3 10:38:24 docker-06 dockerd[19722]: time="2017-06-03T10:38:24.186999855+08:00" level=debug 
+msg="containerd: read past events" count=0
+Jun  3 10:38:24 docker-06 dockerd[19722]: time="2017-06-03T10:38:24.18737577+08:00" 
+level=fatal msg=EOF</code></pre>
+<p>嗯哼，在libcontainerd new出来containerd的进程之后，出现了<code>EOF</code>的fatal信息，之前怎么没看到这个重要的信息呢？那么，是否是containerd的问题？我们来一探究竟。</p>
+
+<h4 id="根据日志分析启动问题">根据日志分析启动问题</h4>
+
+<p>Okay，第一条libcontainerd的日志位置出现在<a href="https://github.com/moby/moby/blob/v1.12.3/libcontainerd/remote_linux.go#L406">这里</a>，很显然，它是要做containerd，即容器runtime的boot up，请注意，接下来就是坑点了，再翻一下docker daemon的<a href="https://github.com/moby/moby/blob/v1.12.3/cmd/dockerd/daemon.go#L255">启动对应代码</a>，你会发现，对libcontainerd建立远程通信，是放在<a href="https://github.com/moby/moby/blob/v1.12.3/cmd/dockerd/daemon.go#L265">daemon初始化</a>之前的！这也可以解释为啥dump无法生效了，因为它就是在<a href="https://github.com/moby/moby/blob/v1.12.3/daemon/daemon.go#L413">NewDaemon方法</a>里做的啊，喂！</p>
+
+<p>事情似乎又回到了原点，唯一的进展便是，可能libcontainerd本身runtime出问题了，这也可以解释我们删除libcontainerd的数据便能恢复启动的现象。那么再去看看libcontainerd的情况？</p>
+
+<h4 id="继续扒源码">继续扒源码</h4>
+
+<p>继续上Github翻containerd的源码（吐槽一下Docker官方，仓库位置都挪了，闹哪样！），还记得异常启动的daemon日志里<code>containerd: read past events</code>这一段吗？</p>
+
+<p>似乎像是libcontainerd想要恢复曾经启动过的容器，然后读取之前的历史event，那么这段代码具体在哪呢？Woot！它是containerd启动自己的容器进程管理器supervisor时做的初始化事情里的<a href="https://github.com/containerd/containerd/blob/v0.2.4/supervisor/supervisor.go#L66">一部分</a>。</p>
+
+<p>它接下来会做什么？作为程序猿 + 工程师的嗅觉，恩，想来应该是我所猜测的恢复操作，果然不假，<a href="https://github.com/containerd/containerd/blob/v0.2.4/supervisor/supervisor.go#L52">代码</a>确实是这样的逻辑。事到如今，再想扒下去，难度就更大了。鄙人突然想到，咦，新版本的containerd有没有改进呢？</p>
+
+<h4 id="亘古不变的解题窍门">亘古不变的解题窍门</h4>
+
+<p>mmp! 查到了这样的<a href="https://github.com/containerd/containerd/pull/609">PR</a>，甚至于supervisor的代码在新版都有了大的变动：</p>
+
+<p><img src="https://colstuwjx.github.io/images/2017/Jun/Github-404.png" alt="GITHUB.404" /></p>
+
+<p>再见！不想再查下去了！果然还是古人说得好哇，对付Docker有两个办法：</p>
+<pre><code>#1 升级kernel
+#2 升级docker daemon</code></pre>
+<p>如果不行的话，就试试两个都升级！恩！鄙人打算先尝试升级下docker daemon（及containerd），以观后效。</p>
+
+<h3 id="结语">结语</h3>
+
+<p>鄙人之所以编写这篇“失败的排障之旅”，也是希望能通过鄙人失败的经历，为大家讲述，“我是如何排障docker的”，这些方法理论上来说应该是普遍适用的，<code>strace</code>、<code>debug level log</code>、<code>dump</code>、<code>sourcode level debug</code>，这些都是深入排障一个很tricky的问题时必备的技能。当然，如果各路大神有一些好的建议和吐槽我菜比的地方，欢迎邮箱联系：wjx_colstu@hotmail.com</p>
+
+<p>希望能有所价值！</p>
+<pre><code>BTW，Enjoy the container trip!
+Colstuwjx
+2017.06.03</code></pre>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/docker/">docker</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/hang/">hang</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/troubleshooting/">troubleshooting</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/containerd/">containerd</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2017/07/easy-your-life-by-using-the-snmp-exporter-generator/" data-tooltip="Easy your life by using the snmp-exporter generator">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2017/04/%E7%BF%BB%E8%AF%91-%E4%BB%8E%E5%A4%B4%E7%BC%96%E5%86%99%E4%B8%80%E6%AC%BE%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E6%95%B0%E6%8D%AE%E5%BA%93/" data-tooltip="[ 翻译 ] 从头编写一款时间序列数据库">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2020 Powered by Hugo with tranquilpeak. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2017/07/easy-your-life-by-using-the-snmp-exporter-generator/" data-tooltip="Easy your life by using the snmp-exporter generator">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2017/04/%E7%BF%BB%E8%AF%91-%E4%BB%8E%E5%A4%B4%E7%BC%96%E5%86%99%E4%B8%80%E6%AC%BE%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E6%95%B0%E6%8D%AE%E5%BA%93/" data-tooltip="[ 翻译 ] 从头编写一款时间序列数据库">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+    
+    <h4 id="about-card-name">Jacky Wu (Colstuwjx)</h4>
+    
+      <div id="about-card-bio">DevOPS &amp; OpenSource Fans</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        DevOPS Engineer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    <div id="cover" style="background-image:url('https://res.cloudinary.com/ddhitj0ja/image/upload/v1581843208/pic_nfgplt.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://colstuwjx.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+
+
+
+
+    
+  </body>
+</html>
+

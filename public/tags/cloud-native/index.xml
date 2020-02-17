@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>cloud-native on Colstuwjx&#39;s site</title>
+    <link>https://colstuwjx.github.io/tags/cloud-native/</link>
+    <description>Recent content in cloud-native on Colstuwjx&#39;s site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 23 Jun 2018 20:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://colstuwjx.github.io/tags/cloud-native/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>[ 翻译 ] Thanos：大规模prometheus集群解决方案</title>
+      <link>https://colstuwjx.github.io/2018/06/%E7%BF%BB%E8%AF%91-thanos%E5%A4%A7%E8%A7%84%E6%A8%A1prometheus%E9%9B%86%E7%BE%A4%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</link>
+      <pubDate>Sat, 23 Jun 2018 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/2018/06/%E7%BF%BB%E8%AF%91-thanos%E5%A4%A7%E8%A7%84%E6%A8%A1prometheus%E9%9B%86%E7%BE%A4%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88/</guid>
+      <description>&lt;p&gt;【编者的话】Improbable开源了他们的Prometheus高可用解决方案Thanos，提供Prometheus的无缝集成，并为它带来了全局视图和不受限制的历史数据存储能力。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>[ 原创 ] 小尝containerd（一）</title>
+      <link>https://colstuwjx.github.io/2018/02/%E5%8E%9F%E5%88%9B-%E5%B0%8F%E5%B0%9Dcontainerd%E4%B8%80/</link>
+      <pubDate>Mon, 05 Feb 2018 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/2018/02/%E5%8E%9F%E5%88%9B-%E5%B0%8F%E5%B0%9Dcontainerd%E4%B8%80/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://containerd.io/&#34;&gt;containerd&lt;/a&gt;是一个开源的container runtime实现，也是docker背后管理容器生命周期的功臣，借着周末的一些时间，鄙人也小小把玩了一下containerd，有任何不对的地方欢迎指正。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>kube-dns实现原理的解读</title>
+      <link>https://colstuwjx.github.io/2018/01/kube-dns%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E7%9A%84%E8%A7%A3%E8%AF%BB/</link>
+      <pubDate>Sat, 20 Jan 2018 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/2018/01/kube-dns%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86%E7%9A%84%E8%A7%A3%E8%AF%BB/</guid>
+      <description>&lt;p&gt;最近一直在做类似skydns的dns服务发现相关的研究和代码实现，也就有了兴趣想解读下kube-dns的实现过程，学习和参考下社区的做法。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>[ 翻译 ] 开源世界的&#34;服务发现&#34;</title>
+      <link>https://colstuwjx.github.io/2014/08/%E7%BF%BB%E8%AF%91-%E5%BC%80%E6%BA%90%E4%B8%96%E7%95%8C%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0/</link>
+      <pubDate>Sat, 30 Aug 2014 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/2014/08/%E7%BF%BB%E8%AF%91-%E5%BC%80%E6%BA%90%E4%B8%96%E7%95%8C%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0/</guid>
+      <description>&lt;p&gt;这里是对服务发现的一篇翻译，原文见：&lt;a href=&#34;http://jasonwilder.com/blog/2014/02/04/service-discovery-in-the-cloud/&#34;&gt;Open-Source Service Discovery&lt;/a&gt;&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
