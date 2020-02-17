@@ -2,7 +2,7 @@
 title: "Saltstack 学习之target minions（一）"
 date: 2014-05-14T20:00:00+08:00
 tags: ["devops", "salt"]
-categories: ["it"]
+categories: ["salt"]
 comments: false
 showMeta: false
 showAction: false

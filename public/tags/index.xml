@@ -6,7 +6,7 @@
     <description>Recent content in Tags on Colstuwjx&#39;s site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 14 May 2014 20:00:00 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 19 Jul 2014 20:00:00 +0800</lastBuildDate>
     
 	<atom:link href="https://colstuwjx.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,7 +14,7 @@
     <item>
       <title>devops</title>
       <link>https://colstuwjx.github.io/tags/devops/</link>
-      <pubDate>Wed, 14 May 2014 20:00:00 +0800</pubDate>
+      <pubDate>Sat, 19 Jul 2014 20:00:00 +0800</pubDate>
       
       <guid>https://colstuwjx.github.io/tags/devops/</guid>
       <description></description>
@@ -23,9 +23,27 @@
     <item>
       <title>salt</title>
       <link>https://colstuwjx.github.io/tags/salt/</link>
-      <pubDate>Wed, 14 May 2014 20:00:00 +0800</pubDate>
+      <pubDate>Sat, 19 Jul 2014 20:00:00 +0800</pubDate>
       
       <guid>https://colstuwjx.github.io/tags/salt/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>best practice</title>
+      <link>https://colstuwjx.github.io/tags/best-practice/</link>
+      <pubDate>Wed, 11 Jun 2014 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/tags/best-practice/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>python</title>
+      <link>https://colstuwjx.github.io/tags/python/</link>
+      <pubDate>Tue, 27 May 2014 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/tags/python/</guid>
       <description></description>
     </item>
     

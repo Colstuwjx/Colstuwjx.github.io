@@ -20,10 +20,10 @@ canonifyurls = true
   job = "DevOPS Engineer"
   location = "Shanghai, China"
   # Your Gravatar email. Overwrite `author.picture` everywhere in the blog
-  gravatarEmail = "wjx_colstu@hotmail.com"
+  # gravatarEmail = "wjx_colstu@hotmail.com"
   # Your profile picture
   # Overwritten by your gravatar image if `author.gravatarEmail` is filled
-  # picture = "https://xxx"
+  picture = "https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg"
 
 # Menu Configuration
 [[menu.main]]
@@ -129,7 +129,7 @@ canonifyurls = true
   # Display thumbnail image at the right of title in index pages (`right`, `left` or `bottom`)
   # Set this value to `right` if you have old posts to keep the old style on them
   # and define `thumbnailImagePosition` on a post to overwrite this setting
-  thumbnailImagePosition = "bottom"
+  thumbnailImagePosition = "right"
   # Automatically select the cover image or the first photo from the gallery of a post if there is no thumbnail image as the thumbnail image
   # Set this value to `true` if you have old posts that use the cover image or the first photo as the thumbnail image
   # and set `autoThumbnailImage` to `false` on a post to overwrite this setting
