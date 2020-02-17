@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>best practice on Colstuwjx&#39;s site</title>
+    <link>https://colstuwjx.github.io/tags/best-practice/</link>
+    <description>Recent content in best practice on Colstuwjx&#39;s site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Wed, 11 Jun 2014 20:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://colstuwjx.github.io/tags/best-practice/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>建立Saltstack运转机制之个人做法（一）</title>
+      <link>https://colstuwjx.github.io/2014/06/%E5%BB%BA%E7%AB%8Bsaltstack%E8%BF%90%E8%BD%AC%E6%9C%BA%E5%88%B6%E4%B9%8B%E4%B8%AA%E4%BA%BA%E5%81%9A%E6%B3%95%E4%B8%80/</link>
+      <pubDate>Wed, 11 Jun 2014 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/2014/06/%E5%BB%BA%E7%AB%8Bsaltstack%E8%BF%90%E8%BD%AC%E6%9C%BA%E5%88%B6%E4%B9%8B%E4%B8%AA%E4%BA%BA%E5%81%9A%E6%B3%95%E4%B8%80/</guid>
+      <description>&lt;p&gt;一个企业的IT系统的运转机制是非常复杂的，如何结合Saltstack加入自动化运维的基因，不同的运维工程师都有各自独到的见解和做法，本文就此介绍下鄙人参考大神们做法得出的一些拙见。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
