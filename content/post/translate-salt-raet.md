@@ -6,8 +6,6 @@ categories: ["salt"]
 comments: false
 showMeta: false
 showAction: false
-aliases:
-    - /-fan-yi-salt-xin-tong-xin-jia-gou-salt-raet/
 ---
 
 Saltstack官方在salt 2014 介绍视频中引入了salt raet概念，salt raet是继Salt-Zeromq, Salt-Ssh之后的第三套通信体系，全名为Reliable Asynchronous Event Transport,即基于事件的可靠异步传输协议 —— by 译者
