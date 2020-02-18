@@ -6,6 +6,8 @@ categories: ["monitoring"]
 comments: false
 showMeta: false
 showAction: false
+aliases:
+    - /snmp-exporter-generator-tutorial/
 ---
 
 This is a post for explaining how to use snmp exporter generator...

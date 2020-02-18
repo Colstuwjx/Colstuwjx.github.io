@@ -6,6 +6,8 @@ categories: ["monitoring"]
 comments: false
 showMeta: false
 showAction: false
+aliases:
+    - /translate-writing-a-time-series-database-from-scratch/
 ---
 
 本文是翻译自Prometheus核心开发人员之一的fabxc的一篇博客文章。

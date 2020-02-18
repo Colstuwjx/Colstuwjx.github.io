@@ -6,6 +6,8 @@ categories: ["monitoring"]
 comments: false
 showMeta: false
 showAction: false
+aliases:
+    - /translate-thanos-prometheus-at-scale/
 ---
 
 【编者的话】Improbable开源了他们的Prometheus高可用解决方案Thanos，提供Prometheus的无缝集成，并为它带来了全局视图和不受限制的历史数据存储能力。

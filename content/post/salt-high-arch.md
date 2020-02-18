@@ -7,6 +7,8 @@ comments: true
 showMeta: false
 showAction: false
 GHissueID: 2
+aliases:
+    - /saltstack-ha-arch/
 ---
 
 这篇文章记录了鄙人折腾Salt项目的背景和一些成果及经验教训。

@@ -6,6 +6,8 @@ categories: ["salt"]
 comments: false
 showMeta: false
 showAction: false
+aliases:
+    - /yuan-ma-jie-du-saltstackyun-xing-ji-zhi-zhi-job-runtime/
 ---
 
 鄙人深切以为 “在开源的世界里阅读源码才是深层次理解软件运行机制的不二法门”，本系列即是旨在通过解读（当然，鄙人实力有限，只是粗浅的解读）Saltstack源码的方式，了解Saltstack内部的运行机制，对排障和更好理解和二次开发Saltstack有一定助力。
