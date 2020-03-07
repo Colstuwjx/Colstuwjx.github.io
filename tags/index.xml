@@ -6,10 +6,37 @@
     <description>Recent content in Tags on Colstuwjx&#39;s site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 20 Jan 2020 20:00:00 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 07 Mar 2020 20:00:00 +0800</lastBuildDate>
     
 	<atom:link href="https://colstuwjx.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>kubernetes</title>
+      <link>https://colstuwjx.github.io/tags/kubernetes/</link>
+      <pubDate>Sat, 07 Mar 2020 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/tags/kubernetes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>pr</title>
+      <link>https://colstuwjx.github.io/tags/pr/</link>
+      <pubDate>Sat, 07 Mar 2020 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/tags/pr/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>sourcecode</title>
+      <link>https://colstuwjx.github.io/tags/sourcecode/</link>
+      <pubDate>Sat, 07 Mar 2020 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/tags/sourcecode/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>design-patterns</title>
@@ -116,24 +143,6 @@
       <pubDate>Sat, 20 Jan 2018 20:00:00 +0800</pubDate>
       
       <guid>https://colstuwjx.github.io/tags/devops/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>kubernetes</title>
-      <link>https://colstuwjx.github.io/tags/kubernetes/</link>
-      <pubDate>Sat, 20 Jan 2018 20:00:00 +0800</pubDate>
-      
-      <guid>https://colstuwjx.github.io/tags/kubernetes/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>sourcecode</title>
-      <link>https://colstuwjx.github.io/tags/sourcecode/</link>
-      <pubDate>Sat, 20 Jan 2018 20:00:00 +0800</pubDate>
-      
-      <guid>https://colstuwjx.github.io/tags/sourcecode/</guid>
       <description></description>
     </item>
     
