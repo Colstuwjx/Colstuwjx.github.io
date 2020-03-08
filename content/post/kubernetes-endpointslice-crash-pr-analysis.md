@@ -1,7 +1,7 @@
 ---
 title: "[源码分析] 解读 Kubernetes EndpointSlice 控制器导致的Crash 问题始末"
 date: 2020-03-07T20:00:00+08:00
-tags: ["sourcecode", "pr", "kubernetes"]
+tags: ["sourcecode", "pr", "kubernetes", "bug", "endpointslice"]
 categories: ["cloud-native"]
 comments: true
 showMeta: false
@@ -21,7 +21,7 @@ aliases:
 
 ![引入EndpointSlice功能会导致 Controller Manager 几率性的 Panic](/images/2020/Mar/endpoint_slice_crash.jpg)
 
-上面也给出了这个 Bug 的修复[PR](https://github.com/kubernetes/kubernetes/pull/85368)，一路追查起因，可以发现最初是 [RainbowMango](https://github.com/RainbowMango) （这位大佬应该是华为云团队的一员）在[另外一个PR](https://github.com/kubernetes/kubernetes/pull/83837#issuecomment-553715114)里的测试用例发现的问题。
+上面也给出了这个 Bug 的修复[PR 85368](https://github.com/kubernetes/kubernetes/pull/85368)，一路追查起因，可以发现最初是 [RainbowMango](https://github.com/RainbowMango) （这位大佬应该是华为云团队的一员）在[另外一个PR 83837](https://github.com/kubernetes/kubernetes/pull/83837#issuecomment-553715114)里的测试用例发现的问题。
 
 #### 关于 k8s 的测试
 
@@ -36,7 +36,7 @@ aliases:
 #### 共享内存导致的问题
 
 回到问题，根据测试失败结果，这位大佬在评论里同步了相关异常信息：在执行 `/test pull-kubernetes-kubemark-e2e-gce-big` 这个测试任务时，k8s 的核心组件之一，`kube-controller-manager` panic 了，日志显示 `fatal error: concurrent map iteration and map write
-...`，具体报错内容见这个[链接](https://github.com/kubernetes/kubernetes/pull/83837#issuecomment-553715114)。
+...`，具体报错内容见这个[PR 83837里的评论内容](https://github.com/kubernetes/kubernetes/pull/83837#issuecomment-553715114)。
 
 先简单 Google 一下这个 Golang 的报错，不难知道这是**一个 map 被一个线程遍历的同时存在另外一个线程对该 map 执行了写操作**导致的 panic 。
 
@@ -47,7 +47,7 @@ k8s.io/kubernetes/pkg/controller/endpointslice.(*Controller).ensureSetupManagedB
 	pkg/controller/endpointslice/endpointslice_controller.go:414 +0x4ba fp=0xc0015ebac8 sp=0xc0015eb8c0 pc=0x245d99a
 ```
 
-那么这个方法为什么会导致上述的 panic 呢？RainbowMango 大佬另外开了一个 [issue](https://github.com/kubernetes/kubernetes/issues/85331#issue-523321015) 来专门汇报这个 Bug，并且贴出了触发 panic 的上述代码执行的方法体部分：
+那么这个方法为什么会导致上述的 panic 呢？RainbowMango 大佬另外开了一个 [issue 85331](https://github.com/kubernetes/kubernetes/issues/85331#issue-523321015) 来专门汇报这个 Bug，并且贴出了触发 panic 的上述代码执行的方法体部分：
 
 ```
 for _, endpointSlice := range endpointSlices { 
@@ -92,14 +92,14 @@ return err
 除了更新 `EndpointSlice` 对象的标签内容，这个方法还操作了 `service` 的 `annotation` ，见下面代码：
 
 ```
-	if service.Annotations == nil {
-		service.Annotations = make(map[string]string)
-	}
+    if service.Annotations == nil {
+        service.Annotations = make(map[string]string)
+    }
 
-	service.Annotations[managedBySetupAnnotation] = managedBySetupCompleteValue
+    service.Annotations[managedBySetupAnnotation] = managedBySetupCompleteValue
 
     // 这一行报出的panic！
-	_, err = c.client.CoreV1().Services(service.Namespace).Update(service)
+    _, err = c.client.CoreV1().Services(service.Namespace).Update(service)
 ```
 
 根据 `managedBySetupCompleteValue` 和 `managedBySetupCompleteValue` 的[注释内容](https://github.com/kubernetes/kubernetes/blob/ded6ee953c68f8333ee6291e0bcb7e58604fac00/pkg/controller/endpointslice/endpointslice_controller.go#L60)，可以得知，为了标明此 `service` 下的 `endpoints` 均已经被处理过，此方法给每个处理过的 `service` 增加了对应的 `annotation` 字段。也正是更新 `service` 这一步触发的 panic。
@@ -116,7 +116,7 @@ OK，问题分析就到这了。
 
 ### 怎么解决？
 
-关于上面 issue 报出的这个panic，负责 EndpointSlice 功能开发的 [robscott](github.com/robscott) 也很快就这个问题提出了一个修复的 [PR](https://github.com/kubernetes/kubernetes/pull/85359)，等于是把 `ensureSetupManagedByAnnotation` 部分 revert 掉了。这期间 [robscott](github.com/robscott) 和 [liggitt](https://github.com/liggitt) 还各自提了一个 [PR 85324](https://github.com/kubernetes/kubernetes/pull/85324) 、[PR 85356](https://github.com/kubernetes/kubernetes/pull/85356) 尝试修复，因为最终没合并，这里就不再赘述了。
+关于上面 issue 报出的这个panic，负责 EndpointSlice 功能开发的 [robscott](github.com/robscott) 也很快就这个问题提出了一个修复的 [PR 85359](https://github.com/kubernetes/kubernetes/pull/85359)，等于是把 `ensureSetupManagedByAnnotation` 部分 revert 掉了。这期间 [robscott](github.com/robscott) 和 [liggitt](https://github.com/liggitt) 还各自提了一个 [PR 85324](https://github.com/kubernetes/kubernetes/pull/85324) 、[PR 85356](https://github.com/kubernetes/kubernetes/pull/85356) 尝试修复，因为最终没合并，这里就不再赘述了。
 
 除了修复这个问题以外，[liggitt](https://github.com/liggitt) 又紧接着提了一个PR，启用了 [mutation detection的测试验证](https://github.com/kubernetes/kubernetes/pull/85350)。通过这个测试，又找出了一个EndpointSlice 控制器操作的共享变量[问题](https://github.com/kubernetes/kubernetes/issues/85364)，原因也是类似的，因为 `addTriggerTimeAnnotation` 方法[对原共享对象 endpointslice的注解做了写操作](https://github.com/kubernetes/kubernetes/blob/86141c0cce2496508c2f9c1f1af3e6cbfb69f50c/pkg/controller/endpointslice/utils.go#L272)。很快，[robscott](github.com/robscott) 又提了一个 [PR 85368](https://github.com/kubernetes/kubernetes/pull/85368) ，通过 `DeepCopy()` 的方式修复了这个问题，并且通过在测试用例里增加 `CacheMutationCheck` 的方式从测试途径每次验证这一点。
 
