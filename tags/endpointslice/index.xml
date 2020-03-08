@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>endpointslice on Colstuwjx&#39;s site</title>
+    <link>https://colstuwjx.github.io/tags/endpointslice/</link>
+    <description>Recent content in endpointslice on Colstuwjx&#39;s site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sat, 07 Mar 2020 20:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://colstuwjx.github.io/tags/endpointslice/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>[源码分析] 解读 Kubernetes EndpointSlice 控制器导致的Crash 问题始末</title>
+      <link>https://colstuwjx.github.io/2020/03/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A7%A3%E8%AF%BB-kubernetes-endpointslice-%E6%8E%A7%E5%88%B6%E5%99%A8%E5%AF%BC%E8%87%B4%E7%9A%84crash-%E9%97%AE%E9%A2%98%E5%A7%8B%E6%9C%AB/</link>
+      <pubDate>Sat, 07 Mar 2020 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/2020/03/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A7%A3%E8%AF%BB-kubernetes-endpointslice-%E6%8E%A7%E5%88%B6%E5%99%A8%E5%AF%BC%E8%87%B4%E7%9A%84crash-%E9%97%AE%E9%A2%98%E5%A7%8B%E6%9C%AB/</guid>
+      <description>&lt;p&gt;前几天看到华为云容器团队维护的公众号 “容器魔方” 发布的&lt;a href=&#34;https://mp.weixin.qq.com/s/d-9QSu7Y2VuCmMWZgk4XyQ&#34;&gt;一篇文章&lt;/a&gt;，里面提到了一个 &lt;code&gt;EndpointSlice&lt;/code&gt; 相关的 Bug ，官方人员也很快就提了修复的PR。笔者近期也一直在&lt;a href=&#34;https://github.com/kubernetes/website/pull/18343&#34;&gt;关注这块功能&lt;/a&gt;, 今天就分析一下这个 Bug 以及相关修复的 PR 内容。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

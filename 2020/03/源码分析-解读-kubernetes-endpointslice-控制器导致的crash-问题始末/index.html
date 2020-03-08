@@ -42,6 +42,10 @@
     
       <meta property="article:tag" content="kubernetes">
     
+      <meta property="article:tag" content="bug">
+    
+      <meta property="article:tag" content="endpointslice">
+    
   
 
 
@@ -235,7 +239,7 @@
 
 <p><img src="https://colstuwjx.github.io/images/2020/Mar/endpoint_slice_crash.jpg" alt="引入EndpointSlice功能会导致 Controller Manager 几率性的 Panic" /></p>
 
-<p>上面也给出了这个 Bug 的修复<a href="https://github.com/kubernetes/kubernetes/pull/85368">PR</a>，一路追查起因，可以发现最初是 <a href="https://github.com/RainbowMango">RainbowMango</a> （这位大佬应该是华为云团队的一员）在<a href="https://github.com/kubernetes/kubernetes/pull/83837#issuecomment-553715114">另外一个PR</a>里的测试用例发现的问题。</p>
+<p>上面也给出了这个 Bug 的修复<a href="https://github.com/kubernetes/kubernetes/pull/85368">PR 85368</a>，一路追查起因，可以发现最初是 <a href="https://github.com/RainbowMango">RainbowMango</a> （这位大佬应该是华为云团队的一员）在<a href="https://github.com/kubernetes/kubernetes/pull/83837#issuecomment-553715114">另外一个PR 83837</a>里的测试用例发现的问题。</p>
 
 <h4 id="关于-k8s-的测试">关于 k8s 的测试</h4>
 
@@ -250,14 +254,14 @@
 <h4 id="共享内存导致的问题">共享内存导致的问题</h4>
 
 <p>回到问题，根据测试失败结果，这位大佬在评论里同步了相关异常信息：在执行 <code>/test pull-kubernetes-kubemark-e2e-gce-big</code> 这个测试任务时，k8s 的核心组件之一，<code>kube-controller-manager</code> panic 了，日志显示 <code>fatal error: concurrent map iteration and map write
-...</code>，具体报错内容见这个<a href="https://github.com/kubernetes/kubernetes/pull/83837#issuecomment-553715114">链接</a>。</p>
+...</code>，具体报错内容见这个<a href="https://github.com/kubernetes/kubernetes/pull/83837#issuecomment-553715114">PR 83837里的评论内容</a>。</p>
 
 <p>先简单 Google 一下这个 Golang 的报错，不难知道这是<strong>一个 map 被一个线程遍历的同时存在另外一个线程对该 map 执行了写操作</strong>导致的 panic 。</p>
 
 <p>那么这是哪里报出来的 panic 呢？从上面的链接里的报错日志，不难发现最后一次业务逻辑层的调用是在这里：</p>
 <pre><code>k8s.io/kubernetes/pkg/controller/endpointslice.(*Controller).ensureSetupManagedByAnnotation(0xc0009bc4e0, 0xc00c171e00, 0xc00569faa0, 0x0)
 	pkg/controller/endpointslice/endpointslice_controller.go:414 +0x4ba fp=0xc0015ebac8 sp=0xc0015eb8c0 pc=0x245d99a</code></pre>
-<p>那么这个方法为什么会导致上述的 panic 呢？RainbowMango 大佬另外开了一个 <a href="https://github.com/kubernetes/kubernetes/issues/85331#issue-523321015">issue</a> 来专门汇报这个 Bug，并且贴出了触发 panic 的上述代码执行的方法体部分：</p>
+<p>那么这个方法为什么会导致上述的 panic 呢？RainbowMango 大佬另外开了一个 <a href="https://github.com/kubernetes/kubernetes/issues/85331#issue-523321015">issue 85331</a> 来专门汇报这个 Bug，并且贴出了触发 panic 的上述代码执行的方法体部分：</p>
 <pre><code>for _, endpointSlice := range endpointSlices { 
 if _, ok := endpointSlice.Labels[discovery.LabelManagedBy]; !ok { 
     if endpointSlice.Labels == nil { 
@@ -292,14 +296,14 @@ return err</code></pre>
 <p>这表明这个方法是出于向后兼容性而存在的，它会判断一个 <code>Service</code> 下的 <code>EndpointSlice</code> 是否都具备 <code>LabelManagedBy</code> 标签，如果没设置此标签的话，该方法将会默认给对应的 <code>EndpointSlice</code> 打上 <code>LabelManagedBy</code> 标签并且值为 <code>controllerName</code> 的值，也就是表明这些 <code>EndpointSlice</code> 由 <code>endpointslice-controller.k8s.io</code> 管理的意思。</p>
 
 <p>除了更新 <code>EndpointSlice</code> 对象的标签内容，这个方法还操作了 <code>service</code> 的 <code>annotation</code> ，见下面代码：</p>
-<pre><code>	if service.Annotations == nil {
-		service.Annotations = make(map[string]string)
-	}
+<pre><code>    if service.Annotations == nil {
+        service.Annotations = make(map[string]string)
+    }
 
-	service.Annotations[managedBySetupAnnotation] = managedBySetupCompleteValue
+    service.Annotations[managedBySetupAnnotation] = managedBySetupCompleteValue
 
     // 这一行报出的panic！
-	_, err = c.client.CoreV1().Services(service.Namespace).Update(service)</code></pre>
+    _, err = c.client.CoreV1().Services(service.Namespace).Update(service)</code></pre>
 <p>根据 <code>managedBySetupCompleteValue</code> 和 <code>managedBySetupCompleteValue</code> 的<a href="https://github.com/kubernetes/kubernetes/blob/ded6ee953c68f8333ee6291e0bcb7e58604fac00/pkg/controller/endpointslice/endpointslice_controller.go#L60">注释内容</a>，可以得知，为了标明此 <code>service</code> 下的 <code>endpoints</code> 均已经被处理过，此方法给每个处理过的 <code>service</code> 增加了对应的 <code>annotation</code> 字段。也正是更新 <code>service</code> 这一步触发的 panic。</p>
 
 <p>很显然，根据 panic 信息可以判定，在更新这个 <code>annotation</code> 的同时，有其他 <code>goroutine</code> 在遍历这个 <code>service.Annotations</code>。这也解释了为什么这个 Bug 是 <strong>有概率触发</strong> 的，而不是一定每次复现的。</p>
@@ -314,7 +318,7 @@ return err</code></pre>
 
 <h3 id="怎么解决">怎么解决？</h3>
 
-<p>关于上面 issue 报出的这个panic，负责 EndpointSlice 功能开发的 <a href="github.com/robscott">robscott</a> 也很快就这个问题提出了一个修复的 <a href="https://github.com/kubernetes/kubernetes/pull/85359">PR</a>，等于是把 <code>ensureSetupManagedByAnnotation</code> 部分 revert 掉了。这期间 <a href="github.com/robscott">robscott</a> 和 <a href="https://github.com/liggitt">liggitt</a> 还各自提了一个 <a href="https://github.com/kubernetes/kubernetes/pull/85324">PR 85324</a> 、<a href="https://github.com/kubernetes/kubernetes/pull/85356">PR 85356</a> 尝试修复，因为最终没合并，这里就不再赘述了。</p>
+<p>关于上面 issue 报出的这个panic，负责 EndpointSlice 功能开发的 <a href="github.com/robscott">robscott</a> 也很快就这个问题提出了一个修复的 <a href="https://github.com/kubernetes/kubernetes/pull/85359">PR 85359</a>，等于是把 <code>ensureSetupManagedByAnnotation</code> 部分 revert 掉了。这期间 <a href="github.com/robscott">robscott</a> 和 <a href="https://github.com/liggitt">liggitt</a> 还各自提了一个 <a href="https://github.com/kubernetes/kubernetes/pull/85324">PR 85324</a> 、<a href="https://github.com/kubernetes/kubernetes/pull/85356">PR 85356</a> 尝试修复，因为最终没合并，这里就不再赘述了。</p>
 
 <p>除了修复这个问题以外，<a href="https://github.com/liggitt">liggitt</a> 又紧接着提了一个PR，启用了 <a href="https://github.com/kubernetes/kubernetes/pull/85350">mutation detection的测试验证</a>。通过这个测试，又找出了一个EndpointSlice 控制器操作的共享变量<a href="https://github.com/kubernetes/kubernetes/issues/85364">问题</a>，原因也是类似的，因为 <code>addTriggerTimeAnnotation</code> 方法<a href="https://github.com/kubernetes/kubernetes/blob/86141c0cce2496508c2f9c1f1af3e6cbfb69f50c/pkg/controller/endpointslice/utils.go#L272">对原共享对象 endpointslice的注解做了写操作</a>。很快，<a href="github.com/robscott">robscott</a> 又提了一个 <a href="https://github.com/kubernetes/kubernetes/pull/85368">PR 85368</a> ，通过 <code>DeepCopy()</code> 的方式修复了这个问题，并且通过在测试用例里增加 <code>CacheMutationCheck</code> 的方式从测试途径每次验证这一点。</p>
 
@@ -353,6 +357,10 @@ return err</code></pre>
   <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/pr/">pr</a>
 
   <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/kubernetes/">kubernetes</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/bug/">bug</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/endpointslice/">endpointslice</a>
 
                   </div>
                 
