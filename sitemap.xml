@@ -3,6 +3,51 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://colstuwjx.github.io/categories/</loc>
+    <lastmod>2020-08-23T15:00:00+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://colstuwjx.github.io/</loc>
+    <lastmod>2020-08-23T15:00:00+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://colstuwjx.github.io/tags/enpower/</loc>
+    <lastmod>2020-08-23T15:00:00+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://colstuwjx.github.io/tags/game-development/</loc>
+    <lastmod>2020-08-23T15:00:00+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://colstuwjx.github.io/post/</loc>
+    <lastmod>2020-08-23T15:00:00+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://colstuwjx.github.io/tags/</loc>
+    <lastmod>2020-08-23T15:00:00+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://colstuwjx.github.io/categories/talk/</loc>
+    <lastmod>2020-08-23T15:00:00+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://colstuwjx.github.io/tags/talk/</loc>
+    <lastmod>2020-08-23T15:00:00+08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://colstuwjx.github.io/2020/08/%E5%A6%82%E4%BD%95%E4%B8%BA%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E8%B5%8B%E8%83%BD%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83/</loc>
+    <lastmod>2020-08-23T15:00:00+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://colstuwjx.github.io/2020/03/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-%E8%A7%A3%E8%AF%BB-kubernetes-endpointslice-%E6%8E%A7%E5%88%B6%E5%99%A8%E5%AF%BC%E8%87%B4%E7%9A%84crash-%E9%97%AE%E9%A2%98%E5%A7%8B%E6%9C%AB/</loc>
     <lastmod>2020-03-07T20:00:00+08:00</lastmod>
   </url>
@@ -13,17 +58,7 @@
   </url>
   
   <url>
-    <loc>https://colstuwjx.github.io/categories/</loc>
-    <lastmod>2020-03-07T20:00:00+08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://colstuwjx.github.io/categories/cloud-native/</loc>
-    <lastmod>2020-03-07T20:00:00+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://colstuwjx.github.io/</loc>
     <lastmod>2020-03-07T20:00:00+08:00</lastmod>
   </url>
   
@@ -38,22 +73,12 @@
   </url>
   
   <url>
-    <loc>https://colstuwjx.github.io/post/</loc>
-    <lastmod>2020-03-07T20:00:00+08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://colstuwjx.github.io/tags/pr/</loc>
     <lastmod>2020-03-07T20:00:00+08:00</lastmod>
   </url>
   
   <url>
     <loc>https://colstuwjx.github.io/tags/sourcecode/</loc>
-    <lastmod>2020-03-07T20:00:00+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://colstuwjx.github.io/tags/</loc>
     <lastmod>2020-03-07T20:00:00+08:00</lastmod>
   </url>
   
@@ -68,12 +93,12 @@
   </url>
   
   <url>
-    <loc>https://colstuwjx.github.io/categories/microservice/</loc>
+    <loc>https://colstuwjx.github.io/tags/microservice/</loc>
     <lastmod>2020-01-20T20:00:00+08:00</lastmod>
   </url>
   
   <url>
-    <loc>https://colstuwjx.github.io/tags/microservice/</loc>
+    <loc>https://colstuwjx.github.io/categories/microservice/</loc>
     <lastmod>2020-01-20T20:00:00+08:00</lastmod>
   </url>
   
@@ -89,11 +114,6 @@
   
   <url>
     <loc>https://colstuwjx.github.io/2019/07/%E7%BF%BB%E8%AF%91-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E4%B8%8D%E6%98%AF%E7%BB%88%E7%82%B9%E7%AB%99/</loc>
-    <lastmod>2019-07-26T20:00:00+08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://colstuwjx.github.io/tags/talk/</loc>
     <lastmod>2019-07-26T20:00:00+08:00</lastmod>
   </url>
   
@@ -183,22 +203,17 @@
   </url>
   
   <url>
-    <loc>https://colstuwjx.github.io/tags/book/</loc>
-    <lastmod>2017-09-30T20:00:00+08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://colstuwjx.github.io/categories/book/</loc>
     <lastmod>2017-09-30T20:00:00+08:00</lastmod>
   </url>
   
   <url>
-    <loc>https://colstuwjx.github.io/2017/08/%E6%9D%82%E8%B0%88-%E4%B8%89%E5%B9%B4%E5%90%8E/</loc>
-    <lastmod>2017-08-23T20:00:00+08:00</lastmod>
+    <loc>https://colstuwjx.github.io/tags/book/</loc>
+    <lastmod>2017-09-30T20:00:00+08:00</lastmod>
   </url>
   
   <url>
-    <loc>https://colstuwjx.github.io/categories/talk/</loc>
+    <loc>https://colstuwjx.github.io/2017/08/%E6%9D%82%E8%B0%88-%E4%B8%89%E5%B9%B4%E5%90%8E/</loc>
     <lastmod>2017-08-23T20:00:00+08:00</lastmod>
   </url>
   
@@ -303,12 +318,12 @@
   </url>
   
   <url>
-    <loc>https://colstuwjx.github.io/tags/python/</loc>
+    <loc>https://colstuwjx.github.io/categories/python/</loc>
     <lastmod>2016-05-30T20:00:00+08:00</lastmod>
   </url>
   
   <url>
-    <loc>https://colstuwjx.github.io/categories/python/</loc>
+    <loc>https://colstuwjx.github.io/tags/python/</loc>
     <lastmod>2016-05-30T20:00:00+08:00</lastmod>
   </url>
   

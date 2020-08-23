@@ -6,10 +6,37 @@
     <description>Recent content in Tags on Colstuwjx&#39;s site</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 07 Mar 2020 20:00:00 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 23 Aug 2020 15:00:00 +0800</lastBuildDate>
     
 	<atom:link href="https://colstuwjx.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>enpower</title>
+      <link>https://colstuwjx.github.io/tags/enpower/</link>
+      <pubDate>Sun, 23 Aug 2020 15:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/tags/enpower/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>game-development</title>
+      <link>https://colstuwjx.github.io/tags/game-development/</link>
+      <pubDate>Sun, 23 Aug 2020 15:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/tags/game-development/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>talk</title>
+      <link>https://colstuwjx.github.io/tags/talk/</link>
+      <pubDate>Sun, 23 Aug 2020 15:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/tags/talk/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>bug</title>
@@ -89,15 +116,6 @@
       <pubDate>Mon, 20 Jan 2020 20:00:00 +0800</pubDate>
       
       <guid>https://colstuwjx.github.io/tags/translate/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>talk</title>
-      <link>https://colstuwjx.github.io/tags/talk/</link>
-      <pubDate>Fri, 26 Jul 2019 20:00:00 +0800</pubDate>
-      
-      <guid>https://colstuwjx.github.io/tags/talk/</guid>
       <description></description>
     </item>
     
