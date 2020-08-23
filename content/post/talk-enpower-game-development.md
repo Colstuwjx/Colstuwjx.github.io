@@ -6,6 +6,8 @@ categories: ["talk"]
 comments: false
 showMeta: false
 showAction: false
+aliases:
+    - /talk-enpowering-game-development/
 ---
 
 最近一直在思考怎么能为游戏业务研发赋能，让他们能够更好地专注于游戏本身精品化内容的打造，这里权且记录一下一些想法。
