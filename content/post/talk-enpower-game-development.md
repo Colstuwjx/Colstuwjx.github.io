@@ -28,7 +28,7 @@ aliases:
 
 - 游戏管理平台
 
-下面我挑选其中几个个人认为有挑战但是也许值得去做的事情讲讲。
+下面我选几个目前个人比较关注的部分讲讲。
 
 ### 游戏服务端开发框架
 
@@ -38,7 +38,7 @@ aliases:
 
 - [xtac](https://github.com/xtaci) 于 2015 年左右开源的使用 Golang 编写的[gonet2 游戏开发框架](https://github.com/gonet2)
 
-- 业内闻名的[云风大佬](https://github.com/cloudwu)开源的使用 C 编写的 [skynet](https://github.com/cloudwu/skynet) 框架
+- 业内闻名的[云风大佬](https://github.com/cloudwu)于 2012 年开源的使用 C 编写的 [skynet](https://github.com/cloudwu/skynet) 框架
 
 *待补充各个框架优劣比较*
 
@@ -46,7 +46,7 @@ aliases:
 
 这阵子因为工作原因接触和了解了 4 款网络游戏背后的后端架构，笔者惊奇地发现它们大都使用了独自开发一个所谓的 gateway/gate 节点服务来和客户端建立 TCP 长连接通信，而不是像经典的互联网架构那样，遵循 DNS -> GSLB/LB/FE -> service 这样的接入层架构。
 
-这仔细想想也是有原因的，网络游戏大多是一个沉浸式的用户体验，而大多数都是 socket 式的网络通信方式，那么为了能够做到相对地可以横向扩展（scale out），它就必须抽象出一个所谓的 gateway 服务来分发玩家请求。与互联网服务不同的是，它有时候并不是一个复杂的链式调用请求，而更像是一个基于节点角色和消息的多点通信的结构，也因此有些游戏会设置一个 World 节点服务来统筹玩家调度和各种角色节点之间的协同。
+这仔细想想也是有原因的，网络游戏一般追求的是一个沉浸式的用户体验，因此大多数都是 socket 式的网络通信方式，那么为了能够做到相对地可以横向扩展（scale out），它就必须抽象出一个所谓的 gateway 服务来分发玩家请求。与互联网服务不同的是，它有时候并不是一个复杂的链式调用请求，而更像是一个基于节点角色和消息的多点通信的结构，也因此有些游戏会设置一个 World 节点服务来统筹玩家调度和各种角色节点之间的协同。
 
 笔者也了解了一下，腾讯互娱是 TGW + [tconnd](https://sdk.gcloud.tencent.com/documents/details/%E7%BD%91%E7%BB%9C%E8%BF%9E%E6%8E%A5%20Connector) 这样的接入层架构，并搭配 [tbus](https://github.com/hellokangning/TSF4G) 来和背后的 GameServer 做通信。
 
