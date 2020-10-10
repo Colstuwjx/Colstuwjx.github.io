@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>enpower on Colstuwjx&#39;s site</title>
+    <link>https://colstuwjx.github.io/tags/enpower/</link>
+    <description>Recent content in enpower on Colstuwjx&#39;s site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Sun, 23 Aug 2020 15:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://colstuwjx.github.io/tags/enpower/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>如何为游戏开发赋能的一些思考</title>
+      <link>https://colstuwjx.github.io/2020/08/%E5%A6%82%E4%BD%95%E4%B8%BA%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E8%B5%8B%E8%83%BD%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83/</link>
+      <pubDate>Sun, 23 Aug 2020 15:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/2020/08/%E5%A6%82%E4%BD%95%E4%B8%BA%E6%B8%B8%E6%88%8F%E5%BC%80%E5%8F%91%E8%B5%8B%E8%83%BD%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%9D%E8%80%83/</guid>
+      <description>&lt;p&gt;最近一直在思考怎么能为游戏业务研发赋能，让他们能够更好地专注于游戏本身精品化内容的打造，这里权且记录一下一些想法。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
