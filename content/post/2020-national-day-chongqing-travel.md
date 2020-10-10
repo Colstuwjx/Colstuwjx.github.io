@@ -6,6 +6,8 @@ categories: ["life"]
 comments: false
 showMeta: false
 showAction: false
+aliases:
+    - /2020-national-day-chongqing-travel/
 ---
 
 这个国庆节假期抽了几天时间去了趟重庆，正好回到上海以后还有一些闲暇时间，权且写篇文章记录一下这次重庆之旅的见闻和感想。
