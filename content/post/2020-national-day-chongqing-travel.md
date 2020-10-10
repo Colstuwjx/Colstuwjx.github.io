@@ -1,6 +1,6 @@
 ---
 title: "聊聊重庆之旅的一些收获感想"
-date: 2020-10-10T20:00:00+08:00
+date: 2020-10-10T08:00:00+08:00
 tags: ["life", "talk", "chongqing"]
 categories: ["life"]
 comments: false
