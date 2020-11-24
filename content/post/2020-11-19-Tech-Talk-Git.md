@@ -6,6 +6,8 @@ categories: ["tech-talk"]
 comments: false
 showMeta: false
 showAction: false
+aliases:
+    - /tech-talk-git-skills-and-internals/
 ---
 
 本文源自于笔者在公司内部做的一次技术分享，主要是讲解 Git 的一些背景知识以及如何用好它。
