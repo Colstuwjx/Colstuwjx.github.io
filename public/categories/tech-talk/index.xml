@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>tech-talk on Colstuwjx&#39;s site</title>
+    <link>https://colstuwjx.github.io/categories/tech-talk/</link>
+    <description>Recent content in tech-talk on Colstuwjx&#39;s site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 23 Nov 2020 20:00:00 +0800</lastBuildDate>
+    
+	<atom:link href="https://colstuwjx.github.io/categories/tech-talk/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Git 实用技巧和原理解读</title>
+      <link>https://colstuwjx.github.io/2020/11/git-%E5%AE%9E%E7%94%A8%E6%8A%80%E5%B7%A7%E5%92%8C%E5%8E%9F%E7%90%86%E8%A7%A3%E8%AF%BB/</link>
+      <pubDate>Mon, 23 Nov 2020 20:00:00 +0800</pubDate>
+      
+      <guid>https://colstuwjx.github.io/2020/11/git-%E5%AE%9E%E7%94%A8%E6%8A%80%E5%B7%A7%E5%92%8C%E5%8E%9F%E7%90%86%E8%A7%A3%E8%AF%BB/</guid>
+      <description>&lt;p&gt;本文源自于笔者在公司内部做的一次技术分享，主要是讲解 Git 的一些背景知识以及如何用好它。&lt;/p&gt;
+
+&lt;!--toc--&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

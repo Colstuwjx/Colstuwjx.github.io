@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.64.1 with theme Tranquilpeak 0.4.7-BETA">
+<meta name="author" content="Jacky Wu (Colstuwjx)">
+<meta name="keywords" content="">
+<meta name="description" content="本文源自于笔者在公司内部做的一次技术分享，主要是讲解 Git 的一些背景知识以及如何用好它。
+
+">
+
+
+<meta property="og:description" content="本文源自于笔者在公司内部做的一次技术分享，主要是讲解 Git 的一些背景知识以及如何用好它。
+
+">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git 实用技巧和原理解读">
+<meta name="twitter:title" content="Git 实用技巧和原理解读">
+<meta property="og:url" content="https://colstuwjx.github.io/2020/11/git-%E5%AE%9E%E7%94%A8%E6%8A%80%E5%B7%A7%E5%92%8C%E5%8E%9F%E7%90%86%E8%A7%A3%E8%AF%BB/">
+<meta property="twitter:url" content="https://colstuwjx.github.io/2020/11/git-%E5%AE%9E%E7%94%A8%E6%8A%80%E5%B7%A7%E5%92%8C%E5%8E%9F%E7%90%86%E8%A7%A3%E8%AF%BB/">
+<meta property="og:site_name" content="Colstuwjx&#39;s site">
+<meta property="og:description" content="本文源自于笔者在公司内部做的一次技术分享，主要是讲解 Git 的一些背景知识以及如何用好它。
+
+">
+<meta name="twitter:description" content="本文源自于笔者在公司内部做的一次技术分享，主要是讲解 Git 的一些背景知识以及如何用好它。
+
+">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2020-11-23T20:00:00">
+  
+  
+    <meta property="article:modified_time" content="2020-11-23T20:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="tech-talk">
+    
+  
+  
+    
+      <meta property="article:tag" content="git">
+    
+      <meta property="article:tag" content="tech-talk">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+  <meta property="twitter:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+
+
+    <title>Git 实用技巧和原理解读</title>
+
+    <link rel="icon" href="https://colstuwjx.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://colstuwjx.github.io/2020/11/git-%E5%AE%9E%E7%94%A8%E6%8A%80%E5%B7%A7%E5%92%8C%E5%8E%9F%E7%90%86%E8%A7%A3%E8%AF%BB/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    <link rel="stylesheet" href="https://colstuwjx.github.io/css/comments.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://colstuwjx.github.io/">Colstuwjx&#39;s site</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://colstuwjx.github.io/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://colstuwjx.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">Jacky Wu (Colstuwjx)</h4>
+        
+          <h5 class="sidebar-profile-bio">DevOPS &amp; OpenSource Fans</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Colstuwjx" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-user"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://colstuwjx.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      Git 实用技巧和原理解读
+    </h1>
+  
+  
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>本文源自于笔者在公司内部做的一次技术分享，主要是讲解 Git 的一些背景知识以及如何用好它。</p>
+
+<h1 id="table-of-contents">目录</h1><nav id="TableOfContents">
+<ul>
+<li><a href="#开篇">开篇</a></li>
+<li><a href="#git-是什么">Git 是什么？</a></li>
+<li><a href="#git-v-s-svn">Git v.s. SVN</a></li>
+<li><a href="#git-背后的原理">Git 背后的原理</a>
+<ul>
+<li><a href="#object">Object</a></li>
+<li><a href="#index">Index</a></li>
+<li><a href="#默克尔树-merkle-tree">默克尔树（Merkle Tree）</a></li>
+<li><a href="#合并">合并</a></li>
+</ul></li>
+<li><a href="#如何使用">如何使用？</a>
+<ul>
+<li><a href="#工作流">工作流</a></li>
+<li><a href="#一些常见的陷阱和技巧">一些常见的陷阱和技巧</a></li>
+</ul></li>
+<li><a href="#demo-演示">Demo 演示</a></li>
+</ul>
+</nav>
+
+<h1 id="开篇">开篇</h1>
+
+<p>大家好，很高兴有机会能给大家带来一次技术分享，我这次分享的主题是《Git原理解读及使用技巧》，希望能给大家带来一些启发和收获。</p>
+
+<p>首先做下自我介绍，我是IT运维部-运维开发组的吴佳兴，然后我目前是专注于云原生和工程效率这块，下面是我个人的博客和 GitHub 地址，然后我也是一直在关注 CNCF 社区的一些项目，是 Kubernetes、Prometheus、Harbor、Chaos-Mesh 等多个开源项目的 Contributor，如果在座的对这块有关注的话欢迎线下交流。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/1.jpg" alt="图1" /></p>
+
+<p>然后本次演讲的话，主要分这么几块，首先我会讲一下 Git 是什么，为什么会有这个工具，然后其次我会就 Git 和 SVN 做一下对比，因为我们知道公司现在还有不少的项目是使用 SVN 的，那么我们可以看看这两者到底有什么区别，是否可以考量一下迁移到 Git，然后我会讲一下使用 Git 的话，究竟可以给我们带来哪些好处，以及它背后的原理。最后，我会重点讲一下大家在日常开发过程中时常会用到的一些实用技巧，然后简单 demo 一下我这边用 shell 脚本写的一个简易版 Git 实现，主要是用来加深对 Git 原理的一个理解。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/2.jpg" alt="图2" /></p>
+
+<h1 id="git-是什么">Git 是什么？</h1>
+
+<p>OK，我们先来看看在 2005 年 Git 刚诞生的时候，当时的开发者们面临哪些挑战。</p>
+
+<p>我们知道，Git 是 Linus Torvalds 为了满足 Linux 内核项目版本管理的需要而开发的一个工具。其实早在 05 年之前 Linux 项目用的是另外一个版本管理工具，叫 BitKeeper，那么 05 年的时候这个软件给 Linux 项目的免费授权到期了，然后因为某些原因 BitKeeper 不准备再给他们续了，那么在这种情况下，Linus 不得不另做打算。</p>
+
+<p>当时其实是有两套体系，一套是 VCS、RCS 这样的 GNU 工具，另外一套则是 SVN 这样的中央仓库式的版本控制工具。做技术选型的话，我们当然首先得看看要解决的是哪些问题。那么很显然，对于 Linux 这样在当时就已经是数百万行代码的巨型仓库来说，易用性和性能是第一位的，另外一点就是 Linux 项目是一个全球协同开发的这样一个世界级项目，同一时间可能会有多个功能在并行开发然后审核合并，那么它需要的版本管理工具显然需要支持这样独立的分布式协同开发模式。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/3.jpg" alt="图3" /></p>
+
+<p>综合上述这些问题，最终 Linux 给出的答案我们也看到了，是的，他的选择是自研一套工具，也就是 Git !</p>
+
+<p>这里可以看下 Git 当初的<a href="https://github.com/git/git/tree/e83c5163316f89bfbde7d9ab23ca2e25604af290">第一个 commit</a>，相对来说还是比较简单清晰的。这个一长串的字符就是 Git 每次提交的一个唯一标识，它其实是一个哈希值，我们后面会介绍到它是如何产生的。</p>
+
+<p>可以看到，第一次提交的时间是 2005 年，当时其实还没有 GitHub 这个社区，之所以会展示这个时间，原因是 Git 的提交里是带有提交时间的信息的，然后它的提交信息也很有意思，说是一个信息管理工具，然后可以把我们从地狱里解放出来。OK，有兴趣的同学可以继续深入看看它的代码细节，因为是第一次提交，所以还是挺简单清晰的。</p>
+
+<p>那么，我们再来看看，维基百科上给出的一个 Git 的介绍。</p>
+
+<p>Git 是什么呢？它是一个分布式的版本控制工具，然后它是用来追踪软件开发过程中的代码修改，然后它是用于开发人员之间的协同工作，当然，近些年的话 Git 也被用于其他的一些用途，比如运维领域的话，就有一个 GitOps 的概念，我们会把运维基础设施的配置和资源文件托管到 Git 这样来实现所谓不可变基础设施（immutable infrastructure）的概念。然后它在设计方面的话，侧重于性能和数据完整性，这个数据完整性指的是，每次的一个提交都是一个完整可用的版本，还有就是它是支持分布式的非线性工作，因为当时 Linux 项目是一个全球性质的分布式协同开发项目，所以每个开发者一定是一个非线性的开发模式。</p>
+
+<p>然后我们可以看看 Git 的一些基本概念，首先一个 git 仓库的话会有三块区域：工作区、暂存区、版本库。工作区就是我们平常代码存放的地方，然后这个暂存区可以理解为一个<strong>待提交</strong>的部分，然后提交以后就会存放到一个本地的版本仓库，那么大家也不难发现，既然有本地版本库，也就一定会有远程仓库，那么我们后面会讲到他们之间的区别。然后 Git 主要是通过分支管理来实现不同开发人员开发的功能之间的协同，默认分支就是 master（现在改名叫 main 了），然后每一次提交叫 <code>commit</code>，会有一个唯一的哈希值作为ID。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/4.jpg" alt="图4" /></p>
+
+<p>然后我简单做下 demo，如何上手使用 Git。</p>
+
+<p>这里我们以公司的 Gitlab 平台为例，这个平台可以理解为是基于 Git 的基础上搭建的一套代码托管平台，然后我们可以建一个仓库，然后做一次提交，那么提交之后首先是提交到了本地的版本库，那么如果要推送到 Gitlab 上的远程仓库的话，我们可以使用 <code>git push origin master</code>。</p>
+
+<p>这里大家也可以看出来，我其实可以一直在本地仓库做独立开发，完全不和远程仓库交互，没有问题，等到我认为要开发的功能完全OK的时候再去提交到远端。这里就是它和 SVN 这样的中央仓库式的设计的一个很大区别。</p>
+
+<h1 id="git-v-s-svn">Git v.s. SVN</h1>
+
+<p>然后我们可以看看 Git 和 SVN 到底有哪些不同之处。</p>
+
+<p>首先可以看到，SVN 是一个中央仓库的设计，每个开发人员会签出自己的一份工作拷贝，每次提交都需要提交到中央仓库，然后 Git 呢，它是一个去中心化的设计思路，每个开发人员在签出后都会有一份自己的本地仓库，它和远程仓库是一个相对独立的关系。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/5.jpg" alt="图5" /></p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/6.jpg" alt="图6" /></p>
+
+<p>然后我们再来看看它们两者之间的一些功能设计方面的详细对比：</p>
+
+<ul>
+<li><p>首先是开发模式，刚也提到了，SVN 是集中式的版本控制，Git 则是分布式的版本控制；</p></li>
+
+<li><p>然后 SVN 在实现方面会维护每次提交和上一次提交之间的差异，也即是增量式的版本控制实现，Git 的话，它每次提交里的每个文件都会完整保留下来。</p></li>
+</ul>
+
+<p>那么大家可以想想，一个是增量式的实现，一个是全量式的实现，两者各自有什么优势和劣势呢？那么对于增量式的实现来说，它每次提交保存的内容可能是相对比较轻量的，只需要保存这个版本和上一个版本之间差异的地方即可，就是它们之间的增量，但是有一个问题就是，比如我现在是第100个版本，然后想回到第50个版本的话，我要怎么做呢？我可能需要倒退这五十个版本，否则我无法知道第50个版本是什么样子。Git 就不一样了，如果想要从第100个版本回到第50个版本的话，你只需要执行<code>git checkout v50_commit_id</code>即可，这就是全量式设计的好处。</p>
+
+<p>包括我们的发布系统策略也是这样，我们每次发布的时候机器上会保留多个历史版本，然后如果有问题想要回滚到某个版本的话，切一个软链接就行了，但是如果是增量式的发布的话，我们这样一次次叠加内容上去，可能最后自己都不知道它原本应该是什么样子了。这就是增量式设计的一个缺陷。当然，这也并不是说增量式设计就完全不好，只是它们的设计思路不一样，所以使用场景也就不尽相同；</p>
+
+<ul>
+<li><p>在开发流程方面，刚刚我们提到对于 SVN 来说，每次提交是要提交到中央仓库的，所以如果有冲突的话会被阻止提交代码，Git 的话你可以本地仓库自行开发，然后只有当你需要同步到远端，或者需要做分支合并的时候才需要联动；</p></li>
+
+<li><p>在分支实现方面，SVN 的话它是完全拷贝了一份原有的代码，这个也可以理解，因为它是一个增量式的设计，所以没法做成像 Git 这样用一个指针指向某个提交就行；</p></li>
+
+<li><p>权限这块的话，SVN 相对来说是比较细致的，它可以细化到目录级别，然后 Git 原生的话只能到仓库级别，当然，现在 GitHub 社区也提供了一个插件式的实现，可以通过 chat robot 细分到目录级别 owner；</p></li>
+
+<li><p>安全性方面的话，这个指的是数据完整性这块，应该也不难理解，因为 Git 是全量式的设计，所以每一次提交都可以作为一个独立的版本使用。</p></li>
+</ul>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/7.jpg" alt="图7" /></p>
+
+<p>然后我们再来看看两者命令之间的对比，其实差别不大，主要差别可能是 <code>commit</code> 这块，一个是直接提交到中央仓库，一个则是提交到本地仓库。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/8.jpg" alt="图8" /></p>
+
+<p>那么到底应该选哪个呢？如果说，你经常遇到下面这些场景的话，我会建议你考虑下 Git ：</p>
+
+<ul>
+<li>第一个就是你在开发任务时希望能够独立开发，不会受其他人提交或者合并影响自己开发分支；</li>
+<li>然后如果你时常会遇到一些紧急上线的情况，需要先放下手上的工作先提交紧急修复的话，Git 也挺擅长做这件事情；</li>
+<li>还有就是如果你希望能够快速回溯到某个版本，甚至是重新修改提交的历史的话，Git 这块是比较容易上手的；</li>
+<li>此外，如果你往往希望能够了解仓库里某个文件完整的更改历史的话，Git 在这块也有完备的功能支持</li>
+</ul>
+
+<p>那么哪些场景是 Git 不太擅长或者不适合的呢：</p>
+
+<ul>
+<li>第一个就是我基本不用到分支这个功能，那么如果是这样的话，Git 对你来说就可能是大材小用了；</li>
+<li>此外，如果你的仓库很大，然后每次改动只是修改某些文件的话，我也不太建议你使用 Git，因为这样的做法是和 Git 的设计理念相悖的；</li>
+<li>然后如果你对于目录级别权限控制是一个硬性指标的话，原生的 Git 也无法满足你的需求；</li>
+<li>还有一点就是，我也了解到咱们一些游戏的资源文件是存放到 SVN 的，这个我觉得完全OK，静态资源这个场景的话，Git 相比于 SVN 其实没有太多亮点，所以两者都可以。</li>
+</ul>
+
+<p>然后我们再来说说，采用 Git 以后能够给我们带来哪些好处：</p>
+
+<ul>
+<li>首先，Git 已经拥有一个完整的社区生态，相关的 GUI 软件也已经非常好用了，比如 Windows 下面的话我会推荐小乌龟也就是 Tortoise Git 这款软件，相当好用，然后 macOS 下面的话比较常见的有 SourceTree；</li>
+<li>然后我们也知道，基于 Git 之上有了诸如 GitHub 这样的开源社区平台，GitHub 创新式的提出了一个开源的协作模式，也就是 Fork+PR 的方式，我们可以自由地 fork 一些顶尖的开源仓库然后自行修改用来满足自己的定制化需求，然后也可以通过 PR 的形式将自己的一些积累反馈到上游 upstream 仓库。这样一来，也就等于是全世界的开发人员都在使用这些开源软件，然后一起来帮助改进和迭代，这样的话这些软件的质量也就会越来越高，也会有更多的功能。</li>
+</ul>
+
+<p>而且，fork 之后的仓库还可以继续维护一个新的开源生态，国内比较有名的例子，比如阿里巴巴 fork 的 Tengine 和 Nginx 之间的关系就是这样，就是它可以按照自己的需求维护自己的一个迭代版本，其他拥有相似需求的用户也可以用他们的这个 fork 版本，这样这个生态就会活跃地运转起来。</p>
+
+<p>然后使用 Git 的话还有一个好处就是基于它实现的一些代码托管平台如今提供的一些辅助服务，比如 Code Review 功能，然后自动化的 CI 以及项目管理等，CI 的话，就是持续集成，开发者可以自定义一些脚本实现一些自动化测试或者代码质量检测等，这样的好处就是经过这么一系列确认，开发者会更有信心将自己的代码部署到生产环境。</p>
+
+<p>然后我们公司的话也是提供了一套统一维护和支持的 Gitlab 平台，我们会定期备份数据，然后版本升级和安全补丁也会定期去做。</p>
+
+<p>这里还插一句，就是我们有时候可能对 git 提交信息不太注意，这里我推荐大家看一下阮一峰的<a href="https://www.ruanyifeng.com/blog/2016/01/commit_message_change_log.html">一篇博客文章</a>，它里面就是讲到怎样写出一条通俗可读的 git message。</p>
+
+<p>不知道大家有没有这个感觉，就是哪怕是自己写的代码，可能过个三五个月或者甚至一个月以后，就不太看得懂写的是啥了。那么 git 上提交的修改历史也是这样，比如 <code>feat(xxx): feature description</code> 或者 <code>chore(xxx): update license</code>这样清晰地写明这次提交的改动的话，那么一看这个提交信息，基本上就大概知道它是做了哪块改动了。</p>
+
+<p>然后还有一个就是，内部仓库统一托管到 Gitlab 平台也会给我们带来一个额外的好处，也就是所谓的 Inner Sourcing（内部开源），意思就是，比如说我们运维会统一维护一些 SDK 性质的仓库，比如 <code>pycmdb</code>，然后以前其他想要消费 CMDB 数据的开发者只能通过文档来了解如何调用 CMDB 的 API 来获取数据，那么现在的话，他们可以直接使用运维提供的 SDK，并且可以有版本控制。</p>
+
+<p>除此之外，我们运维这边也是基于 Gitlab 包括打通了一些运维的基础设施，然后做了一套统一的 CICD 平台，然后大家可以通过这个统一的平台去做代码编译和发布，就完全不用关心背后的具体细节，比如怎么拷贝到服务器上之类的。</p>
+
+<h1 id="git-背后的原理">Git 背后的原理</h1>
+
+<p>然后我们再来看看要实现这样一个全量的、分布式协同开发的设计，背后具体是怎么做的。</p>
+
+<p>我们不妨先看一个简单的刚建好的仓库，这里面首先是仓库里现有的文件，我们称作是工作区，然后这个根目录下面会有一个 .git 的隐藏目录，这个隐藏目录的结构会是这样的：</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/9.jpg" alt="图9" /></p>
+
+<h2 id="object">Object</h2>
+
+<p>这里面最核心的就是 <code>objects</code> 和 <code>refs</code> 这两块，可以看到，<code>objects</code> 目录里又嵌套了一层两个字符的子目录，然后里面存放的是一些文件名是一长串字符的文件，这也即是 git 里面的核心资源 —— 对象（object）。</p>
+
+<p>和 Unix 的 &ldquo;一切皆文件&rdquo; 的设计类似，在 git 里面无论是 commit 还是文件（ git 里面分类为<code>blob</code> ）、目录（ git 里面分类为 <code>tree</code> ），又或者是 tag，都是一个对象。</p>
+
+<p>每个对象拥有一个唯一的哈希值作为 ID 标识，也即是这个 objects 下面两级目录组成的一长串的字符串，然后它是怎么算出来的呢？一个对象的 ID 其实等于 <code>&lt;分类&gt;&lt;空格&gt;&lt;对象数据大小&gt;&lt;/0&gt;&lt;二进制数据&gt;</code> 这样一块内容再做 SHA1 哈希后的值，当然，实际现在我们使用的 git 实现的话，它还会使用 zlib 做一次压缩。</p>
+
+<p>也因此，它是每份文件都全量式的保存为对应的一个 git 对象。然后还有一个 <code>refs</code> 目录，可以看到这个目录会有一个文件是 <code>refs/heads/master</code>，它里面的内容，仔细对比一下不难发现恰好就是第一次提交的 commit id，下面这张图的右半部分展示了分支指针和 <code>commit</code> 以及对应的文件内容之间的关系。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/10.jpg" alt="图10" /></p>
+
+<h2 id="index">Index</h2>
+
+<p>然后我们再来看看对仓库里工作区的文件做修改然后到提交这个过程，git 是如何实现的。</p>
+
+<p>首先，假设我们现在仓库里有 <code>a.txt</code> 和 <code>b.txt</code> 两份文件，然后这个时候 git 对它做的索引是这样的：</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/11.jpg" alt="图11" /></p>
+
+<p>当我们对 <code>a.txt</code> 的内容做了修改以后，注意，在没有做 <code>git add</code> 提交到暂存区之前，.git 目录是没有任何变动的。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/12.jpg" alt="图12" /></p>
+
+<p>然后，当我们 <code>git add</code> 把它加入到暂存区以后，它会在 .git 里面生成一个新的 blob 对象，因为是用哈希值来索引，所以即便同名也不会有问题。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/13.jpg" alt="图13" /></p>
+
+<p>但是这个时候 master 指向这棵树还没有变动，所以接下来我们可以执行一次 <code>git commit</code>，在提交以后，git 会新增一个 commit 节点，由于这个 commit 是基于现有 commit 基础上做的修改，所以它会把它的 parent 指向现有的这个 commit 节点，然后 master 的指针会改为指向这个新的 commit。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/14.jpg" alt="图14" /></p>
+
+<p>这就是一次 commit 提交过程 git 背后做的一些事情。</p>
+
+<p>然后我们可以再想想，这个 git commit 的树形结构本身需要怎么管理呢？一个分支可能会有很多次 commit 提交，然后每个 commit 都会是一个树形结构的数据，那么这个肯定是需要一个数据结构来管理的。</p>
+
+<h2 id="默克尔树-merkle-tree">默克尔树（Merkle Tree）</h2>
+
+<p>这个数据结构就是默克尔树（Merkle Tree）。然后区块链其实也是用到它的。</p>
+
+<p>针对一个默克尔树实例，它的叶子节点就是数据块的哈希值，然后非叶子节点就是它的所有子节点的哈希。所以每次底下数据块内容发生变化时，它的变化会逐层传导到根节点，这样就能实现内容的相对不可篡改。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/15.jpg" alt="图15" /></p>
+
+<p>然后我们再来看看 git 里面具体是如何维护这棵树的，下面这张图里面，当 <code>cmd/demo/main.go</code> 改动并提交后，它会建出来一个新的 blob 对象，并且传导到上层的 tree 对象，最终左边树干的内容均发生了变化，然后右边的树干则不受影响。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/16.jpg" alt="图16" /></p>
+
+<h2 id="合并">合并</h2>
+
+<p>我们再来看看 git 里面是怎么做分支合并的。</p>
+
+<p>既然有分支，那么肯定就有合并，最简单的情况就是，我是基于之前的内容做的修改，然后没有任何冲突，那么很简单，直接追加上去就行，但是现实世界会出现很多复杂的情况。很多时候会是我正在改一个文件，然后其他人也改了这个文件，甚至会是同一行的内容，那这种情况应该怎么处理呢？比如下面这个例子，当我们需要合并时，for 循环这一行是冲突的。</p>
+
+<p>要解答这个问题，我们不妨看看 git 实现的一些合并算法。</p>
+
+<p>首先，最简单的情况自然是直接追加即可，这种就是简单的 <code>fast-forward</code> 就可以。</p>
+
+<p>然后一般的情况会是一个三路合并，也即是两方均从一个 base 的地方出发，然后各自做了修改，这个时候某一方要合并到另一方时候采用的算法。</p>
+
+<p>我们来看个例子。这里我们有一个 main 分支，然后做了 0、1 两次提交，然后这时候切出了一个 task001 的分支并单独进行了 4 号提交，与此同时，main 分支上也追加了一个 3 号提交。这时候如果 task001 分支想要把 main 的修改合并到自己分支的话，就会发生一次三路合并，base 即是 commit 1，发起方是 commit 4，目标是 commit 3，git 会对比这两次提交和 base 之间的差异，并判断是否有冲突，如果没有冲突的话，会生成一个 merged commit 也即是 commit 5 来记录这次合并，如果有冲突的话，合并将会中止，需要开发者手动解决冲突后再进行合并。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/17.jpg" alt="图17" /></p>
+
+<p>还是这个例子，如果继续在 task001 分支上做开发，比如添加了一个 commit 6，然后 main 分支上此时又单独追加了一个 commit 7，这时候如果将 task001 的内容合并到 main 分支的话，则又会发生一次三路合并，这时候 base 是 commit 3，发起方是 commit 6，目标是 commit 7，合并完成后会增加一个 merged commit，也就是 commit 8。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/18.jpg" alt="图18" /></p>
+
+<p>这里还有一个更复杂的情况，也就是所谓的循环 merge 。</p>
+
+<p>我们看一个例子。X 和 Y 分别是两个文件，然后切出了两个单独的分支并各自做了修改，然后这时候两个分支相互做了一次 merge 。</p>
+
+<p>那么这时候就产生一个问题：这两个分支如果要继续做合并的话，谁是 base 呢？可以看到，在相互 merge 之后，它们没有公共的起始节点了。</p>
+
+<p>这种情况下，如果要做合并，git 的做法便是，类似初中几何里面做辅助线一样，人为造出来一个虚拟的公共节点，作为这两个分支的 base，这个也即是递归三路合并算法的核心思想，每当遇到没有共同祖先的情况，会先创建出一个虚拟的祖先节点，这样来方便合并。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/19.jpg" alt="图19" /></p>
+
+<h1 id="如何使用">如何使用？</h1>
+
+<p>下面我们再来讲下 git 的一些具体用法，首先我会讲一下业内现在普遍采用的一些工作流，然后会讲一下常见的一些陷阱和技巧。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/20.jpg" alt="图20" /></p>
+
+<h2 id="工作流">工作流</h2>
+
+<p>我们先来看看工作流。最经典的自然是 git workflow，当然，它也足够复杂，下面这张图大家也看到了，基本看不懂是讲啥 :)</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/21.jpg" alt="图21" /></p>
+
+<p>那么，git workflow 具体是怎么用的呢？</p>
+
+<p>首先它的研发主干是 develop 分支，所有的开发人员都会基于 develop 分支切出自己的功能开发分支然后再提交合并请求，合并到 develop 分支。</p>
+
+<p>然后 develop 分支会有一个测试周期，每当测试验证集成环境没有问题的时候，主程会把 develop 分支上的最新修改合并到 release 分支。每当需要生产发布时，采用的是 release 分支上的代码，然后 release 分支本身只允许接受合并或者 bugfix，并且会定期将 release 分支内容合并到 master。此外，研发人员可以给一些特定版本打上一个 tag 来锁定版本。</p>
+
+<p>可以看到，这个工作流确实过于复杂，而且每个仓库默认建出来的 master 分支并不是开发中心，develop 分支才是，这个对于很多新手可能并不友好，然后需要做 bugfix 的话也需要反复生效到多处（release、develop 分支均允许接受直接的 hotfix ）。</p>
+
+<p>也因此，我们一般现在目前采用的，大都是一个简化版的 git workflow，可以看到这里交付和研发主干都是 master 分支，master 分支和生产环境部署相对保持同步，然后 master 分支本身只允许直接追加 hotfix 或者合并。我们也可以通过给 master 分支上指定提交打上 tag 的形式锁定版本。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/22.jpg" alt="图22" /></p>
+
+<p>这个工作流看上去相对是比较简单容易上手的，然后开发中心和交付中心都是 master 分支，然后 hotfix 一般也只会提交到同一处，也就是 master 分支，但是有个问题就是 master 分支交付的环境是比较含糊的，一般来说是集成到预发布到生产，也就是说，master 可能还未完全经过测试和灰度验证，所以 master 分支相对来说仍然有不稳定的风险。</p>
+
+<p>与之对应地，gitlab 官方在他们的文档里提出了一种 workflow，也即是 gitlab workflow，它推荐的做法是根据要交付的环境维护对应的分支，然后研发主干是 master 分支，每次合并到 master 分支后，再经过各个环境分支来做具体的测试和验证并最终上线。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/23.jpg" alt="图23" /></p>
+
+<p>最后一种 workflow，就是 GitHub 提出的，作为开源基石的 Github Workflow，也即是前面我们提到的 Fork + PR 这样的玩法。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/24.jpg" alt="图24" /></p>
+
+<h2 id="一些常见的陷阱和技巧">一些常见的陷阱和技巧</h2>
+
+<p>然后下面我们再介绍一些实用的 git 技巧。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/25.jpg" alt="图25" /></p>
+
+<p>首先，第一个技巧就是灵活地运用 <code>git stash</code> 来临时保存开发的进度。这个技巧的一个典型的场景就是，开发人员临时接到一个紧急需求，那么需要先放下当前正在开发的功能，这个时候就可以通过 <code>git stash</code> 把当前修改的部分保存到一个临时区域，等到交付了那个紧急需求之后再通过 <code>git stash pop</code> 来恢复进度。</p>
+
+<p>然后第二个技巧的话就是合并分支方面，我们既可以选择常见的 <code>git merge &lt;source-branch&gt;</code> 的方式来合并，也可以通过 <code>git rebase &lt;source-branch&gt;</code> 的方式来同步，这两者最明显的一处区别就是 merge 会多出来一个新的 merge commit，当然，rebase 也不只是这一个用处，稍后部分我还会介绍一些其他的用法。</p>
+
+<p>我们再来看看第三个技巧，也就是 <code>cherry-pick</code> 这个命令，顾名思义，这个命令可以把某个 commit 直接嫁接到某个分支上，那么这个技巧比较适用于某些 hotfix 场景，比如某个分支上提的一处 commit 可能是一个补丁性质的修复，然后另外一个分支需要带上这个 commit 的内容才能上线，那么可以通过 <code>cherry-pick</code> 的形式，在不合并分支的情况下获得指定的部分修改。</p>
+
+<p>然后有时候我们可能会因为粗心提交不正确的 commit 信息，或者某个 commit 提交没带签名信息，那么这个时候 git commit 的 <code>--amend</code> 选项就派上用场了。</p>
+
+<p>我们可以通过 <code>git commit --amend</code> 来修改已提交的 commit 信息，带上 <code>--signoff</code> 的话还可以在提交信息里带上自己的签名信息。值得一提的是，如果之前的 commit 已经提交到了远端仓库的话，由于 commit 历史已经发生变化，修改 commit 后再要同步到远端仓库时，需要使用 <code>--force</code> 选项，也就是说，需要执行的命令是 <code>git push -f origin master</code> 这样才行。当然，这个选项要慎用，如果误操作的话整个仓库就会有问题了。</p>
+
+<p>然后我们再来介绍一下第五个技巧，也就是使用 git rebase 来合并或重新编辑多个 commit，这里常见的使用场景就是分支合并的时候，有时候我们功能开发分支可能因为不断测试发现问题而叠加一些修复问题性质的 commit，但其实该分支只做了一件事情，也就是说这些 commit 完全可以合并成一个 commit，这个时候就可以用 git rebase 来做。</p>
+
+<p>我们可以首先执行 <code>git rebase -i HEAD~N</code>，这个 N 就是从当前 commit 到最近 N 个 commit，然后执行该命令后，会出现一个提示，要求执行相关的操作，那么 <code>pick</code> 就是挑选出该 commit ，<code>squash</code> 就是将该 commit 和其他提交做合并，然后 <code>drop</code> 就是弃用该次提交，然后这里我们一般会留下一个 pick 的 commit，然后再把其他 commit 标为 <code>squash</code>，缩写便是 <code>s</code>，然后敲下回车。</p>
+
+<p>我们会发现它会打开第二个提示框，要求编辑这些 commit 的提交信息，然后我们可以合并为一行信息，最后保存退出。如果没有问题的话，这些 commit 就会被合并为一个 commit，而刚编辑好的 commit message 就是这个合并后的 commit 的提交信息。rebase 还可以用来做很多其他事情，比如刚我们看到的，可以用来弃用某些 commit，这里我们就不再详细展开。</p>
+
+<p>然后常见的，我们一般可以通过 <code>git checkout &lt;file&gt;</code> 来清除某些文件的改动，让它们恢复到最近一次提交后的状态。然后也可以通过 <code>git diff &lt;分支_or_指定commit_or_文件\目录&gt;</code> 来查看相应提交或者分支之间文件的差异。</p>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/26.jpg" alt="图26" /></p>
+
+<p>也是基于这个 <code>git diff</code>，也就是通过 <code>git diff &gt; &lt;patch文件名&gt;</code> 这样的形式我们可以生成一个补丁文件，这个在开源社区里用的还蛮多的，比如 Linux 内核会维护一些补丁文件，然后如果企业内部是同一个大版本，然后又不想更新整个内核，那么可以手动通过 <code>git apply &lt;patch文件名&gt;</code> 来打上相应的补丁。</p>
+
+<p>然后我个人的话，一般遇到某个分支已经和 master 严重背离，然后又需要做合并的时候，也会用这种方式生成一个补丁然后生效到主干分支。</p>
+
+<p>还有一个比较实用的技巧，就是有时候我们可能会遇到这样的情况，有些提交它是有问题的，想要把它直接废弃掉，那么除了刚才我们提到的，通过 git rebase 来 drop 这些 commit 的话，还可以通过 <code>git reset --soft &lt;想要回到的commit&gt;</code>，将当前分支的指针指向指定的 commit。</p>
+
+<p>注意，这里既然有 <code>--soft</code>，那么自然也就有 <code>--hard</code>，那么这两者有什么区别呢？简单来说，<code>--soft</code>不会把暂存区里的修改清除，<code>--hard</code>则会一股脑全部回退到指向的那个 commit 的状态。所以一般来说，我比较倾向于使用 <code>--soft</code>。</p>
+
+<p>然后如果有时候我们想要做版本控制相关的一些实验，然后又不想在分支历史里留下痕迹，那么这个时候可以考虑使用 <code>detached head mode</code> 这个方式，也即是切换到一个单独的 commit，而不是具体的分支，这种情况下做的一些修改，在用户切换回主干分支后都会不再保留。</p>
+
+<p>然后技巧11的话，一般比较适用于比如 CICD 的场景，我们更关注克隆仓库的速度，然后并不关心整个仓库的提交历史，那么由于 git 是一个全量式的设计，所以完全可以只克隆最近的一次 commit，这个可以通过 <code>git clone --depth 1</code>来实现。</p>
+
+<p>最后一个技巧就是如果我们有一些大文件，比如一些视频或者图片之类的素材资源文件，然后希望单独处理，不走 git 原生的提交流程，那么可以使用 git LFS 这个功能来实现。</p>
+
+<p>然后这里我们再提一下使用 Git 时常见的两个问题。</p>
+
+<p>一个是刚我们也提到的循环 merge 问题，这个就会造成合并时 git 被迫采用递归三路合并算法，所以整个分支树干就会变得比较难看。相对来说，维护的比较好的仓库的话，它的主干提交历史是相对线性的，就是切出一些功能分支后很快就合并到主干了，然后一些分支是直接从 master 分支分叉了出去再也没合并回来，甚至又再度分叉，那么这种就是一个糟糕的用法。</p>
+
+<p>我个人建议的做法是各个功能分支之间不要做相互合并的操作，统一 merge 到研发主干分支。</p>
+
+<p>还有一个问题是，要慎用 git push <code>--force</code> 这个选项，因为这个会强制覆盖远端仓库的提交历史，很可能会造成未知的后果。</p>
+
+<p>然后还有一个常见的困扰就是 git 冲突。其实刚入行的时候我个人也比较畏惧出现冲突，总觉得是个麻烦，那么其实这个想法完全没有必要。只要是协同开发就一定存在修改同一块内容然后出现冲突的风险，所以遇到冲突，一个个解决就好了。</p>
+
+<h1 id="demo-演示">Demo 演示</h1>
+
+<p><img src="https://colstuwjx.github.io/images/2020/Nov/27.jpg" alt="图27" /></p>
+
+<p>下面我们再来 demo 一下我个人鼓捣的一个用 shell 实现的简单版 git：<a href="https://github.com/Colstuwjx/xgit">xgit</a>。</p>
+
+<p>其实很简单，它也是通过 <code>xgit init</code> 生成一个 .xgit 的隐藏目录，然后可以通过 <code>xgit add</code> 把要修改的文件放到暂存区，最后通过 <code>xgit commit</code> 来提交到分支。</p>
+
+<p>我们可以通过 <code>xgit cat-file -p</code> 和 <code>xgit cat-file -t</code> 来查看 .xgit 目录下对应对象包含的信息，执行后我们不难发现，也是符合 git 的设计思路，commit\tree\blob 这么一个树形结构。</p>
+
+<p>然后关于交付这块的后续重点工作的话，我们会考虑引入 Gitlab CI 来解决一些差异化的需求，然后会引入增量发布的支持。</p>
+
+<p>最后，再以 Linus Torvalds 的自传 《Just for fun》里的一句话来结束吧，&rdquo;技术是生存之道。然而生存不仅仅在于活着，还在于更好的生存下去。&rdquo;</p>
+
+<p>OK，本次分享就到这里，谢谢大家！</p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/git/">git</a>
+
+  <a class="tag tag--primary tag--small" href="https://colstuwjx.github.io/tags/tech-talk/">tech-talk</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2020/10/%E8%81%8A%E8%81%8A%E9%87%8D%E5%BA%86%E4%B9%8B%E6%97%85%E7%9A%84%E4%B8%80%E4%BA%9B%E6%94%B6%E8%8E%B7%E6%84%9F%E6%83%B3/" data-tooltip="聊聊重庆之旅的一些收获感想">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#table-of-contents">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2020 Powered by Hugo with tranquilpeak. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://colstuwjx.github.io/2020/10/%E8%81%8A%E8%81%8A%E9%87%8D%E5%BA%86%E4%B9%8B%E6%97%85%E7%9A%84%E4%B8%80%E4%BA%9B%E6%94%B6%E8%8E%B7%E6%84%9F%E6%83%B3/" data-tooltip="聊聊重庆之旅的一些收获感想">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+      
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#table-of-contents">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg" alt="作者的图片" />
+    
+    <h4 id="about-card-name">Jacky Wu (Colstuwjx)</h4>
+    
+      <div id="about-card-bio">DevOPS &amp; OpenSource Fans</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        DevOPS Engineer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        Shanghai, China
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    <div id="cover" style="background-image:url('https://res.cloudinary.com/ddhitj0ja/image/upload/v1581843208/pic_nfgplt.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://colstuwjx.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+
+
+
+
+    
+  </body>
+</html>
+
