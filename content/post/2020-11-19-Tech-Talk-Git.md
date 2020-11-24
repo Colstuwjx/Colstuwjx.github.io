@@ -1,5 +1,5 @@
 ---
-title: "Git 实用技巧和原理解读"
+title: "Git实用技巧和原理解读"
 date: 2020-11-23T20:00:00+08:00
 tags: ["git", "tech-talk"]
 categories: ["tech-talk"]
