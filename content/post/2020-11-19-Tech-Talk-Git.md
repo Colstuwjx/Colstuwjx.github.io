@@ -310,3 +310,7 @@ Git 是什么呢？它是一个分布式的版本控制工具，然后它是用�
 最后，再以 Linus Torvalds 的自传 《Just for fun》里的一句话来结束吧，"技术是生存之道。然而生存不仅仅在于活着，还在于更好的生存下去。"
 
 OK，本次分享就到这里，谢谢大家！
+
+# 参考
+
+在制作演讲内容的过程中参考了[图解git原理的几个关键概念](https://tonybai.com/2020/04/07/illustrated-tale-of-git-internal-key-concepts/)、[这才是真正的Git](https://www.lzane.com/slide/git-under-the-hood/#/)，在此表示感谢!
