@@ -15,7 +15,7 @@ jobs:
         with:
           submodules: true
       - name: Publish Site
-        uses: Colstuwjx/Colstuwjx.github.io@develop
+        uses: chabad360/hugo-gh-pages@master
         with:
           githubToken: ${{ secrets.PERSONAL_TOKEN }}
           branch: master
