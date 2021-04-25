@@ -338,19 +338,26 @@ _还有一个要记住的重点，那就是以太坊不仅能够完成金融交�
 
 <!-- #### 与此同时的 rollups...
 
-While we wait for Eth2, products are moving to a "layer 2" technology known as rollups. Working on top of Ethereum, this technology lets you "roll up" or batch many transactions into a single one that is submitted to the chain. By moving as many things off the chain and only submitting the truly important bits (the cryptographic proofs), demand for block space will decrease. This will in turn lower the amount of computing power needed to create new blocks.
+在我们翘首以待 Eth2 上线的同时，我们的产品正在迁移到一个被称为 "rollup" 的 "二层" 技术。它工作在以太坊之上，可以让你将多个交易 "卷起来" 或者批量打包到一个已经提交上链的单笔交易。通过尽可能多的将事物从链上移开，然后只提交真正重要的比特（也即是加密证明），我们对块空间的需求将会减少。回过头来，这也将会降低我们创造新块所需的算力。
 
 [关于 rollups 以及 2 层技术的更多信息](/developers/docs/layer-2-scaling/)
 
 #### 一个更高效的 NFT 标准...
 
-Ethereum is open source software and new standards are being figured out and agreed on all the time. The Consecutive Transfer Extension Standard (EIP-2309) plans to make the creation of NFTs more efficient. Like rollups this reduces the amount of heavy lifting done on chain, allowing you to mint one billion NFTs in a single transaction.
+以太坊是一个开源软件，新的标准也一直在酝酿和商讨。连续传输扩展标准 (EIP-2309) 计划让 NFT 的创建变得更加高效。像 rollup 那样，这减少了链上繁重的工作量，让你可以在单笔交易中制作 10 亿个 NFT。
 
-[More on EIP-2309](https://eips.ethereum.org/EIPS/eip-2309)
+[有关 EIP-2309 的更多信息](https://eips.ethereum.org/EIPS/eip-2309)
 
-[to me this doesn't solve the problem if block space remains the same due to mining etc... should we include?] -->
+[对我来说，如果由于挖矿等原因导致块空间保持原样的话，这就无法解决问题了... 我们应该把这类情况囊括起来吗？]
+-->
 
-<!-- Ethereum currently used proof-of-work to achieve consensus. It is a top priority of the community to transition to a proof-of-stake system, to increase decentralization, security and scalability, while reducing energy consumption requirements imposed from proof-of-work. Several layer 2 scaling solutions, such as rollups, are being developed and implemented which also aim to improve scalability while decreasing energy usage. EIP-2309 is a proposal also aiming to improve the efficiency of layer 1 NFT transactions.
+<!-- 以太坊目前使用工作量证明 (proof-of-work) 来达成共识。为了提高去中心化，安全性和可扩展性，同时缩减因工作量证明而产生的能耗需求，将整个网络切换到权益证明系统（proof-of-stake）是社区当下的头等大事。一些二层扩展方案，比如 rollup，还在开发和实施过程中，它们也旨在提高可扩展性的同时降低能耗。EIP-2309 是一项旨在提高 1 层 NFT 交易效率的提案。
+
+
+
+-->
+
+<!--
 
 Before these scaling solutions are fully implemented, it is worth noting that NFT's specifically are not necessarily _directly_ causing any increased carbon emission. The proof-of-work consensus mechanism that currently underlies the entire Ethereum blockchain is being used whether NFTs are being minted or not. If NFTs were to disappear today, there is a strong chance that block space would remain in demand for other reasons, though even if demand for block space decreased it wouldn't drastically impact energy consumption. For sake of example, imagine the demand for transacting on Ethereum falls to where the blocks are now empty. Miners would still be incentivized to produce blocks for the reward, and the hashing power required to do so would persist despite an empty block. More realistically, other transactions would take the place of NFT transactions. So again, there remains a strong and a active push to advance layer 2 solutions, and finalize Ethereum's transition to a proof-of-stake system.
 
@@ -393,57 +400,54 @@ Oh, and the same thing was said about the internet itself. Early measures of Goo
 
 <!-- TODO: after shipping this can form the basis of an energy efficiency page. I suspect this could also live under learn and just do some general mythbusting and supply stats about eth2 energy usage-->
 
-This explains how we arrived at our energy estimates above. These estimates apply to the network as a whole and are not just reserved for the process of creating, buying, or selling NFTs.
+这一小节说明了我们是如何得出上述能耗估算的。这些估算值适用于整个网络，而不仅仅是保留用于创建，购买或者出售 NFT 的过程。
 
-#### 1. 99.98% energy reduction from mining {#fn-1}
+#### 1. 与挖矿相比减少 99.98% 的能耗 {#fn-1}
 
-The 99.98% reduction in energy consumption from a system secured by mining to a system secured by staking is calculated using the following data sources:
+根据如下数据源可以计算出从通过挖矿保护的系统转变到质押保护的系统，能耗降低了 99.98%：
 
-- 24 tWh of annualized electrical energy is consumed by mining Ethereum - [Digiconomist](https://digiconomist.net/ethereum-energy-consumption)
+- 以太坊挖矿每年要消耗 24 tWh 电能 - [Digiconomist](https://digiconomist.net/ethereum-energy-consumption)
 
-- The average desktop computer, all that's needed to run Proof of Stake, uses 0.06kWh of energy per hour – [Silicon Valley power chart](https://www.siliconvalleypower.com/residents/save-energy/appliance-energy-use-chart) (Some estimates are a little higher at 0.15kWh)
+- 普通的一台台式机，运行权益证明所需的全部资源，每小时大概消耗 0.06 kWh 的能量 - [硅谷功率表](https://www.siliconvalleypower.com/residents/save-energy/appliance-energy-use-chart)（某些地方估算值更高，为 0.15 kWh）
 
-The calculation also assumes that the user running Ethereum never lets their computer sleep or switches off their monitor.
+以上计算方式假定运行以太坊的用户从不让电脑进入睡眠状态或是关闭他们的显示器。
 
-Daily usage: `0.06kWh * 24 = 1.44 kWh` per day per person
+日常使用量：`0.06kWh * 24 = 1.44 kWh` 每人每天
 
-Annual usage: `1.44 kWh * 365 = 525.6 kWh` per year per person
+年度使用量：`1.44 kWh * 365 = 525.6 kWh` 每人每天
 
-If there are 10,000 people running Ethereum (rounding up current numbers of 8000ish) the cost of running the entire network is `10,000 nodes * 525.6kWh = 5,256,000 kWh`.
+如果有一万人运行以太坊（目前的数字为 8000 ish）的话，那么运行整个网络的成本为 `10,000 nodes * 525.6kWh = 5,256,000 kWh`。
+5,256,000kWh 也即是 0.005256tWh。和挖矿带来的 24tWh 能耗相比，它是其所需能量的 0.0219%，换句话说就是减少了 99.98%。
 
-5,256,000kWh is 0.005256tWh. With 24tWh produced by mining, that's 0.0219% of the energy required or a decrease of 99.98%.
+#### 2. Visa 的能耗 {#fn-2}
 
-#### 2. Visa energy consumption {#fn-2}
+十万次 Visa 交易的成本是 149 kwH - [截止2020年，比特币网络每笔交易的平均能耗与 VISA 网络的对比，Statista](https://www.statista.com/statistics/881541/bitcoin-energy-consumption-transaction-comparison-visa/)
 
-The cost of 100,000 Visa transactions is 149 kwH - [Bitcoin network average energy consumption per transaction compared to VISA network as of 2020, Statista](https://www.statista.com/statistics/881541/bitcoin-energy-consumption-transaction-comparison-visa/)
+截止2020年9月的年度报告，他们共处理了 140,839,000,000 次交易 - [Visa 2020年Q4财务报告](https://s1.q4cdn.com/050606653/files/doc_financials/2020/q4/Visa-Inc.-Q4-2020-Operational-Performance-Data.pdf)
 
-Year-ending September 2020 they processed 140,839,000,000 transactions – [Visa financials report Q4 2020](https://s1.q4cdn.com/050606653/files/doc_financials/2020/q4/Visa-Inc.-Q4-2020-Operational-Performance-Data.pdf)
+#### 3. Eth2 处理十万次交易的能耗情况 {#fn-3}
 
-#### 3. Eth2 energy usage for 100,000 transactions {#fn-3}
+据估算，Eth2 将允许整个网络每秒处理 25,000 到 100,000 次交易，[目前 100,000 是理论上的最大值](https://ethereum-magicians.org/t/a-rollup-centric-ethereum-roadmap/4698)。[Vitalik Buterin 在 Eth2 上每秒潜在交易量](https://twitter.com/VitalikButerin/status/1312905884549300224?ref_src=twsrc%5Etfw%7Ctwcamp%5Etweetembed%7Ctwterm%5E1312905886327664640%7Ctwgr%5E%7Ctwcon%5Es2_&ref_url=https%3A%2F%2Fwww.coinspeaker.com%2Fvitalik-buterin-ethereum-layer-2%2F)。
 
-It's estimated that Eth2 will allow the network to process between 25,000 and 100,000 transactions per second, with [100,000 as the theoretical maximum right now](https://ethereum-magicians.org/t/a-rollup-centric-ethereum-roadmap/4698).
+最起码，Eth2 允许的交易量会是今天的 64 倍，目前约有 15 笔交易。这也是引入分片链（额外的数据和容量）的数量。[有关分片链的更多信息](/eth2/shard-chains/)
 
-[Vitalik Buterin on transactions per second potential on Eth2](https://twitter.com/VitalikButerin/status/1312905884549300224?ref_src=twsrc%5Etfw%7Ctwcamp%5Etweetembed%7Ctwterm%5E1312905886327664640%7Ctwgr%5E%7Ctwcon%5Es2_&ref_url=https%3A%2F%2Fwww.coinspeaker.com%2Fvitalik-buterin-ethereum-layer-2%2F)
+这意味着我们可以估算出处理 100,000 次交易所需的时间，因此我们便能够将其和上述 Visa 的例子进行比较。
 
-At the bare minimum, Eth2 will allow 64 times the amount of transactions as today which sits at around 15 transactions. That's the amount of shard chains (extra data and capacity) being introduced. [More on shard chains](/eth2/shard-chains/)
+- `15 * 64 = 960` 次交易/秒。
+- `100,000 / 960 = 104.2` 秒，处理 100,000 次交易。
 
-That means we can estimate how long it will take to process 100,000 transactions so we can compare it to the Visa example above.
+在这 104.2 秒的时间里，以太坊网络将会消耗如下数量的能量：
 
-- `15 * 64 = 960` transactions per second.
-- `100,000 / 960 = 104.2` seconds to process 100,000 transactions.
+`1.44kWh 日常使用 * 10,000 网络节点数 = 14,400kWh` 每天。
 
-In 104.2 seconds, the Ethereum network will use the following amount of energy:
+一天有 86,400 秒，因此也就是 `14,400 / 86,400 = 0.1666666667kWh` 每秒。
 
-`1.44kWh daily usage * 10,000 network nodes = 14,400kWh` per day.
+如果我们将其乘以处理 100,000 次交易所需的时间：`0.1666666667 * 104.2 = 17.3666666701 kWh`。
 
-There are 86,400 seconds in a day, so `14,400 / 86,400 = 0.1666666667kWh` per second.
+也就是相当于在 Visa 上进行相同次数交易所消耗的能量的 **11.6554809866%**。
 
-If we times that by the amount of time it takes to process 100,000 transaction: `0.1666666667 * 104.2 = 17.3666666701 kWh`.
+别忘了，这是基于 Eth2 每秒能够处理的最小交易量而得出的数据。如果 Eth2 达到其每秒 100,000 次交易的潜力，那么 100,000 次交易将会只消耗 0.1666666667kWh 的能量。
 
-That is **11.6554809866%** of the energy consumed by the same amount of transactions on Visa.
+换句话说，如果 Visa 以每 100,000 笔交易 149 kWh 能耗的成本处理了 140,839,000,000 笔交易的话，那么它一年的能耗便是 209,850,110 kWh。
 
-And remember, this is based on the minimum amount of transactions that Eth2 will be able to handle per second. If Eth2 reaches its potential of 100,000 transactions per second, 100,000 transactions would consume 0.1666666667kWh.
-
-To put it another way, if Visa handled 140,839,000,000 transactions at a cost of 149 kWh per 100,000 transactions that's 209,850,110 kWh energy consumed for the year.
-
-Eth2 in a single year stands to consume 5,256,000 kWh. With a potential of 788,940,000,000 - 3,153,600,000,000 transactions processed in that time.
+Eth2 一年的能耗将会是 5,256,000 kWh。届时，它所能处理的潜在交易量将会是 788,940,000,000 - 3,153,600,000,000 次。
