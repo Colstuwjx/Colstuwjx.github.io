@@ -238,74 +238,83 @@ NFT 创作者还可以为其 NFT 制作 "股票"。这让投资者和粉丝有�
 
 ## 以太坊和 NFT {#ethereum-and-nfts}
 
-Ethereum makes it possible for NFTs to work for a number of reasons:
+以太坊可以玩转 NFT 的原因有很多：
 
-- Transaction history and token metadata is publicly verifiable – it's simple to prove ownership history.
-- Once a transaction is confirmed, it's nearly impossible to manipulate that data to "steal" ownership.
-- Trading NFTs can happen peer-to-peer without needing platforms that can take large cuts as compensation.
-- All Ethereum products share the same "backend". Put another way, all Ethereum products can easily understand each other – this makes NFTs portable across products. You can buy an NFT on one product and sell it on another easily. As a creator you can list your NFTs on multiple products at the same time – every product will have the most up-to-date ownership information.
-- Ethereum never goes down, meaning your tokens will always be available to sell.
+- 交易历史和 token 元数据是公开可验证的 ———— 证明所有权的历史不再困难。
 
-## The environmental impact of NFTs {#environmental-impact-nfts}
+- 一旦交易确认了，就几乎不可能操纵该数据来 "窃取" 所有权。
 
-NFTs are growing in popularity which means they're also coming under increased scrutiny – especially over their carbon footprint.
+- NFT 的交易可以是点对点的，无需利用平台中介，平台方会大量克扣作为补偿。
 
-To clarify a few things:
+- 所有以太坊的产品都共用一套相同的 "后端"。换句话说，所有以太坊的产品都可以轻松地相互理解 ———— 这使得 NFT 可以跨产品移植。你可以在一个产品上购买一个 NFT，然后在另一种产品上轻松出售。作为一个创作者，你可以同时在多个产品上列出你的 NFT ———— 每个产品都将拥有最新的所有权信息。
 
-- NFTs aren't directly increasing the carbon footprint of Ethereum.
-- The way Ethereum keeps your funds and assets secure is currently energy-intensive but it's about to improve.
-- Once improved, Ethereum's carbon footprint will be 99.98% better, making it more energy efficient than many existing industries.
+- 以太坊永远不会崩溃，这意味着你的代币将始终可以出售。
 
-To explain further we're going to have to get a little more technical so bear with us...
+## NFT 对环境的影响 {#environmental-impact-nfts}
 
-### Don't blame it on the NFTs {#nft-qualities}
+NFT 越来越受欢迎，这意味着它们也受到了越来越多的审查 ———— 尤其是在碳足迹方面。
 
-The whole NFT ecosystem works because Ethereum is decentralized and secure.
+这里我们要阐明一些事情：
 
-Decentralized meaning you and everyone else can verify you own something. All without trusting or granting custody to a third party who can impose their own rules at will. It also means your NFT is portable across many different products and markets.
+- NFT 并没有直接增加以太坊的碳足迹。
 
-Secure meaning no one can copy/paste your NFT or steal it.
+- 以太坊保证用户的资金和资产安全的方式目前是能源密集型的，但是这一情况将会得到改善。
 
-These qualities of Ethereum makes digitally owning unique items and getting a fair price for your content possible. But it comes at a cost. Blockchains like Bitcoin and Ethereum are energy intensive right now because it takes a lot of energy to preserve these qualities. If it was easy to rewrite Ethereum's history to steal NFTs or cryptocurrency, the system collapses.
+- 一旦情况得到改善，以太坊的碳足迹将会得到 99.98% 以上的改进，这足以使它比现有许多行业更加节能。
 
-#### The work in minting your NFT {#minting-nfts}
+为了进一步解释，我们将需要更多的技术知识，不妨耐心点，听我们讲下去...
 
-When you mint an NFT, a few things have to happen:
+### 不要将其归咎于 NFT {#nft-qualities}
 
-- It needs to be confirmed as an asset on the blockchain.
-- The owner's account balance must be updated to include that asset. This makes it possible for it to then be traded or verifiably "owned".
-- The transactions that confirm the above need to be added to a block and "immortalised" on the chain.
-- The block needs to be confirmed by everyone in the network as "correct". This consensus removes the need for intermediaries because the network agrees that your NFT exists and belongs to you. And it's on chain so anyone can check it. This is one of the ways Ethereum helps NFT creators to maximise their earnings.
+整个 NFT 生态系统之所以起作用，就是因为以太坊本身是去中心化的，而且是安全的。
 
-All these tasks are done by miners. And they let the rest of the network know about your NFT and who owns it. This means mining needs to be sufficiently difficult, otherwise anyone could just claim that they own the NFT you just minted and fraudulently transfer ownership. There are lots of incentives in place to make sure miners are acting honestly.
+去中心化意味着你和其他所有人都可以验证你对某件东西的所有权。所有这一切并不需要信任或授权给任何可以随意实施他们自己的规则的第三方机构来保管。这也意味着你的 NFT 可以在许多不同的产品和市场间流转。
 
-[More on mining](/developers/docs/consensus-mechanisms/pow/)
+安全意味着没人可以复制/粘贴你的 NFT 或者窃取它。
 
-#### Securing your NFT with mining {#securing-nfts}
+以太坊的这些品质使得这样以数字化的形式拥有某些独一无二的物品，以及给自己创作的内容拿到一个合理的价格这些做法成为可能。但是这也是有代价的。像比特币和以太坊这样的区块链产品目前是能源密集型的，因为要保持这些品质需要消耗大量的能量。如果能够简单通过重写以太坊的历史来窃取 NFT 或者加密货币的话，整个系统就会崩溃。
 
-Mining difficulty comes from the fact that it takes a lot of computing power to create new blocks in the chain. Importantly, blocks are created consistently, not just when they're needed. They're created every 12 seconds or so.
+#### 铸造 NFT 的工作 {#minting-nfts}
 
-This is important for making Ethereum tamper-proof, one of the qualities that makes NFTs possible. The more blocks the more secure the chain. If your NFT was created in block #600 and a hacker were to try and steal your NFT by modifying its data, the digital fingerprint of all subsequent blocks would change. That means anyone running Ethereum software would immediately be able to detect and prevent it from happening.
+当你铸造一个 NFT 时，会有一些事情发生：
 
-However this means that computing power needs to be used constantly. It also means that a block that contains 0 NFT transactions will still have roughly the same carbon footprint, because computing power will still be consumed to create it. Other non-NFT transactions will fill the blocks.
+- 它需要被确认为一个链上资产。
 
-#### Blockchains are energy intensive, right now {#blockchains-intensive}
+- 持有者的账户余额将会得到更新以包含该项资产。这使得随后把它卖出去或者鉴定为自己 "所有" 这些事情成为可能。
 
-So yes, there is a carbon footprint associated with creating blocks by mining – and this is a problem for chains like Bitcoin too – but it's not directly the fault of NFTs.
+- 确认上述内容的事务需要被添加到区块里，并在链上 "永存"。
 
-A lot of mining uses renewable energy sources or untapped energy in remote locations. And there is the argument that the industries that NFTs and cryptocurrencies are disrupting have huge carbon footprints too. But just because existing industries are bad, doesn't mean we shouldn't strive to be better.
+- 网络中的每个人都需要将该块确认为 "正确"。这种共识消除了人们对中介机构的需求，因为网络同意你的 NFT 存在并且属于你。而且它已经上链，因此任何人都可以检查它。这是以太坊帮助 NFT 创作者获得最大收益的方式之一。
 
-And we are. Ethereum is evolving to make using Ethereum (and by virtue, NFTs) more energy efficient. And that's always been the plan.
+所有这些任务都是由矿工完成的。他们让网络的其余部分知晓了你的 NFT 的存在以及谁拥有它。这也就意味着挖矿必须是足够困难的，否则任何人都可以声称自己拥有你刚刚铸造的 NFT 然后利用欺诈的手段转走所有权。有很多激励措施可以确保矿工诚实行事。
 
-We're not here to defend the environmental footprint of mining, instead we want to explain how things are changing for the better.
+[有关挖矿的更多信息](/developers/docs/consensus-mechanisms/pow/)
 
-### A greener future... {#a-greener-future}
+#### 通过挖矿确保 NFT 的安全 {#securing-nfts}
 
-For as long as Ethereum has been around, the energy-consumption of mining has been a huge focus area for developers and researchers. And the vision has always been to replace it as soon as possible. [More on Ethereum's vision](/eth2/vision/)
+挖矿的难度取决于以下事实：在链上创造一个新的区块需要消耗大量的计算能力。重要的是，链上会不断产生新的区块，而不仅仅只是在需要它们的时候。它们每隔 12 秒左右出一次块。
 
-This vision is being delivered right now.
+这对于以太坊的防篡改机制来说至关重要，它也是使得 NFT 成为可能的品质之一。块越多，链就越安全。如果你的 NFT 在 #600 区块上创建的，然后黑客试图通过修改其数据来窃取你的 NFT，那么所有后续区块的数字指纹都会改变。这就意味着任何运行以太坊软件的人都将立即检测到并阻止它的发生。
 
-#### A greener Ethereum: Eth2 {#eth2}
+然而，这也意味着我们需要持续不断地消耗算力。这也意味着一个包含 0 次 NFT 交易的区块仍将耗费大致相同的碳足迹，因为创建它仍然会消耗算力。其他非 NFT 的事务将填补区块上的这一空白。
+
+#### 区块链是能源密集型的，就目前来说 {#blockchains-intensive}
+
+因此，是的，通过挖矿创建区块会产生碳足迹 ———— 而这对于像比特币这样的链来说也是一个问题 ———— 但是这并不是由 NFT 带来的直接过错。
+
+许多矿工使用的是可再生能源或是一些偏远地区里未经开发的能源。还有一种观点认为，NFT 以及加密货币正在推翻的行业，其本身也有大量的碳足迹。但是，仅仅因为现有行业的糟糕做法，并不意味着我们不应该努力去做得更好。
+
+然后，我们的确有在做。以太坊正在不断发展，致力于让以太坊（同时也就意味着 NFT ）变得更加节能。这一直是我们计划里的一部分。
+
+这里我们并不是想要为挖矿对环境造成的影响作出什么辩解，而是想解释一下，一切将会如何变得更好。
+
+### 更绿色的未来... {#a-greener-future}
+
+自从以太坊问世以来，挖矿所带来的的能耗问题一直是开发人员和研究人员关注的重点领域。一直以来的愿景则是尽快将它替换掉。[有关以太坊的愿景的更多信息](/eth2/vision/)
+
+这一愿景目前正在变为现实。
+
+#### 一个更绿色的以太坊: Eth2 {#eth2}
 
 Ethereum is currently going through a series of upgrades, known as Eth2, that will replace mining with [staking](/eth2/staking/). This will remove computing power as a security mechanism, and reduce Ethereum's carbon footprint by ~99.98%<sup>[^1]</sup>. In this world, stakers commit funds instead of computing power to secure the network.
 
