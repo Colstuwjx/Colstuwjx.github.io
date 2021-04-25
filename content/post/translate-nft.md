@@ -316,33 +316,33 @@ NFT 越来越受欢迎，这意味着它们也受到了越来越多的审查 —
 
 #### 一个更绿色的以太坊: Eth2 {#eth2}
 
-Ethereum is currently going through a series of upgrades, known as Eth2, that will replace mining with [staking](/eth2/staking/). This will remove computing power as a security mechanism, and reduce Ethereum's carbon footprint by ~99.98%<sup>[^1]</sup>. In this world, stakers commit funds instead of computing power to secure the network.
+以太坊目前正在进行一系列升级，我们将其称之为 Eth2，它将会用 [staking](/eth2/staking/)（质押）代替挖矿。这将移除把算力作为安全机制的方式，也因此可以将以太坊的碳足迹减少约 99.98%<sup>[^1]</sup>。在这个世界里，投资者投入资金而不是算力来保护整个网络。
 
-The energy-cost of Ethereum will become the cost of running a home computer multiplied by the number of nodes in the network. If there are 10,000 nodes in the network and the cost of running a home computer is roughly 525kWh per year. That's 5,250,000kWh<sup>[^1]</sup> per year for the entire network.
+以太坊的能耗成本将会变成运行家用计算机的成本乘以整个网络中节点的数量。如果网络中有 10000 个节点，而运行一台家用计算机的成本约为每年 525kWh。那么整个网络每年将需要 5,250,000kWh<sup>[^1]</sup>。
 
-We can use this to compare Eth2 to a global service like Visa. 100,000 Visa transactions uses 149kWh of energy<sup>[^2]</sup>. In Eth2, that same number of transactions would cost 17.4kWh of energy or ~11% of the total energy<sup>[^3]</sup>. That's without considering the many optimisations being worked on in parallel to Eth2, like [rollups](/glossary/#rollups). It could be as little as 0.1666666667kWh of energy for 100,000 transactions.
+我们可以据此拿 Eth2 和一个像 Visa 这样的全球服务来做个对比。十万次 Visa 交易将会消耗 149kWh 能量<sup>[^2]</sup>。在 Eth2里，相同数量的交易将会耗费 17.4kWh 能量，约占总共<sup>[^3]</sup>的 11%。这还没考虑与 Eth2 并行进行的许多优化，比如像 [rollups](/glossary/#rollups)。10万次交易可能只会用掉 0.1666666667kWh 能量。
 
-Importantly this improves the energy efficiency while preserving Ethereum's decentralization and security. Many other blockchains out there might already use some form of staking, but they're secured by a select few stakers, not the thousands that Ethereum will have. The more decentralization, the more secure the system.
+重要的是，这在维持以太坊的去中心化和安全性的同时提高了能效。市面上其他一些区块链可能已经率先使用了某种形式的质押机制，但是它们是由少数几个利益相关者来保护的，以太坊拥有的则是数以千计的支持者。越是去中心化，整个系统就越安全。
 
-[More on energy estimates](#footnotes-and-sources)
+[有关能耗估算的更多信息](#footnotes-and-sources)
 
-_We’ve provided the basic comparison to Visa to baseline your understanding of Eth2 energy consumption against a familiar name. However, in practice, it’s not really correct to compare based on number of transactions. Ethereum’s energy output is time-based. If Ethereum did more or less transactions from one minute to the next, the energy output would stay the same._
+_我们已经给出了一份和 Visa 的基本比较，以一个熟悉的名字就 Eth2 的能耗方面给出一份基准理解。然而，实际上，根据交易次数进行比较并不太准确。以太坊的能量输出是基于时间的。哪怕以太坊在这一分钟到下一分钟做或多或少的交易，能量输出将依旧保持不变。_
 
-_It’s also important to remember that Ethereum does more than just financial transactions, it’s a platform for applications, so a fairer comparison might be to many companies/industries including Visa, AWS and more!_
+_还有一个要记住的重点，那就是以太坊不仅能够完成金融交易，它还可以作为应用程序的平台，因此我们不妨拿它和包括 Visa，AWS等在内的更多企业/行业进行更为公平的比较吧！_
 
-#### Timelines {#timelines}
+#### 时间线 {#timelines}
 
-The process has already started. [The Beacon Chain](/eth2/beacon-chain/), the first upgrade, shipped in December 2020. This provides the foundation for staking by allowing stakers to join the system. The next step relevant to energy efficiency is to merge the current chain, the one secured by miners, into the Beacon Chain where mining isn't needed. Timelines can't be exact at this stage, but it's estimated that this will happen some time in 2021/2022. This process is known as the docking or the merge. [More on the docking](/eth2/docking/).
+这个进程已经开启。[Beacon 链](/eth2/beacon-chain/)，便是第一个升级版本，于 2020 年 12 月上线。它提供了质押的基础，允许质押者加入系统。与能效有关的下一步措施便是把当前的链合并，从当前由矿工保护的链，合并到不需要挖矿的 Beacon 链。这个阶段的时间节点尚不明确，但是估计应该会是在 2021/2022 的某个时间点发生。此过程也被称之为扩展或者说合并。[有关扩展的更多信息](/eth2/docking/)
 
-<ButtonLink to="/eth2/">More on Eth2</ButtonLink>
+<ButtonLink to="/eth2/">有关 Eth2 的更多信息</ButtonLink>
 
-<!-- #### Rollups in the meantime...
+<!-- #### 与此同时的 rollups...
 
 While we wait for Eth2, products are moving to a "layer 2" technology known as rollups. Working on top of Ethereum, this technology lets you "roll up" or batch many transactions into a single one that is submitted to the chain. By moving as many things off the chain and only submitting the truly important bits (the cryptographic proofs), demand for block space will decrease. This will in turn lower the amount of computing power needed to create new blocks.
 
-[More on rollups and layer 2 technology](/developers/docs/layer-2-scaling/)
+[关于 rollups 以及 2 层技术的更多信息](/developers/docs/layer-2-scaling/)
 
-#### A more efficient NFT standard...
+#### 一个更高效的 NFT 标准...
 
 Ethereum is open source software and new standards are being figured out and agreed on all the time. The Consecutive Transfer Extension Standard (EIP-2309) plans to make the creation of NFTs more efficient. Like rollups this reduces the amount of heavy lifting done on chain, allowing you to mint one billion NFTs in a single transaction.
 
@@ -368,18 +368,18 @@ The other side of the coin: Keep in mind that alternatives are not necessarily c
 
 Oh, and the same thing was said about the internet itself. Early measures of Google's search traffic led to incorrectly extrapolating that data to the future, forming incorrect conclusions about the unmanageable "waste of energy" that would follow.
 
-### Mint NFTs {#mint-nfts}
+### 铸造 NFT {#mint-nfts}
 
-Want to turn your content into a NFT?
+想要将你的内容变成 NFT 吗？
 
 - Foundation
-- Other platforms... -->
+- 其他平台... -->
 
-## Build with NFTs {#build-with-nfts}
+## 制作 NFT {#build-with-nfts}
 
-Most NFTs are built using a consistent standard known as [ERC-721](/developers/docs/standards/tokens/erc-721/). However there are other standards that you might want to look into. The [ERC-1155](https://blog.enjincoin.io/erc-1155-the-crypto-item-standard-ac9cf1c5a226) standard allows for semi-fungible tokens which is particularly useful in the realm of gaming. And more recently, [EIP-2309](https://eips.ethereum.org/EIPS/eip-2309) has been proposed to make minting NFTs a lot more efficient. This standard lets you mint as many as you like in one transaction!
+绝大多数 NFT 是使用一个称为 [ERC-721](/developers/docs/standards/tokens/erc-721/) 的一致性标准构建的。然而，这里有一些其他标准，你没准也想看看。[ERC-1155](https://blog.enjincoin.io/erc-1155-the-crypto-item-standard-ac9cf1c5a226) 标准允许使用半可替代 token，这在游戏领域特别有用。最近，有人提出了 [EIP-2309](https://eips.ethereum.org/EIPS/eip-2309) 来提高 NFT 的制作效率。此标准让你可以在一次交易里铸造任意数量的 NFT！
 
-## Further reading {#further-reading}
+## 进一步阅读 {#further-reading}
 
 - [Crypto art data](https://cryptoart.io/data) – Richard Chen, updated automatically
 - [OpenSea: the NFT Bible](https://opensea.io/blog/guides/non-fungible-tokens/) – _Devin Fizner, January 10 2020_
@@ -389,7 +389,7 @@ Most NFTs are built using a consistent standard known as [ERC-721](/developers/d
 
 <Divider />
 
-### Footnotes and sources {#footnotes-and-sources}
+### 脚注及来源 {#footnotes-and-sources}
 
 <!-- TODO: after shipping this can form the basis of an energy efficiency page. I suspect this could also live under learn and just do some general mythbusting and supply stats about eth2 energy usage-->
 
