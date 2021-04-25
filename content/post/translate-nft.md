@@ -10,7 +10,7 @@ aliases:
     - /translate-ethereum-nft-doc/
 ---
 
-以太坊官方于近期在他们的官方文档里上传了一篇介绍 nft（ non-fungible tokens ）的文章，本文翻译自该篇文章。
+【编者按】以太坊官方于近期在他们的官方文档里上传了一篇介绍 nft（ non-fungible tokens ）的文章，本文翻译自该篇文章。
 
 <!--more-->
 
