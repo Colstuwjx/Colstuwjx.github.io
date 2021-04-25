@@ -353,27 +353,13 @@ _还有一个要记住的重点，那就是以太坊不仅能够完成金融交�
 
 <!-- 以太坊目前使用工作量证明 (proof-of-work) 来达成共识。为了提高去中心化，安全性和可扩展性，同时缩减因工作量证明而产生的能耗需求，将整个网络切换到权益证明系统（proof-of-stake）是社区当下的头等大事。一些二层扩展方案，比如 rollup，还在开发和实施过程中，它们也旨在提高可扩展性的同时降低能耗。EIP-2309 是一项旨在提高 1 层 NFT 交易效率的提案。
 
+在这些扩展方案完全落地前，值得一提的是，NFT 并不一定会 _直接_ 导致任何碳排放量的增加。无论是否铸造了 NFT，目前整个以太坊区块链底层依然是采用的工作量证明这套共识机制。如果今天 NFT 突然消失了，那么即便对于区块空间的需求减少了，出于其他一些原因，很大可能还是会需要保留区块空间，因此它将不会对能耗有显著影响。举个例子，试想一下在以太坊上进行交易的需求下沉到了现在空的区块。矿工们仍然会被激励着去生产区块以获得奖励，尽管有空的区块，但是这样做所需的哈希算力仍将持续。更现实的是，其他交易将取代 NFT 交易。因此，仍然存在一股强大而积极的推力来推进2层方案，并最终让以太坊向权益证明系统（proof-of-stake）过渡。话虽如此，让我们谈谈有关工作量证明的更多细节吧。客观上讲，为了实现以太坊所提供的安全性，我们必须消耗大量的能量。基于此，许多人很快便主观地认为，工作量证明区块链产生的碳足迹是一种 "能源浪费"。能耗这个问题从根本上来讲不是什么 "好" 或者 "坏" 的事情，而在很大程度上取决于能源的来源，以及它的用途。由不得任意指定的某个人来为他人决定，能源的使用是 "好" 或者 "坏"。这一原则同样也应用于整个以太坊，没有任何人可以跟你说，你的交易是不重要的。对于那些没用过这项技术的人来说，他们指示说这种形式的能源消耗纯属浪费，这样公平吗？那些生活因此变得更好的人呢？一些外部特性，像是那些根据能量来源选择的碳排放，未必已经计入到当前系统的定价，但是这样做将会进一步鼓励大家使用可再生能源。
 
+在这种情况下，矿工们将会迁移到成本更低的替代方案。由于用户无法实现长距离（高压线路里的能量损失）高效的能量传输，因此也就压低了在一些偏远地区构建可再生能源的投资成本。想要利用可再生能源（比如太阳能农场）来运营矿场的人可以在一个更方便接触到可再生能源（例如：大片空地或瀑布）的偏远地区投资建设。否则这里尚未开发的能量也会由于不加以利用而被白白"浪费"。这些针对基础设施的投资可以为当地社区提供服务，而且可以从挖矿获得的经济回报中更快地获得收入。
 
--->
+硬币的另一面：请记住，替代品也不一定是碳中和的，比如印刷、装卸、运输和护卫法定货币这些足迹。每年的圣诞节灯光镜都会产生大量能耗，更不用提填满垃圾填埋场的那些商业产品，还有政府参战，它们会导致更加严重的污染。
 
-<!--
-
-Before these scaling solutions are fully implemented, it is worth noting that NFT's specifically are not necessarily _directly_ causing any increased carbon emission. The proof-of-work consensus mechanism that currently underlies the entire Ethereum blockchain is being used whether NFTs are being minted or not. If NFTs were to disappear today, there is a strong chance that block space would remain in demand for other reasons, though even if demand for block space decreased it wouldn't drastically impact energy consumption. For sake of example, imagine the demand for transacting on Ethereum falls to where the blocks are now empty. Miners would still be incentivized to produce blocks for the reward, and the hashing power required to do so would persist despite an empty block. More realistically, other transactions would take the place of NFT transactions. So again, there remains a strong and a active push to advance layer 2 solutions, and finalize Ethereum's transition to a proof-of-stake system.
-
-All this being said, let's talk more about proof-of-work. Objectively there is a significant amount of energy that must be consumed in order to achieve the security that Ethereum offers.
-Based on this, many people are quick to subjectively argue that the carbon footprint from proof-of-work blockchains is a "waste of energy."
-
-Energy consumption is not fundamentally a "good" or "bad" thing, and very much depends on where the energy is coming from, and what it is being used for.
-It is not up to any given individual to decide what is a "good" or "bad" use of energy for someone else. This same principle is used throughout Ethereum, where nobody can tell you that your transaction is not important.
-For someone not using this technology, is it fair for them to dictate that this form of energy consumption is wasteful? What about those who's lives have been changed for the better as a result?
-
-Externalities, such as carbon emissions based on choice of energy source, have not necessarily been priced in to the current system, but doing so would further encourage the use of renewable energy sources.
-In this case, miners would migrate to lower cost alternatives. Since you can't transport energy effectively over great distances (energy lost in high voltage lines), this depreciates the capital cost of building renewable energy sources in more remote places. Someone looking to utilize renewable energy sources, such as solar farms, to run a mining rig could invest in a remote location where renewable energy sources are more accessible (ie: large open plots of land or at a waterfall). This energy would have otherwise been untapped, and "wasted" by not harnessing it. These investments in infrastructure open up the ability to serve a local community, and can be paid off much faster from the economic payoff received from mining.
-
-The other side of the coin: Keep in mind that alternatives are not necessarily carbon-neutral either, such as the footprint of printing, handling, shipping and guarding fiat currencies. Annual spectacles of Christmas lights consume large amounts of energy, not to mention commercial products filling landfills, and governments engaging in war, leading to substantial levels of pollution.
-
-Oh, and the same thing was said about the internet itself. Early measures of Google's search traffic led to incorrectly extrapolating that data to the future, forming incorrect conclusions about the unmanageable "waste of energy" that would follow.
+哦，关于互联网本身也说了同样的话。谷歌搜索流量的早期测量结果导致该数据推断出了错误的未来，从而对随后产生的难以控制的 "能源浪费" 做出了错误的结论。
 
 ### 铸造 NFT {#mint-nfts}
 
