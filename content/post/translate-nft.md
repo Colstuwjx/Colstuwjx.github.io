@@ -1,5 +1,5 @@
 ---
-title: "[ 翻译 ] 不可替代的代币"
+title: "[ 翻译 ] 非同质化代币"
 date: 2021-04-23T17:00:00+08:00
 tags: ["ethereum", "nft", "translate"]
 categories: ["nft"]
