@@ -68,9 +68,9 @@ NFT 的世界还相对稚嫩。从理论上讲，NFT 的应用领域可以是任
 
 #### POAPs ( 出勤证明协议 ) {#poaps}
 
-如果你对 ethereum.org 做出贡献，那么可以申请一个 POAP NFT。这些是可以证明你参加过活动的收藏品。一些加密货币的 meetup 会使用 POAP 作为其活动门票的一种形式。[有关贡献的更多信息](/en/contributing/#poap)。
+如果你对 ethereum.org 做出贡献，那么可以申请一个 POAP NFT。这些是可以证明你参加过活动的收藏品。一些加密货币的 meetup 会使用 POAP 作为其活动门票的一种形式。[有关贡献的更多信息](https://ethereum.org/en/contributing/#poap)。
 
-![ethereum.org POAP](https://github.com/ethereum/ethereum-org-website/blob/dev/src/assets/use-cases/poap.png)
+![ethereum.org POAP](https://ethereum.org/static/aee7aca97ad8405722868827513c9937/0d390/poap.png)
 
 #### ethereum.eth {#ethereum-dot-eth}
 
@@ -148,7 +148,7 @@ NFT 为新的创作者经济提供了动力，在这种经济生态里，创作�
 
 <InfoBanner shouldSpaceBetween emoji=":eyes:">
   <div>探索一下，购买和创造属于你自己的 NFT 艺术/收藏品...</div>
-  <ButtonLink to="/dapps/?category=collectibles">探索 NFT 艺术</ButtonLink>
+  <ButtonLink to="https://ethereum.org/dapps/?category=collectibles">探索 NFT 艺术</ButtonLink>
 </InfoBanner>
 
 #### 复制粘贴问题 {#nfts-copy-paste}
@@ -177,7 +177,7 @@ NFT 已经引起了游戏开发者的极大兴趣。NFT 可以提供游戏里物
 
 <InfoBanner shouldSpaceBetween emoji=":eyes:">
   <div>看看由 NFT 制作的以太坊游戏...</div>
-  <ButtonLink to="/dapps/?category=gaming">探索一下 NFT 游戏</ButtonLink>
+  <ButtonLink to="https://ethereum.org/dapps/?category=gaming">探索一下 NFT 游戏</ButtonLink>
 </InfoBanner>
 
 <Divider />
@@ -204,17 +204,17 @@ NFT 已经引起了游戏开发者的极大兴趣。NFT 可以提供游戏里物
 
 由于 NFT 本质上是一张契约，因此，终有一天你将可以使用 ETH 购买一辆汽车或一栋房子，然后以 NFT 的形式拿到契约凭据（在同一笔交易里）。随着事情变得越来越高科技，人们不难想象这样的一个世界：以太坊钱包将会变成你的车子或者房子的钥匙 ———— 加密的所有权证明可以用来开锁。
 
-随着像汽车和财产这类贵重资产得以在以太坊上标识，你可以将 NFT 用作去中心化贷款的抵押品。如果你手上没有现金或者没多少加密货币，但是拥有一些有价实物的话，NFT 应该会挺有用处。[有关 DeFi 的更多信息](/defi/)
+随着像汽车和财产这类贵重资产得以在以太坊上标识，你可以将 NFT 用作去中心化贷款的抵押品。如果你手上没有现金或者没多少加密货币，但是拥有一些有价实物的话，NFT 应该会挺有用处。[有关 DeFi 的更多信息](https://ethereum.org/en/defi/)
 
 <Divider />
 
 ### NFT 和 DeFi {#nfts-and-defi}
 
-NFT 世界和[去中心化金融(DeFi)](/defi/)的世界正开始以一系列有趣的方式合作。
+NFT 世界和[去中心化金融(DeFi)](https://ethereum.org/en/defi/)的世界正开始以一系列有趣的方式合作。
 
 #### NFT 支持的贷款 {#nft-backed-loans}
 
-现如今有一些 DeFi 应用允许用户通过抵押来借钱。比如，你抵押了 10 ETH，那么你便可以借入 5000 DAI ([一种稳定币](/stablecoins/))。这可以确保放款人得到偿还 —— 如果借款人不偿还 DAI 的话，抵押品将被转给放款人。然而，并不是所有人都有足够的加密货币用作抵押品。
+现如今有一些 DeFi 应用允许用户通过抵押来借钱。比如，你抵押了 10 ETH，那么你便可以借入 5000 DAI ([一种稳定币](https://ethereum.org/stablecoins/))。这可以确保放款人得到偿还 —— 如果借款人不偿还 DAI 的话，抵押品将被转给放款人。然而，并不是所有人都有足够的加密货币用作抵押品。
 
 有些项目已经开始探索使用 NFT 作为替代的抵押品。试想一下，有一天你买了一个稀有的 CryptoPunk NFT 回来 —— 它们以今天的价格能够卖到 1000 多美元。通过将其作为抵押品，你可以使用相同的一组规则借贷。如果你无法还清 DAI 的话，你的 CryptoPunk 将会被当成抵押品转给借贷方。这可以最终与标记为 NFT 的任何物品一起使用。
 
@@ -224,7 +224,7 @@ NFT 世界和[去中心化金融(DeFi)](/defi/)的世界正开始以一系列有
 
 NFT 创作者还可以为其 NFT 制作 "股票"。这让投资者和粉丝有机会拥有 NFT 的一部分，而不必购买整个产品。这为 NFT 铸造者和收藏家提供了更多的机会。
 
-- 部分产权化的 NFT 可以在 [DEX](/defi/#dex) 上像 Uniswap 那样交易，而不仅仅只是在 [NFT 市场](/dapps?category=collectibles)。这就意味着可以有更多的买家和卖家。
+- 部分产权化的 NFT 可以在 [DEX](https://ethereum.org/en/defi/#dex) 上像 Uniswap 那样交易，而不仅仅只是在 [NFT 市场](https://ethereum.org/dapps?category=collectibles)。这就意味着可以有更多的买家和卖家。
 
 - NFT 的整体价格可以由其部分的价格来定义。
 
@@ -241,7 +241,7 @@ NFT 创作者还可以为其 NFT 制作 "股票"。这让投资者和粉丝有�
 
 正如我们所提到的，这是一个新兴的领域。NFT、DAO 部分产权代币都在以各自不同的步伐发展。但是他们所有的基础设施都在这里，并且可以轻松地协同工作，因为他们都使用相同的语言：以太坊。因此，不妨关注一下这个领域。
 
-[有关 DAO 的更多信息](/dao/)
+[有关 DAO 的更多信息](https://ethereum.org/en/dao/)
 
 <Divider />
 
@@ -297,7 +297,7 @@ NFT 越来越受欢迎，这意味着它们也受到了越来越多的审查 —
 
 所有这些任务都是由矿工完成的。他们让整个网络的其余部分知晓了你的 NFT 的存在以及谁拥有它。这也就意味着挖矿必须是足够困难的，否则任何人都可以声称自己拥有你刚刚铸造的 NFT 然后利用欺诈的手段转走所有权。有很多激励措施可以确保矿工诚实行事。
 
-[有关挖矿的更多信息](/developers/docs/consensus-mechanisms/pow/)
+[有关挖矿的更多信息](https://ethereum.org/en/developers/docs/consensus-mechanisms/pow/)
 
 #### 通过挖矿确保 NFT 的安全 {#securing-nfts}
 
@@ -319,17 +319,17 @@ NFT 越来越受欢迎，这意味着它们也受到了越来越多的审查 —
 
 ### 更绿色的未来... {#a-greener-future}
 
-自从以太坊问世以来，挖矿所带来的的能耗问题一直是开发人员和研究人员关注的重点领域。我们一直以来的愿景则是尽快将它替换掉。[有关以太坊的愿景的更多信息](/eth2/vision/)
+自从以太坊问世以来，挖矿所带来的的能耗问题一直是开发人员和研究人员关注的重点领域。我们一直以来的愿景则是尽快将它替换掉。[有关以太坊的愿景的更多信息](https://ethereum.org/en/eth2/vision/)
 
 这一愿景目前正在变为现实。
 
 #### 一个更绿色的以太坊: Eth2 {#eth2}
 
-以太坊目前正在进行一系列升级，我们将其称之为 Eth2，它将会用 [staking](/eth2/staking/)（质押）的手段代替挖矿。这将会把算力作为安全机制的方式移除，因此也可以将以太坊的碳足迹减少约 99.98%<sup>[^1]</sup>。在这个世界里，投资者投入资金而不是算力来保护整个网络。
+以太坊目前正在进行一系列升级，我们将其称之为 Eth2，它将会用 [staking](https://ethereum.org/en/eth2/staking/)（质押）的手段代替挖矿。这将会把算力作为安全机制的方式移除，因此也可以将以太坊的碳足迹减少约 99.98%<sup>[^1]</sup>。在这个世界里，投资者投入资金而不是算力来保护整个网络。
 
 以太坊的能耗成本将会变成运行家用计算机的成本乘以整个网络中节点的数量。如果网络中有 10000 个节点，而运行一台家用计算机的成本约为每年 525kWh。那么整个网络每年将需要 5,250,000kWh<sup>[^1]</sup>。
 
-我们可以据此拿 Eth2 和一个像 Visa 这样的全球服务来做个对比。十万次 Visa 交易将会消耗 149kWh 能量<sup>[^2]</sup>。在 Eth2里，相同数量的交易将会耗费 17.4kWh 能量，约占总共<sup>[^3]</sup>的 11%。这还没考虑与 Eth2 并行进行的许多优化，比如像 [rollups](/glossary/#rollups)。10万次交易可能只会用掉 0.1666666667kWh 能量。
+我们可以据此拿 Eth2 和一个像 Visa 这样的全球服务来做个对比。十万次 Visa 交易将会消耗 149kWh 能量<sup>[^2]</sup>。在 Eth2里，相同数量的交易将会耗费 17.4kWh 能量，约占总共<sup>[^3]</sup>的 11%。这还没考虑与 Eth2 并行进行的许多优化，比如像 [rollups](https://ethereum.org/en/glossary/#rollups)。10万次交易可能只会用掉 0.1666666667kWh 能量。
 
 重要的是，这在维持以太坊的去中心化和安全性的同时提高了能效。市面上其他一些区块链可能已经率先使用了某种形式的质押机制，但是它们是由少数几个利益相关者来保护的，以太坊拥有的则是数以千计的支持者。越是去中心化，整个系统就越安全。
 
@@ -341,15 +341,15 @@ _还有一个要记住的重点，那就是，以太坊不仅能够完成金融�
 
 #### 时间线 {#timelines}
 
-这个进程已经开启。[Beacon 链](/eth2/beacon-chain/)，便是第一个升级版本，于 2020 年 12 月上线。它允许质押者加入系统，这是质押的基础。与能效有关的下一步措施便是把当前的链合并，从当前由矿工保护的链，合并到不需要挖矿的 Beacon 链。这个阶段的时间节点尚不明确，但是估计应该会是在 2021 或者 2022 的某个时间点发生。此过程也被称之为扩展或者说合并。[有关扩展的更多信息](/eth2/docking/)
+这个进程已经开启。[Beacon 链](https://ethereum.org/en/eth2/beacon-chain/)，便是第一个升级版本，于 2020 年 12 月上线。它允许质押者加入系统，这是质押的基础。与能效有关的下一步措施便是把当前的链合并，从当前由矿工保护的链，合并到不需要挖矿的 Beacon 链。这个阶段的时间节点尚不明确，但是估计应该会是在 2021 或者 2022 的某个时间点发生。此过程也被称之为扩展或者说合并。[有关扩展的更多信息](https://ethereum.org/en/eth2/docking/)
 
-<ButtonLink to="/eth2/">有关 Eth2 的更多信息</ButtonLink>
+<ButtonLink to="https://ethereum.org/en/eth2/">有关 Eth2 的更多信息</ButtonLink>
 
 <!-- #### 与此同时的 rollups...
 
 在我们翘首以待 Eth2 上线的同时，我们的产品正在迁移到一个被称为 "rollup" 的 "二层" 技术。它工作在以太坊之上，可以让你将多个交易 "卷起来" 或者批量打包到一个已经提交上链的单笔交易。通过尽可能多的将事物从链上移开，然后只提交真正重要的比特（也即是加密证明），我们对块空间的需求将会减少。回过头来，这也将会降低我们创造新块所需的算力。
 
-[关于 rollups 以及 2 层技术的更多信息](/developers/docs/layer-2-scaling/)
+[关于 rollups 以及 2 层技术的更多信息](https://ethereum.org/en/developers/docs/layer-2-scaling/)
 
 #### 一个更高效的 NFT 标准...
 
@@ -379,7 +379,7 @@ _还有一个要记住的重点，那就是，以太坊不仅能够完成金融�
 
 ## 制作 NFT {#build-with-nfts}
 
-绝大多数 NFT 是使用一个称为 [ERC-721](/developers/docs/standards/tokens/erc-721/) 的一致性标准构建的。然而，这里有一些其他标准，你没准也想看看。[ERC-1155](https://blog.enjincoin.io/erc-1155-the-crypto-item-standard-ac9cf1c5a226) 标准允许使用半可替代 token，这在游戏领域特别有用。最近，有人提出了 [EIP-2309](https://eips.ethereum.org/EIPS/eip-2309) 来提高 NFT 的制作效率。此标准让你可以在一次交易里铸造任意数量的 NFT！
+绝大多数 NFT 是使用一个称为 [ERC-721](https://ethereum.org/en/developers/docs/standards/tokens/erc-721/) 的一致性标准构建的。然而，这里有一些其他标准，你没准也想看看。[ERC-1155](https://blog.enjincoin.io/erc-1155-the-crypto-item-standard-ac9cf1c5a226) 标准允许使用半可替代 token，这在游戏领域特别有用。最近，有人提出了 [EIP-2309](https://eips.ethereum.org/EIPS/eip-2309) 来提高 NFT 的制作效率。此标准让你可以在一次交易里铸造任意数量的 NFT！
 
 ## 进一步阅读 {#further-reading}
 
@@ -424,7 +424,7 @@ _还有一个要记住的重点，那就是，以太坊不仅能够完成金融�
 
 据估算，Eth2 将允许整个网络每秒处理 25,000 到 100,000 次交易，[目前 100,000 是理论上的最大值](https://ethereum-magicians.org/t/a-rollup-centric-ethereum-roadmap/4698)。[Vitalik Buterin 在 Eth2 上每秒潜在交易量](https://twitter.com/VitalikButerin/status/1312905884549300224?ref_src=twsrc%5Etfw%7Ctwcamp%5Etweetembed%7Ctwterm%5E1312905886327664640%7Ctwgr%5E%7Ctwcon%5Es2_&ref_url=https%3A%2F%2Fwww.coinspeaker.com%2Fvitalik-buterin-ethereum-layer-2%2F)。
 
-最起码，Eth2 允许的交易量会是今天的 64 倍，目前约有 15 笔交易。这也是引入分片链（额外的数据和容量）的数量。[有关分片链的更多信息](/eth2/shard-chains/)
+最起码，Eth2 允许的交易量会是今天的 64 倍，目前约有 15 笔交易。这也是引入分片链（额外的数据和容量）的数量。[有关分片链的更多信息](https://ethereum.org/en/eth2/shard-chains/)
 
 这意味着我们可以估算出处理 100,000 次交易所需的时间，因此我们便能够将其和上述 Visa 的例子进行比较。
 
