@@ -10,7 +10,7 @@ aliases:
     - /translate-ethereum-nft-doc/
 ---
 
-【编者按】以太坊官方于近期在他们的官方文档里上传了一篇介绍 nft（ non-fungible tokens ）的文章，本文翻译自该篇文章。
+【编者按】以太坊官方于近期在他们的官方文档里上传了一篇介绍 nft（ non-fungible tokens ）的文章，本文翻译自[该篇文章](https://ethereum.org/en/nft/)。
 
 <!--more-->
 
@@ -146,10 +146,7 @@ NFT 为新的创作者经济提供了动力，在这种经济生态里，创作�
 
 当他们出售内容时，钱会直接打给他们。如果新的所有者随即便把 NFT 卖出了，那么最初的持有者甚至还可以自动获得版税。由于创作者的地址是 token 元数据（无法修改的元数据）的一部分，因此每次交易都可以保证这一点。
 
-<InfoBanner shouldSpaceBetween emoji=":eyes:">
-  <div>探索一下，购买和创造属于你自己的 NFT 艺术/收藏品...</div>
-  <ButtonLink to="https://ethereum.org/dapps/?category=collectibles">探索 NFT 艺术</ButtonLink>
-</InfoBanner>
+探索 [NFT 艺术](https://ethereum.org/dapps/?category=collectibles)。
 
 #### 复制粘贴问题 {#nfts-copy-paste}
 
@@ -175,10 +172,7 @@ NFT 已经引起了游戏开发者的极大兴趣。NFT 可以提供游戏里物
 
 一款虚拟现实游戏，Decentraland，甚至允许玩家购买代表虚拟土地的 NFT，你可以按需使用这些土地。
 
-<InfoBanner shouldSpaceBetween emoji=":eyes:">
-  <div>看看由 NFT 制作的以太坊游戏...</div>
-  <ButtonLink to="https://ethereum.org/dapps/?category=gaming">探索一下 NFT 游戏</ButtonLink>
-</InfoBanner>
+探索一下 [NFT 游戏](https://ethereum.org/dapps/?category=gaming)。
 
 <Divider />
 
@@ -343,7 +337,7 @@ _还有一个要记住的重点，那就是，以太坊不仅能够完成金融�
 
 这个进程已经开启。[Beacon 链](https://ethereum.org/en/eth2/beacon-chain/)，便是第一个升级版本，于 2020 年 12 月上线。它允许质押者加入系统，这是质押的基础。与能效有关的下一步措施便是把当前的链合并，从当前由矿工保护的链，合并到不需要挖矿的 Beacon 链。这个阶段的时间节点尚不明确，但是估计应该会是在 2021 或者 2022 的某个时间点发生。此过程也被称之为扩展或者说合并。[有关扩展的更多信息](https://ethereum.org/en/eth2/docking/)
 
-<ButtonLink to="https://ethereum.org/en/eth2/">有关 Eth2 的更多信息</ButtonLink>
+[有关 Eth2 的更多信息](https://ethereum.org/en/eth2/)。
 
 <!-- #### 与此同时的 rollups...
 
