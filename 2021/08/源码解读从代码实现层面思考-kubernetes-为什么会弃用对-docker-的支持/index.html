@@ -427,7 +427,7 @@ Date:   Thu Nov 5 15:29:53 2015 -0800
 <h2 id=结语>结语</h2>
 <p>呼，花了点时间，终于摸清了 dockershim 的身世背景。整体看下来，似乎和 k8s 官方博客里说的出入不大。笔者也感受到，在迭代过程中社区的开发人员为了弥补 k8s 和 docker 之间的 gap 做出的一些妥协，比如前面提到的实现 dockershim 让 docker 支持 CRI 标准，以及重写 resolv.conf 来支持 k8s 的一些 dns 功能等等。</p>
 <p>出于开发和运维方面的复杂性考虑，无论是 k8s 官方弃用 dockershim 还是社区用户将运行时切换到 containerd 其实都是非常理性的做法。</p>
-<p>只是，似乎 docker 的那个时代，谢幕了。</p>
+<p>只是，似乎 docker 的那个时代已经落幕了。</p>
 <h2 id=参考>参考</h2>
 <p>1、<a href=https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.20.md#deprecation>https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.20.md#deprecation</a></p>
 <p>2、<a href=https://kubernetes.io/blog/2020/12/02/dont-panic-kubernetes-and-docker/>https://kubernetes.io/blog/2020/12/02/dont-panic-kubernetes-and-docker/</a></p>
