@@ -149,7 +149,7 @@ K8s 为什么会弃用对 Docker 的支持呢？除了官方的这篇文章以�
 <p>翻译一下就是: Dockershim 是当初 k8s 引入 CRI 容器运行时标准接口的时候为了兼容 Docker，k8s 官方自行维护的一套临时解决方案，他们现在不想再维护了。</p>
 <h3 id=dockershim-的起点>dockershim 的起点</h3>
 <p>那么，dockershim 是什么时候加进去的呢？当时的背景又是怎样的？</p>
-<p>笔者找到了当初开发人员提的第一个<a href=https://github.com/kubernetes/kubernetes/pull/29553> PR </a>，PR title 里面有这么一句话：</p>
+<p>笔者找到了当初开发人员提的第一个<a href=https://github.com/kubernetes/kubernetes/pull/29553> PR #29553 </a>，PR title 里面有这么一句话：</p>
 <pre tabindex=0><code>yujuhong: ... Add a new docker integration with kubelet using the new runtime API ...</code></pre>
 <p>根据 PR 里给出的信息，顺藤摸瓜，笔者又找到了相关的<a href=https://github.com/kubernetes/kubernetes/issues/28789> umbrella issue </a>，主要是用来跟踪 CRI 对接的进展。也就是说，为了让 Docker 支持 CRI 标准，核心开发 <a href=https://github.com/yujuhong>yujuhong</a> 贡献了集成 docker 操作并且支持新版 runtime API 的一个组件（也即是 dockershim ），具体可以查阅<a href=https://github.com/kubernetes/kubernetes/issues/31459>这个 issue </a>，这是当时用来跟踪 dockershim 实现 CRI 接口专门开的一个 issue。</p>
 <p><em>注：dockershim 的代码位于 k8s 仓库的<a href=https://github.com/kubernetes/kubernetes/tree/v1.22.0/pkg/kubelet/dockershim>这里</a>，我们可以很方便地通过<a href="https://github.com/kubernetes/kubernetes/commits/master?after=5a732dcfe1d4ec0e8ee2871b106605b7f8a69b98+104&branch=master&path%5B%5D=pkg&path%5B%5D=kubelet&path%5B%5D=dockershim&path%5B%5D=docker_service.go">追溯 commit history </a>来找到首次提交，最终便找到了这个<a href=https://github.com/kubernetes/kubernetes/pull/29553> PR </a>。</em></p>
@@ -420,12 +420,13 @@ Date:   Thu Nov 5 15:29:53 2015 -0800
 <p>对比 commit 提交时间，大致是 <a href=https://github.com/containerd/containerd/tree/v0.1.0>v0.1.0</a> 版本发布的时间。</p>
 <p>在 containerd 单独立项开发的两年以后，2017 年 12 月份，<a href=https://www.cncf.io/blog/2017/12/05/general-availability-containerd-1-0/>containerd 1.0 GA 了</a>，containerd 的核心开发人员 Michel Crosby 也<a href=https://www.docker.com/blog/containerd-ga-features-2/>撰文</a>讲述了 containerd 抵达 1.0 的这个旅程，其中包括像从 Graphdriver 切换到 Snapshot 这样的架构层面的重新设计。</p>
 <p>而在此之前的 11 月份，k8s 1.8 加入了对 containerd 运行时的支持，见 <a href=https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.8.md#container-runtime-interface-cri>1.8 changelog</a>。</p>
-<p><em>注：值得一提的是，引入 containerd 后的 docker 自身也不是太稳定（当然，剥离 containerd 之前笔者在生产环境使用 docker daemon 也遇到过不少问题），笔者自己就经历过一个诡异问题，具体可以参考笔者 17 年时候写的<a href=https://colstuwjx.github.io/2017/06/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%A4%B1%E8%B4%A5%E7%9A%84docker%E6%8E%92%E9%9A%9C%E7%BB%8F%E5%8E%86/>这篇博客</a>。那会儿的 containerd 尽管已经 1.0 了，UX 交互却还是相当简陋，有兴趣的朋友也可以看下笔者在 18 年初试玩 containerd 的<a href=https://colstuwjx.github.io/2018/02/%E5%8E%9F%E5%88%9B-%E5%B0%8F%E5%B0%9Dcontainerd%E4%B8%80/>经历</a>。</em></p>
+<p><em>注1：有趣的是，containerd 自己也引入了一个 containerd-shim，这个 shim 是为了让出自 containerd 的容器进程能够和 containerd 解耦，具体见 containerd v0.5 的 <a href=https://github.com/containerd/containerd/pull/98#issue-58078723>PR #98 title</a>。</em></p>
+<p><em>注2：此外，值得一提的是，引入 containerd 后的 docker 自身也不是太稳定（当然，剥离 containerd 之前笔者在生产环境使用 docker daemon 也遇到过不少问题），笔者自己就经历过一个诡异问题，具体可以参考笔者 17 年时候写的<a href=https://colstuwjx.github.io/2017/06/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%A4%B1%E8%B4%A5%E7%9A%84docker%E6%8E%92%E9%9A%9C%E7%BB%8F%E5%8E%86/>这篇博客</a>，现在回过头来看，可能和 containerd-shim 的这个玩法有关系。顺便说一句，那会儿的 containerd 尽管已经 1.0 了，UX 交互却还是相当简陋，这也是很多用户在 containerd 可以单独作为容器运行时选项时仍然坚持选择 docker 的重要原因之一。有兴趣的朋友可以看下笔者在 18 年初试玩 containerd 的<a href=https://colstuwjx.github.io/2018/02/%E5%8E%9F%E5%88%9B-%E5%B0%8F%E5%B0%9Dcontainerd%E4%B8%80/>经历</a>。</em></p>
 <h3 id=从-docker-到-containerd-的迁徙>从 docker 到 containerd 的迁徙</h3>
 <p>时至今日，CRI 已然在各个主流的容器运行时得到支持和普及，containerd 的一些周边支持也逐渐完善起来，比如命令行工具这块，<code>crictl</code> 沿用了之前 <code>docker</code> 留下来的操作习惯，相关命令均可以接近无缝地切换到 <code>crictl</code> 。</p>
 <p>业内也出现一些从 docker 引擎迁移到 containerd 的案例，如 eBay 早在 2019 年就将运行时<a href=https://www.infoq.cn/article/odslclsjvo8bnx*mbrbk>从 docker 切换到了 containerd</a>，各大公有云提供的 Kubernetes 服务也在 k8s 官方宣布弃用 dockershim 支持后不久便宣布<a href=https://thenewstack.io/azure-kubernetes-service-replaces-docker-with-containerd/>使用 containerd 替换 docker</a>。</p>
 <h2 id=结语>结语</h2>
-<p>呼，花了点时间，终于摸清了 dockershim 的身世背景。整体看下来，似乎和 k8s 官方博客里说的出入不大。笔者也感受到，在迭代过程中社区的开发人员为了弥补 k8s 和 docker 之间的 gap 做出的一些妥协，比如前面提到的实现 dockershim 让 docker 支持 CRI 标准，以及重写 resolv.conf 来支持 k8s 的一些 dns 功能等等。</p>
+<p>呼，花了点时间，终于摸清了 dockershim 的身世背景。整体看下来，似乎和 k8s 官方博客里说的差不多。笔者也感受到，在迭代过程中社区的开发人员为了弥补 k8s 和 docker 之间的 gap 做出的一些妥协：比如前面提到的实现 dockershim 让 docker 支持 CRI 标准，以及重写 resolv.conf 来支持 k8s 的一些 dns 功能等等。</p>
 <p>出于开发和运维方面的复杂性考虑，无论是 k8s 官方弃用 dockershim 还是社区用户将运行时切换到 containerd 其实都是非常理性的做法。</p>
 <p>只是，似乎 docker 的那个时代已经落幕了。</p>
 <h2 id=参考>参考</h2>
