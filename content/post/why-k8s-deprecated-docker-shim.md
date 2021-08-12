@@ -400,7 +400,7 @@ func (ds *dockerService) RunPodSandbox(ctx context.Context, r *runtimeapi.RunPod
 }
 ```
 
-从上述注释部分不难看出，k8s 的 kubelet 为了兼容支持 docker 容器运行时，做了大量胶水性质的粘合操作，比如设置 DNS Server 这种甚至是直接调用操作系统接口，以重写 resolv.conf 文件形式实现的！
+笔者在上述代码里添加了一些自己的注释。可以看到，k8s 的 kubelet 为了兼容支持 docker 容器运行时，做了大量胶水性质的粘合操作，比如设置 DNS Server 这种甚至是直接调用操作系统接口，以重写 resolv.conf 文件形式实现的！
 
 *注1：dns 配置这块为什么是直接重写文件呢？为了解答这个问题，笔者找到了[最初实现版本](https://github.com/kubernetes/kubernetes/commit/5960d87d2142055cd29ebbce0243652c4adc5742#diff-40b456472817aeb853ac82dfc7cdf7632243c09bd40a085b74c5748580f6e104R237)，这里面是没有做任何重写操作。继续回溯历史，可以找到这个 [PR #43368](https://github.com/kubernetes/kubernetes/pull/43368)，似乎 dockertool 时代就已经是这种方式设置 DNS 了，为了支持 k8s 的一些 DNS 设置方面的功能，社区沿用了之前 dockertool 的方案，在 dockershim 处理 Pod Sandbox 的时候也加入了重写 resolv.conf 的逻辑。那么，为什么 dockertool 会重写 resolv.conf 呢，继续回溯版本后，笔者发现了关于 dns 设置这块的一段[注释](https://github.com/kubernetes/kubernetes/blob/v0.21.4/pkg/kubelet/dockertools/manager.go#L1235)，它的出处是 [PR 10266](https://github.com/kubernetes/kubernetes/pull/10266)。终于破案了，由于当时 docker 还不支持 ndots 选项，k8s 选择的是 hack 掉 infra 容器的 resolv.conf 来解决这个问题。*
 
@@ -446,7 +446,7 @@ ENV CONTAINERD_COMMIT 7146b01a3d7aaa146414cdfb0a6c96cfba5d9091
 
 ## 结语
 
-呼，花了点时间，终于摸清了 dockershim 的身世背景。整体看下来，似乎和 k8s 官方博客里说的出入不大。笔者也感受到，在迭代过程中社区的开发人员为了弥补 k8s 和 docker 之间的 gap 做的一些妥协，比如前面提到的实现 dockershim 让 docker 支持 CRI 标准，以及重写 resolv.conf 来支持 k8s 的一些 dns 功能等等。
+呼，花了点时间，终于摸清了 dockershim 的身世背景。整体看下来，似乎和 k8s 官方博客里说的出入不大。笔者也感受到，在迭代过程中社区的开发人员为了弥补 k8s 和 docker 之间的 gap 做出的一些妥协，比如前面提到的实现 dockershim 让 docker 支持 CRI 标准，以及重写 resolv.conf 来支持 k8s 的一些 dns 功能等等。
 
 出于开发和运维方面的复杂性考虑，无论是 k8s 官方弃用 dockershim 还是社区用户将运行时切换到 containerd 其实都是非常理性的做法。
 
