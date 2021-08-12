@@ -6,6 +6,8 @@ categories: ["cloudnative"]
 comments: false
 showMeta: false
 showAction: false
+aliases:
+    - /dive-into-sourcecode-why-k8s-deprecated-dockershim/
 ---
 
 2020年底，在 Kubernetes v1.20 正式发布的同时，k8s 官方还搞了一个大动作：他们宣布将会逐步弃用对 Docker 容器运行时的支持。为了不让用户惊慌失措，官方还贴心地写了一篇[博客文章](https://kubernetes.io/blog/2020/12/02/dont-panic-kubernetes-and-docker/)，对此事进行了一番详细说明。
