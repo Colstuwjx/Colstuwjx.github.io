@@ -129,7 +129,7 @@ type DockerInterface interface {
 
 kubelet 的启动入口位于 [cmd/kubelet/kubelet.go](https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/kubelet.go#L36)，熟悉 [cobra](https://github.com/spf13/cobra) 的朋友应该知道，它最终是会调用具体 `Command` 的 `Run` 方法。对于 kubelet 来说，调用的即是它实现的 [Run](https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/app/server.go#L155) 方法。
 
-在经过一系列的处理后，kubelet 会走到核心的用来启动服务的 [run](https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/app/server.go#L514) 方法。我们直接看向和 Dockershim 相关的部分，划到靠近函数末尾的部分，我们可以看到在真正启动前，kubelet 执行了一个 `[kubelet.PreInitRuntimeService](https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/app/server.go#L796)` 的操作。
+在经过一系列的处理后，kubelet 会走到核心的用来启动服务的 [run](https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/app/server.go#L514) 方法。我们直接看向和 Dockershim 相关的部分，划到靠近函数末尾的部分，我们可以看到在真正启动前，kubelet 执行了一个 [kubelet.PreInitRuntimeService](https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/app/server.go#L796) 的操作。
 
 > 这个 PreInitRuntimeService 方法做了什么事情呢？
 
@@ -181,11 +181,202 @@ func PreInitRuntimeService(kubeCfg *kubeletconfiginternal.KubeletConfiguration,
 
 我们可以在 kubelet 目录下找到 `kubelet_dockershim.go`，该文件里即实现了这个 [runDockershim](https://github.com/kubernetes/kubernetes/blob/v1.22.0/pkg/kubelet/kubelet_dockershim.go#L30) 方法，它会去调用 dockershim 的相关服务代码并启动一个 `dockerServer`。
 
-很显然， kubelet 是通过这个 dockershim 服务包装的一层 CRI 接口调用 docker 启动 Pod 容器的。我们不妨看下 kubelet 实际是怎么去起 Pod 的，然后再来看看调用运行时服务这块的实现细节。
+很显然， kubelet 是通过这个 dockershim 服务包装的一层 CRI 接口调用 docker 启动 Pod 容器的。我们不妨看下 kubelet 实际是怎么去起 Pod 的，然后再来看看它是如何调用的容器运行时，这块的实现细节。
 
-### 通过 dockershim 服务 syncPod
+### 通用容器运行时管理器 kubeGenericRuntimeManager
 
-TODO.
+回到 cmd/kubelet/app/server.go，在执行了 `PreInitRuntimeService` 之后，不难发现 kubelet 会去执行 [RunKubelet](https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/app/server.go#L1108)，并最终通过 [kubelet.NewMainKubelet](https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/app/server.go#L1269) 来初始化 kubelet 服务实例。
+
+*注：关于 kubelet 完整的启动逻辑，有位网易的同学写了一个[系列文章](https://mp.weixin.qq.com/s/g3C0alyd21fNhbj4OqPprQ)，有兴趣的朋友可以看看。*
+
+这里面有关 runtime 部分最重要的就是[这一段](https://github.com/kubernetes/kubernetes/blob/v1.22.0/pkg/kubelet/kubelet.go#L662)了：
+
+```
+runtime, err := kuberuntime.NewKubeGenericRuntimeManager(
+    ...
+)
+```
+
+这里初始化了一个 kubeGenericRuntimeManager 的对象，它可以做哪些事情呢？我们暂且按下不表，先从 kubelet 这一层找找入口。回过头来，我们再来看看 kubelet 启动入口 `NewMainKubelet` 这块。可以看到，在初始化 `kubeGenericRuntimeManager` 之前，kubelet 初始化了一个 workQueue，并且初始化了一批 podWorker：
+
+```
+klet.podWorkers = newPodWorkers(
+    klet.syncPod,
+    klet.syncTerminatingPod,
+    klet.syncTerminatedPod,
+
+    kubeDeps.Recorder,
+    klet.workQueue,
+    klet.resyncInterval,
+    backOffPeriod,
+    klet.podCache,
+)
+```
+
+熟悉 k8s 异步调谐这套控制器逻辑的朋友，应该能猜到，没错，这个 `podWorker` 就是监听 kubelet 关注的 Pod 资源的变化，并执行相应的调谐逻辑。这里我们看一下 `syncPod` 这块的实现。
+
+*注：有兴趣的朋友可以看看 `syncPod` 方法的[注释部分](https://github.com/kubernetes/kubernetes/blob/v1.22.0/pkg/kubelet/kubelet.go#L1498)。*
+
+syncPod 方法里的其他细节部分忽略，我们直接关注最终调用容器运行时服务同步 Pod 的[操作部分](https://github.com/kubernetes/kubernetes/blob/v1.22.0/pkg/kubelet/kubelet.go#L1729)：
+
+```
+result := kl.containerRuntime.SyncPod(pod, podStatus, pullSecrets, kl.backOff)
+```
+
+可以看到，这里 kubelet 实例调用的 [containerRuntime](https://github.com/kubernetes/kubernetes/blob/v1.22.0/pkg/kubelet/kubelet.go#L695) 毫无疑问便是之前 kubelet 在 `NewMainKubelet` 初始化 `kubeGenericRuntimeManager` 时创建出来的 `runtime` 实例：
+
+```
+runtime, err := kuberuntime.NewKubeGenericRuntimeManager(
+    ...
+)
+klet.containerRuntime = runtime
+```
+
+那么，这个 runtime manager 具体是怎么调用容器运行时服务来 SyncPod 的呢？
+
+### 调用 runtime service 来 SyncPod
+
+我们不妨先来看看 SyncPod 方法的注释部分：
+
+```
+// SyncPod syncs the running pod into the desired pod by executing following steps:
+//
+//  1. Compute sandbox and container changes.
+//  2. Kill pod sandbox if necessary.
+//  3. Kill any containers that should not be running.
+//  4. Create sandbox if necessary.
+//  5. Create ephemeral containers.
+//  6. Create init containers.
+//  7. Create normal containers.
+func (m *kubeGenericRuntimeManager) SyncPod(pod *v1.Pod, podStatus *kubecontainer.PodStatus, pullSecrets []v1.Secret, backOff *flowcontrol.Backoff) (result kubecontainer.PodSyncResult) {
+	...
+}
+```
+
+可以看到，这就是一次经典的调谐逻辑。按照它的说法，它会计算 Pod 当前的状态，然后按需清理环境，并尝试保证 Pod Sandbox 及相关容器（依次是 ephemeral container、init container 以及应用容器）处于运行状态。快速浏览了一下 `SyncPod` 具体实现之后，不难发现，它将一些具体的实现部分放到了几个单独的方法里，如：[createSandbox](https://github.com/kubernetes/kubernetes/blob/v1.22.0/pkg/kubelet/kuberuntime/kuberuntime_manager.go#L802)、[startContainer](https://github.com/kubernetes/kubernetes/blob/v1.22.0/pkg/kubelet/kuberuntime/kuberuntime_manager.go#L884)。
+
+这里，我们以 `createSandbox` 为例，看看 kubelet 在创建 Pod Sandbox 这块，调用 dockershim 和其他支持 CRI 的容器运行时有什么不同。略过生成 Pod 配置等步骤，我们直接看最核心的这一段：
+
+```
+podSandBoxID, err := m.runtimeService.RunPodSandbox(podSandboxConfig, runtimeHandler)
+```
+
+隐约可以猜到，这个 runtimeService 应该就是一个统一实现调用 CRI 的入口，我们不妨回过头来，再看看 `kuberuntime.NewKubeGenericRuntimeManager` 这一步是怎么初始化这个 `runtimeService` 的：
+
+```
+runtime, err := kuberuntime.NewKubeGenericRuntimeManager(
+	...
+	kubeDeps.RemoteRuntimeService,
+	...
+)
+```
+
+这个 `kubeDeps` 又是何方神圣呢？顺着源头找，我们可以看到它是 `NewMainKubelet` 就传入进来的一个参数项。再顺着调用链的源头，我们找到了 cmd/kubelet/app/server.go 里的 `RunKubelet`：
+
+```
+if err := RunKubelet(s, kubeDeps, s.RunOnce); err != nil {
+	return err
+}
+```
+
+再往上走我们便可以发现，这个 `kubeDeps` 早在 kubelet `NewKubeletCommand` 时候就已经[做了初始化](https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/app/server.go#L269)：
+
+```
+// use kubeletServer to construct the default KubeletDeps
+kubeletDeps, err := UnsecuredDependencies(kubeletServer, utilfeature.DefaultFeatureGate)
+if err != nil {
+	klog.ErrorS(err, "Failed to construct kubelet dependencies")
+	os.Exit(1)
+}
+```
+
+但是仔细一看，里面并没有初始化 `RemoteRuntimeService` ，那什么时候做的呢？答案就在 `RunKubelet` 之前，前文提到的 `PreInitRuntimeService`，它在里面是[这样](https://github.com/kubernetes/kubernetes/blob/v1.22.0/pkg/kubelet/kubelet.go#L334)初始化 `kubeDeps` 的相关运行时依赖的：
+
+```
+if kubeDeps.RemoteRuntimeService, err = remote.NewRemoteRuntimeService(remoteRuntimeEndpoint, kubeCfg.RuntimeRequestTimeout.Duration); err != nil {
+	return err
+}
+```
+
+想必这个 pkg/kubelet/cri/remote/remote_runtime.go 便是统一实现了调用 CRI 的 client 接口。至此，我们大致了解了 kubelet 调用容器运行时的一个流程：
+
+1、在 `NewKubeletCommand` 命令入口便初始化了 `kubeDeps` 对象，用来存放一些 kubelet 需要的依赖；
+
+2、在 Kubelet 执行 `RunKubelet` 之前先执行 `PreInitRuntimeService` 根据 `containerRuntime` 参数初始化 `runtimeService` 句柄并存放到 `kubeDeps` 便于后面部分调用；
+
+3、在上一步骤中，如果是 docker 的话，会额外执行 `runDockershim` 启动 dockershim 服务；
+
+4、执行 `RunKubelet` 方法，它会执行 `NewMainKubelet` 并最终启动 kubelet 服务；
+
+5、在 `NewMainKubelet` 这一步初始化 Pod Worker 去执行 Pod 调谐，具体执行方法为 `syncPod`、`syncTerminatingPod` 等；
+
+6、此外，`NewMainKubelet` 这一步还在初始化 `KubeGenericRuntimeManager` 的时候传入了 `kubeDeps.RemoteRuntimeService`，然后将 runtime manager 该实例赋给了 `kubelet.containerRuntime`；
+
+7、当 kubelet 的 pod worker 进入主要的 syncPod 调谐周期里时，它会调用 runtime manager 的 `SyncPod` 方法去做同步；
+
+8、runtime manager 的 `SyncPod` 方法会做一系列判断，并执行相应的必要操作，比如 `createSandbox`，它会通过之前传入的 runtimeService 的 `RunPodSandbox` 方法调用具体的容器运行时服务做对应的事情。
+
+### dockershim 的 CRI 实现
+
+了解了 kubelet 调用容器运行时做 syncPod 调谐的这个过程以后，我们不妨再来看看 dockershim 究竟是怎样实现和 docker server 联动从而实现 CRI 这套标准接口。
+
+以 RunSandbox 这个接口为例，可以看到它里面[做了大量手动操作的事情](https://github.com/kubernetes/kubernetes/blob/v1.22.0/pkg/kubelet/dockershim/docker_sandbox.go#L89)：
+
+```
+// RunPodSandbox creates and starts a pod-level sandbox. Runtimes should ensure
+// the sandbox is in ready state.
+// For docker, PodSandbox is implemented by a container holding the network
+// namespace for the pod.
+// Note: docker doesn't use LogDirectory (yet).
+func (ds *dockerService) RunPodSandbox(ctx context.Context, r *runtimeapi.RunPodSandboxRequest) (*runtimeapi.RunPodSandboxResponse, error) {
+	...
+	// dockershim 会先保证 sandbox 镜像的存在，按需执行 docker pull
+	if err := ensureSandboxImageExists(ds.client, image); err != nil {
+		return nil, err
+	}
+	...
+	// dockershim 还会根据配置手动创建 infra 容器
+	createConfig, err := ds.makeSandboxDockerConfig(config, image)
+	if err != nil {
+		return nil, fmt.Errorf("failed to make sandbox docker config for pod %q: %v", config.Metadata.Name, err)
+	}
+	createResp, err := ds.client.CreateContainer(*createConfig)
+	if err != nil {
+		createResp, err = recoverFromCreationConflictIfNeeded(ds.client, *createConfig, err)
+	}
+	...
+	// dockershim 手动创建 checkpoint
+	if err = ds.checkpointManager.CreateCheckpoint(createResp.ID, constructPodSandboxCheckpoint(config)); err != nil {
+		return nil, err
+	}
+	...
+	// dockershim 调用 docker client 去启动容器
+	// 注意，这个时候 infra 容器的网络栈还没设置
+	err = ds.client.StartContainer(createResp.ID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to start sandbox container for pod %q: %v", config.Metadata.Name, err)
+	}
+	...
+	// 如果 dns 配置需要定制，dockershim 还会去手动重写该容器的 dns 配置
+	// 这块是真的没想到，`rewriteResolvFile` 里就是一些调用操作系统接口去重写文件
+	// docker client 难道没有提供设置 dns 的方式吗？
+	...
+		if err := rewriteResolvFile(containerInfo.ResolvConfPath, dnsConfig.Servers, dnsConfig.Searches, dnsConfig.Options); err != nil {
+			return nil, fmt.Errorf("rewrite resolv.conf failed for pod %q: %v", config.Metadata.Name, err)
+		}
+	...
+	// 为了能够调用 CNI 插件设置 infra 容器的网络栈
+	// dockershim 还专门实现了一个 network 部分，它会给 CNI 插件传入相应的参数，设置 infra 容器的网络栈
+	err = ds.network.SetUpPod(config.GetMetadata().Namespace, config.GetMetadata().Name, cID, config.Annotations, networkOptions)
+	...
+}
+```
+
+从上述注释部分不难看出，k8s 的 kubelet 为了兼容支持 docker 容器运行时，做了大量胶水性质的粘合操作，像设置 DNS Server 这种甚至是直接调用操作系统接口，以重写文件形式实现的！
+
+*注1：dns 配置这块为什么是直接重写文件呢？为了解答这个问题，笔者找到了[最初实现版本](https://github.com/kubernetes/kubernetes/commit/5960d87d2142055cd29ebbce0243652c4adc5742#diff-40b456472817aeb853ac82dfc7cdf7632243c09bd40a085b74c5748580f6e104R237)，这里面是没有做任何重写操作。继续回溯历史，可以找到这个 [PR](https://github.com/kubernetes/kubernetes/pull/43368)，似乎是 dockertool 时代就已经是这种方式设置 DNS 了，为了支持 k8s 的一些 DNS 设置方面的功能，社区沿用了之前 dockertool 的方案，在 dockershim 处理 Pod Sandbox 的时候也加入了重写 resolv.conf 的逻辑。那么，为什么 dockertool 会重写 resolv.conf 呢，继续回溯版本后，我发现了关于 dns 设置这块的一段[注释](https://github.com/kubernetes/kubernetes/blob/v0.21.4/pkg/kubelet/dockertools/manager.go#L1235)，它的出处是 [PR 10266](https://github.com/kubernetes/kubernetes/pull/10266)。终于破案了，由于当时 docker 还不支持 ndots 选项，k8s 选择的是 hack 掉 infra 容器的 resolv.conf 来解决这个问题。*
+
+*注2：接着上面一个注解，PR 10266 的确是通过魔改的方式给 k8s 加上了 ndots 选项的支持，但是，k8s 官方的核心开发人员 [thockin](https://github.com/thockin) 在同一年（ 2015 年）的九月份就给 docker 提了 PR（见 [PR #16031](https://github.com/moby/moby/pull/16031) ）加上了该功能。从这个事情也可以看出来，两个社区之间信息是存在不同步的，继续维护 dockershim 的话这样的问题还会不少。最好的解决办法恐怕还是将这些需要的功能通过 CRI 标准接口，然后容器运行时各自实现。*
 
 ### containerd beyond 1.0
 
