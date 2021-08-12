@@ -10,9 +10,8 @@ showAction: false
 
 2020年底，在 Kubernetes v1.20 正式发布的同时，k8s 官方还搞了一个大动作：他们宣布将会逐步弃用对 Docker 容器运行时的支持。为了不让用户惊慌失措，官方还贴心地写了一篇[博客文章](https://kubernetes.io/blog/2020/12/02/dont-panic-kubernetes-and-docker/)，对此事进行了一番详细说明。
 
-> K8s 为什么会弃用对 Docker 的支持呢？
 
-除了官方的这篇文章以外，很多科技媒体也做了相应的解读，比如 infoq 的这篇[文章](https://www.infoq.cn/article/47hcixefry1cetbzugwd)。但是，为什么一定要弃用 docker 呢？这方面的维护成本究竟有多高？为了得到一个明确的答案，笔者决定展开一次 k8s 源码的探索之旅，一探究竟。
+**K8s 为什么会弃用对 Docker 的支持呢？**除了官方的这篇文章以外，很多科技媒体也做了相应的解读，比如 infoq 的这篇[文章](https://www.infoq.cn/article/47hcixefry1cetbzugwd)。但是，为什么一定要弃用 docker 呢？这方面的维护成本究竟有多高？为了得到一个明确的答案，笔者决定展开一次 k8s 源码的探索之旅，一探究竟。
 
 <!--more-->
 
