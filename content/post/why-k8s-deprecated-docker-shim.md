@@ -452,7 +452,7 @@ ENV CONTAINERD_COMMIT 7146b01a3d7aaa146414cdfb0a6c96cfba5d9091
 
 出于开发和运维方面的复杂性考虑，无论是 k8s 官方弃用 dockershim 还是社区用户将运行时切换到 containerd 其实都是非常理性的做法。
 
-只是，似乎 docker 的那个时代，谢幕了。
+只是，似乎 docker 的那个时代已经落幕了。
 
 ## 参考
 
