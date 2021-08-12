@@ -1,0 +1,552 @@
+<!doctype html><html lang=zh-cn>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="IE=edge">
+<meta name=generator content="Hugo 0.87.0 with theme Tranquilpeak 0.4.7-BETA">
+<meta name=author content="Jacky Wu (Colstuwjx)">
+<meta name=keywords content>
+<meta name=description content="2020年底，在 Kubernetes v1.20 正式发布的同时，k8s 官方还搞了一个大动作：他们宣布将会逐步弃用对 Docker 容器运行时的支持。为了不让用户惊慌失措，官方还贴心地写了一篇博客文章，对此事进行了一番详细说明。
+
+K8s 为什么会弃用对 Docker 的支持呢？除了官方的这篇文章以外，很多科技媒体也做了相应的解读，比如 infoq 的这篇文章。但是，为什么一定要弃用 docker 呢？这方面的维护成本究竟有多高？为了得到一个明确的答案，笔者决定展开一次 k8s 源码的探索之旅，一探究竟。">
+<meta property="og:description" content="2020年底，在 Kubernetes v1.20 正式发布的同时，k8s 官方还搞了一个大动作：他们宣布将会逐步弃用对 Docker 容器运行时的支持。为了不让用户惊慌失措，官方还贴心地写了一篇博客文章，对此事进行了一番详细说明。
+
+K8s 为什么会弃用对 Docker 的支持呢？除了官方的这篇文章以外，很多科技媒体也做了相应的解读，比如 infoq 的这篇文章。但是，为什么一定要弃用 docker 呢？这方面的维护成本究竟有多高？为了得到一个明确的答案，笔者决定展开一次 k8s 源码的探索之旅，一探究竟。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【源码解读】从代码实现层面思考 Kubernetes 为什么会弃用对 Docker 的支持？">
+<meta name=twitter:title content="【源码解读】从代码实现层面思考 Kubernetes 为什么会弃用对 Docker 的支持？">
+<meta property="og:url" content="https://colstuwjx.github.io/2021/08/%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E4%BB%8E%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E5%B1%82%E9%9D%A2%E6%80%9D%E8%80%83-kubernetes-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E5%BC%83%E7%94%A8%E5%AF%B9-docker-%E7%9A%84%E6%94%AF%E6%8C%81/">
+<meta property="twitter:url" content="https://colstuwjx.github.io/2021/08/%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E4%BB%8E%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E5%B1%82%E9%9D%A2%E6%80%9D%E8%80%83-kubernetes-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E5%BC%83%E7%94%A8%E5%AF%B9-docker-%E7%9A%84%E6%94%AF%E6%8C%81/">
+<meta property="og:site_name" content="Colstuwjx's site">
+<meta property="og:description" content="2020年底，在 Kubernetes v1.20 正式发布的同时，k8s 官方还搞了一个大动作：他们宣布将会逐步弃用对 Docker 容器运行时的支持。为了不让用户惊慌失措，官方还贴心地写了一篇博客文章，对此事进行了一番详细说明。
+
+K8s 为什么会弃用对 Docker 的支持呢？除了官方的这篇文章以外，很多科技媒体也做了相应的解读，比如 infoq 的这篇文章。但是，为什么一定要弃用 docker 呢？这方面的维护成本究竟有多高？为了得到一个明确的答案，笔者决定展开一次 k8s 源码的探索之旅，一探究竟。">
+<meta name=twitter:description content="2020年底，在 Kubernetes v1.20 正式发布的同时，k8s 官方还搞了一个大动作：他们宣布将会逐步弃用对 Docker 容器运行时的支持。为了不让用户惊慌失措，官方还贴心地写了一篇博客文章，对此事进行了一番详细说明。
+
+K8s 为什么会弃用对 Docker 的支持呢？除了官方的这篇文章以外，很多科技媒体也做了相应的解读，比如 infoq 的这篇文章。但是，为什么一定要弃用 docker 呢？这方面的维护成本究竟有多高？为了得到一个明确的答案，笔者决定展开一次 k8s 源码的探索之旅，一探究竟。">
+<meta property="og:locale" content="zh-cn">
+<meta property="article:published_time" content="2021-08-11T10:00:00">
+<meta property="article:modified_time" content="2021-08-11T10:00:00">
+<meta property="article:section" content="cloudnative">
+<meta property="article:tag" content="cloudnative">
+<meta property="article:tag" content="kubernetes">
+<meta property="article:tag" content="docker">
+<meta name=twitter:card content="summary">
+<meta property="og:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+<meta property="twitter:image" content="https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg">
+<title>【源码解读】从代码实现层面思考 Kubernetes 为什么会弃用对 Docker 的支持？</title>
+<link rel=icon href=https://colstuwjx.github.io/favicon.png>
+<link rel=canonical href=https://colstuwjx.github.io/2021/08/%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB%E4%BB%8E%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%E5%B1%82%E9%9D%A2%E6%80%9D%E8%80%83-kubernetes-%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E5%BC%83%E7%94%A8%E5%AF%B9-docker-%E7%9A%84%E6%94%AF%E6%8C%81/>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin=anonymous>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin=anonymous>
+<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin=anonymous>
+<link rel=stylesheet href=https://colstuwjx.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css>
+<link rel=stylesheet href=https://colstuwjx.github.io/css/comments.css>
+</head>
+<body>
+<div id=blog>
+<header id=header data-behavior=4>
+<i id=btn-open-sidebar class="fa fa-lg fa-bars"></i>
+<div class=header-title>
+<a class=header-title-link href=https://colstuwjx.github.io/>Colstuwjx's site</a>
+</div>
+<a class=header-right-picture href=https://colstuwjx.github.io/#about>
+<img class=header-picture src=https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg alt=作者的图片>
+</a>
+</header>
+<nav id=sidebar data-behavior=4>
+<div class=sidebar-container>
+<div class=sidebar-profile>
+<a href=https://colstuwjx.github.io/#about>
+<img class=sidebar-profile-picture src=https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg alt=作者的图片>
+</a>
+<h4 class=sidebar-profile-name>Jacky Wu (Colstuwjx)</h4>
+<h5 class=sidebar-profile-bio>DevOPS & OpenSource Fans</h5>
+</div>
+<ul class=sidebar-buttons>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://colstuwjx.github.io/>
+<i class="sidebar-button-icon fa fa-lg fa-home"></i>
+<span class=sidebar-button-desc>首页</span>
+</a>
+</li>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://colstuwjx.github.io/categories>
+<i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+<span class=sidebar-button-desc>分类</span>
+</a>
+</li>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://colstuwjx.github.io/tags>
+<i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+<span class=sidebar-button-desc>标签</span>
+</a>
+</li>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://colstuwjx.github.io/archives>
+<i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+<span class=sidebar-button-desc>归档</span>
+</a>
+</li>
+</ul>
+<ul class=sidebar-buttons>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://github.com/Colstuwjx target=_blank rel=noopener>
+<i class="sidebar-button-icon fa fa-lg fa-github"></i>
+<span class=sidebar-button-desc>GitHub</span>
+</a>
+</li>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://colstuwjx.github.io/#about>
+<i class="sidebar-button-icon fa fa-lg fa-user"></i>
+<span class=sidebar-button-desc>关于</span>
+</a>
+</li>
+<li class=sidebar-button>
+<a class=sidebar-button-link href=https://colstuwjx.github.io/index.xml>
+<i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+<span class=sidebar-button-desc>RSS</span>
+</a>
+</li>
+</ul>
+<ul class=sidebar-buttons>
+</ul>
+</div>
+</nav>
+<div id=main data-behavior=4 class=hasCoverMetaIn>
+<article class=post itemscope itemtype=http://schema.org/BlogPosting>
+<div class="post-header main-content-wrap text-left">
+<h1 class=post-title itemprop=headline>
+【源码解读】从代码实现层面思考 Kubernetes 为什么会弃用对 Docker 的支持？
+</h1>
+</div>
+<div class="post-content markdown" itemprop=articleBody>
+<div class=main-content-wrap>
+<p>2020年底，在 Kubernetes v1.20 正式发布的同时，k8s 官方还搞了一个大动作：他们宣布将会逐步弃用对 Docker 容器运行时的支持。为了不让用户惊慌失措，官方还贴心地写了一篇<a href=https://kubernetes.io/blog/2020/12/02/dont-panic-kubernetes-and-docker/>博客文章</a>，对此事进行了一番详细说明。</p>
+<p><strong>K8s 为什么会弃用对 Docker 的支持呢？</strong>除了官方的这篇文章以外，很多科技媒体也做了相应的解读，比如 infoq 的这篇<a href=https://www.infoq.cn/article/47hcixefry1cetbzugwd>文章</a>。但是，为什么一定要弃用 docker 呢？这方面的维护成本究竟有多高？为了得到一个明确的答案，笔者决定展开一次 k8s 源码的探索之旅，一探究竟。</p>
+<h1 id=toc>TOC</h1>
+<ul>
+<li>前世
+<ul>
+<li>dockershim 的起点</li>
+<li>前 CRI 时代</li>
+</ul></li>
+<li>今生
+<ul>
+<li>启动前还要运行 dockershim 服务?</li>
+<li>kubeGenericRuntimeManager 的用途</li>
+<li>调用 runtime service 来 SyncPod</li>
+<li>dockershim 的 CRI 实现</li>
+<li>containerd beyond 1.0</li>
+<li>从 docker 到 containerd 的迁徙</li>
+</ul></li>
+<li>结语</li>
+<li>参考</li>
+</ul>
+<h2 id=前世>前世</h2>
+<p>在官方发布的博客文章里链接了一份<a href=https://kubernetes.io/blog/2020/12/02/dockershim-faq/>弃用 Dockershim 的常见问题解答</a>。在这份 FAQ 里，官方也提到了弃用 Dockershim 的根本原因：</p>
+<p><code>Docker itself doesn't currently implement CRI, thus the problem. Dockershim was always intended to be a temporary solution (hence the name: shim).</code></p>
+<p>翻译一下就是: Dockershim 是当初 k8s 引入 CRI 容器运行时标准接口的时候为了兼容 Docker，k8s 官方自行维护的一套临时解决方案，他们现在不想再维护了。</p>
+<h3 id=dockershim-的起点>dockershim 的起点</h3>
+<p>那么，dockershim 是什么时候加进去的呢？当时的背景又是怎样的？</p>
+<p>笔者找到了当初开发人员提的第一个<a href=https://github.com/kubernetes/kubernetes/pull/29553> PR </a>，PR title 里面有这么一句话：</p>
+<pre tabindex=0><code>yujuhong: ... Add a new docker integration with kubelet using the new runtime API ...</code></pre>
+<p>根据 PR 里给出的信息，顺藤摸瓜，笔者又找到了相关的<a href=https://github.com/kubernetes/kubernetes/issues/28789> umbrella issue </a>，主要是用来跟踪 CRI 对接的进展。也就是说，为了让 Docker 支持 CRI 标准，核心开发 <a href=https://github.com/yujuhong>yujuhong</a> 贡献了集成 docker 操作并且支持新版 runtime API 的一个组件（也即是 dockershim ），具体可以查阅<a href=https://github.com/kubernetes/kubernetes/issues/31459>这个 issue </a>，这是当时用来跟踪 dockershim 实现 CRI 接口专门开的一个 issue。</p>
+<p><em>注：dockershim 的代码位于 k8s 仓库的<a href=https://github.com/kubernetes/kubernetes/tree/v1.22.0/pkg/kubelet/dockershim>这里</a>，我们可以很方便地通过<a href="https://github.com/kubernetes/kubernetes/commits/master?after=5a732dcfe1d4ec0e8ee2871b106605b7f8a69b98+104&branch=master&path%5B%5D=pkg&path%5B%5D=kubelet&path%5B%5D=dockershim&path%5B%5D=docker_service.go">追溯 commit history </a>来找到首次提交，最终便找到了这个<a href=https://github.com/kubernetes/kubernetes/pull/29553> PR </a>。</em></p>
+<h3 id=前-cri-时代>前 CRI 时代</h3>
+<p>在翻阅这块代码的时候，笔者内心还有一个疑问: <strong>在 CRI 标准提出之前，k8s 是怎么和容器运行时交互的呢？</strong></p>
+<p>带着这个问题，笔者通过搜索找到了宣布引入 CRI 标准的<a href=https://kubernetes.io/blog/2016/12/container-runtime-interface-cri-in-kubernetes/>官方文章</a>。</p>
+<p>文章里介绍到，自 k8s 1.5 起，CRI 功能作为一个 alpha 特性被引入到 k8s，而早在 1.3 版本开始，k8s 就集成了 rkt 容器运行时的支持，作为替代 docker 的可选方案。</p>
+<p>然而，这些代码都是托管在 k8s kubelet 的核心代码里，后续维护和增加更多容器运行时支持都会变得越来越困难。</p>
+<p>那么，我们不妨来看看当时版本的 k8s 具体是怎么和 docker 及 rkt 引擎做交互的吧。定位代码的方式也很简单，直接选择 1.5 之前的版本，比如 v1.4.0 的 tag 版本。然后，既然官方说代码嵌在了 kubelet 代码里，我们可以直接切到<a href=https://github.com/kubernetes/kubernetes/blob/v1.4.0/pkg/kubelet> kubelet 代码的目录</a>，不难找到下面这两个子目录：</p>
+<ul>
+<li><p><a href=https://github.com/kubernetes/kubernetes/tree/v1.4.0/pkg/kubelet/rkt>rkt</a></p></li>
+<li><p><a href=https://github.com/kubernetes/kubernetes/tree/v1.4.0/pkg/kubelet/dockertools>dockertools</a></p></li>
+</ul>
+<p><em>注：这里还有一个小彩蛋，我们在该目录下还找到了一个<a href=https://github.com/kubernetes/kubernetes/tree/v1.4.0/pkg/kubelet/rktshim> rktshim </a>的目录，说明当初各个容器运行时尚未普及对 CRI 的支持时，在 k8s 代码里嵌 xxxshim 服务用作临时支持是一个常规操作。</em></p>
+<blockquote>
+<p>那么，它们到底是咋交互的呢？</p>
+</blockquote>
+<p>我们不难在 dockertools 目录下的 <a href=https://github.com/kubernetes/kubernetes/blob/v1.4.0/pkg/kubelet/dockertools/kube_docker_client.go>kube_docker_client.go</a> 里面找到一个<a href=https://github.com/kubernetes/kubernetes/blob/v1.4.0/pkg/kubelet/dockertools/kube_docker_client.go#L38> kubeDockerClient </a>的实现：</p>
+<pre tabindex=0><code>// kubeDockerClient is a wrapped layer of docker client for kubelet internal use. This layer is added to:
+//	1) Redirect stream for exec and attach operations.
+//	2) Wrap the context in this layer to make the DockerInterface cleaner.
+//	3) Stabilize the DockerInterface. The engine-api is still under active development, the interface
+//	is not stabilized yet. However, the DockerInterface is used in many files in Kubernetes, we may
+//	not want to change the interface frequently. With this layer, we can port the engine api to the
+//	DockerInterface to avoid changing DockerInterface as much as possible.
+//	(See
+//	  * https://github.com/docker/engine-api/issues/89
+//	  * https://github.com/docker/engine-api/issues/137
+//	  * https://github.com/docker/engine-api/pull/140)
+// TODO(random-liu): Swith to new docker interface by refactoring the functions in the old DockerInterface
+// one by one.
+type kubeDockerClient struct {
+	// timeout is the timeout of short running docker operations.
+	timeout time.Duration
+	client  *dockerapi.Client
+}</code></pre>
+<p>上面的注释也写的挺详细，大致意思就是它是一个和 Docker 交互的 client，并封装了一些 k8s 操作 Docker 需要的一些接口方法，这套接口方法具体定义在同一目录的 <a href=https://github.com/kubernetes/kubernetes/blob/v1.4.0/pkg/kubelet/dockertools/docker.go#L64>docker.go</a> 里：</p>
+<pre tabindex=0><code>// DockerInterface is an abstract interface for testability.  It abstracts the interface of docker client.
+type DockerInterface interface {
+	ListContainers(options dockertypes.ContainerListOptions) ([]dockertypes.Container, error)
+	InspectContainer(id string) (*dockertypes.ContainerJSON, error)
+	CreateContainer(dockertypes.ContainerCreateConfig) (*dockertypes.ContainerCreateResponse, error)
+	StartContainer(id string) error
+	StopContainer(id string, timeout int) error
+	RemoveContainer(id string, opts dockertypes.ContainerRemoveOptions) error
+	InspectImage(image string) (*dockertypes.ImageInspect, error)
+	ListImages(opts dockertypes.ImageListOptions) ([]dockertypes.Image, error)
+	PullImage(image string, auth dockertypes.AuthConfig, opts dockertypes.ImagePullOptions) error
+	RemoveImage(image string, opts dockertypes.ImageRemoveOptions) ([]dockertypes.ImageDelete, error)
+	ImageHistory(id string) ([]dockertypes.ImageHistory, error)
+	Logs(string, dockertypes.ContainerLogsOptions, StreamOptions) error
+	Version() (*dockertypes.Version, error)
+	Info() (*dockertypes.Info, error)
+	CreateExec(string, dockertypes.ExecConfig) (*dockertypes.ContainerExecCreateResponse, error)
+	StartExec(string, dockertypes.ExecStartCheck, StreamOptions) error
+	InspectExec(id string) (*dockertypes.ContainerExecInspect, error)
+	AttachToContainer(string, dockertypes.ContainerAttachOptions, StreamOptions) error
+	ResizeContainerTTY(id string, height, width int) error
+	ResizeExecTTY(id string, height, width int) error
+}</code></pre>
+<p>可以看到，k8s 在 Pod 的生命周期里需要用到的一些操作函数都已经包含在内。</p>
+<p>到这里，大致概括一下 k8s 在引入 CRI 阶段的一个迭代过程吧：</p>
+<p>1、在 CRI 标准落地之前，k8s 等于是为每一个容器运行时都实现了一个具体的对接，rkt 和 dockertools 目录下即对应的代码实现；</p>
+<p>2、官方于 1.5 版本开始正式引入 CRI 标准，并实现了对应的 shim 代码，如 dockershim 和 rktshim，在各个容器运行时尚未支持 CRI 标准的接口之前，充当一个胶水服务。</p>
+<h2 id=今生>今生</h2>
+<p>通过追溯之前的版本历史，笔者终于了解了 k8s 在支持容器运行时这块的&rdquo;坎坷经历&rdquo;。</p>
+<p>然而，最开始的问题始终未能得到解答：<strong>为什么非得要弃用 dockershim ? 继续维护下去的话究竟会有哪些具体的痛点呢？</strong></p>
+<p>毕竟，如果弃用 dockershim 的话，这意味着原本使用 docker 作为容器引擎的用户需要为此计划实施迁移到 containerd 或者其他支持 CRI 的容器运行时，这会是一个不小的时间和人力成本。</p>
+<p>想要解答这个问题，恐怕还得先看看 dockershim 目前的使用场景以及 CRI 的发展现状。</p>
+<h3 id=启动前还要运行-dockershim-服务>启动前还要运行 dockershim 服务?</h3>
+<p>时至今日，kubelet 要去启动一个 docker 容器的话，究竟是怎么和 dockershim 配合工作的呢？不妨再来看看 kubelet 这层的代码实现。</p>
+<p>这次笔者选的是刚发布不久的 <a href=https://github.com/kubernetes/kubernetes/tree/v1.22.0>v1.22</a> 版本的代码。</p>
+<p>kubelet 的启动入口位于 <a href=https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/kubelet.go#L36>cmd/kubelet/kubelet.go</a>，熟悉 <a href=https://github.com/spf13/cobra>cobra</a> 的朋友应该知道，它最终是会调用具体 Command 的 Run 方法。对于 kubelet 来说，调用的即是它实现的 <a href=https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/app/server.go#L155>Run</a> 方法。</p>
+<p>在经过一系列的处理后，kubelet 会走到核心的用来启动服务的 <a href=https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/app/server.go#L514>run</a> 方法。直接看和 Dockershim 相关的部分！划到靠近函数末尾的部分，可以看到在真正启动前，kubelet 执行了一个 <a href=https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/app/server.go#L796>kubelet.PreInitRuntimeService</a> 的操作。</p>
+<blockquote>
+<p>这个 PreInitRuntimeService 方法做了什么事情呢？</p>
+</blockquote>
+<p>不妨继续深入一下，看看它的<a href=https://github.com/kubernetes/kubernetes/blob/v1.22.0/pkg/kubelet/kubelet.go#L297>具体内容</a>：</p>
+<pre tabindex=0><code>// PreInitRuntimeService will init runtime service before RunKubelet.
+func PreInitRuntimeService(kubeCfg *kubeletconfiginternal.KubeletConfiguration,
+	kubeDeps *Dependencies,
+	crOptions *config.ContainerRuntimeOptions,
+	containerRuntime string,
+	runtimeCgroups string,
+	remoteRuntimeEndpoint string,
+	remoteImageEndpoint string,
+	nonMasqueradeCIDR string) error {
+	if remoteRuntimeEndpoint != &#34;&#34; {
+		// remoteImageEndpoint is same as remoteRuntimeEndpoint if not explicitly specified
+		if remoteImageEndpoint == &#34;&#34; {
+			remoteImageEndpoint = remoteRuntimeEndpoint
+		}
+	}
+
+	switch containerRuntime {
+	case kubetypes.DockerContainerRuntime:
+		klog.InfoS(&#34;Using dockershim is deprecated, please consider using a full-fledged CRI implementation&#34;)
+		if err := runDockershim(
+			kubeCfg,
+			kubeDeps,
+			crOptions,
+			runtimeCgroups,
+			remoteRuntimeEndpoint,
+			remoteImageEndpoint,
+			nonMasqueradeCIDR,
+		); err != nil {
+			return err
+		}
+	case kubetypes.RemoteContainerRuntime:
+		// No-op.
+		break
+	default:
+		return fmt.Errorf(&#34;unsupported CRI runtime: %q&#34;, containerRuntime)
+	}
+
+    ...
+}</code></pre>
+<p>可以看到，当 <code>containerRuntime</code> 参数是 <code>kubetypes.DockerContainerRuntime</code> 时，kubelet 需要执行额外的 <code>runDockershim</code> 方法去启动一个 <code>dockershim</code> 服务（可以看到，上面有一行警告 <code>dockershim</code> 已弃用的提醒），而如果是 <code>kubetypes.RemoteContainerRuntime</code> 类型的话，则什么事情也不用干。</p>
+<p>笔者还在 kubelet 目录下找到了 <code>kubelet_dockershim.go</code>，该文件里即实现了这个 <a href=https://github.com/kubernetes/kubernetes/blob/v1.22.0/pkg/kubelet/kubelet_dockershim.go#L30>runDockershim</a> 方法，它会去调用 dockershim 的相关服务代码并启动一个 <code>dockerServer</code>。</p>
+<p>很显然， kubelet 是通过这个 <code>dockershim</code> 服务包装的一层 CRI 接口调用 docker 启动 Pod 容器的。我们不妨看下 kubelet 实际是怎么去起 Pod 的，然后再来看看它是如何调用的容器运行时。</p>
+<h3 id=kubegenericruntimemanager-的用途>kubeGenericRuntimeManager 的用途</h3>
+<p>回到 <a href=https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/app/server.go>cmd/kubelet/app/server.go</a>，在执行了 <code>PreInitRuntimeService</code> 之后，不难发现 kubelet 会去执行 <a href=https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/app/server.go#L1108>RunKubelet</a>，并最终通过 <a href=https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/app/server.go#L1269>kubelet.NewMainKubelet</a> 来初始化 kubelet 服务实例。</p>
+<p><em>注：关于 kubelet 完整的启动逻辑，有位网易的同学写了一个<a href=https://mp.weixin.qq.com/s/g3C0alyd21fNhbj4OqPprQ>系列文章</a>，有兴趣的朋友可以看看。</em></p>
+<p>这里面有关 runtime 部分最重要的就是<a href=https://github.com/kubernetes/kubernetes/blob/v1.22.0/pkg/kubelet/kubelet.go#L662>这一段</a>了：</p>
+<pre tabindex=0><code>runtime, err := kuberuntime.NewKubeGenericRuntimeManager(
+    ...
+)</code></pre>
+<p>这里初始化了一个 <code>kubeGenericRuntimeManager</code> 的对象，它可以做哪些事情呢？我们暂且按下不表，先从 kubelet 这一层找找入口。回过头来，我们再来看看 kubelet 启动入口 <code>NewMainKubelet</code> 这块。可以看到，在初始化 <code>kubeGenericRuntimeManager</code> 之前，kubelet 初始化了一个 workQueue，并且初始化了一批 podWorker：</p>
+<pre tabindex=0><code>klet.podWorkers = newPodWorkers(
+    klet.syncPod,
+    klet.syncTerminatingPod,
+    klet.syncTerminatedPod,
+
+    kubeDeps.Recorder,
+    klet.workQueue,
+    klet.resyncInterval,
+    backOffPeriod,
+    klet.podCache,
+)</code></pre>
+<p>熟悉 k8s 异步调谐这套控制器逻辑的朋友，应该能猜到。没错，这个 <code>podWorker</code> 就是监听 kubelet 关注的 Pod 资源的变化，并执行相应的调谐逻辑。这里先看一下 <code>syncPod</code> 这块的实现。</p>
+<p><em>注：有兴趣的朋友可以看看 <code>syncPod</code> 方法的<a href=https://github.com/kubernetes/kubernetes/blob/v1.22.0/pkg/kubelet/kubelet.go#L1498>注释部分</a>，里面描述了 syncPod 的整体流程。</em></p>
+<p>syncPod 方法里的其他细节部分忽略，我们直接关注最终调用容器运行时服务同步 Pod 的<a href=https://github.com/kubernetes/kubernetes/blob/v1.22.0/pkg/kubelet/kubelet.go#L1729>操作部分</a>：</p>
+<pre tabindex=0><code>result := kl.containerRuntime.SyncPod(pod, podStatus, pullSecrets, kl.backOff)</code></pre>
+<p>可以看到，这里 kubelet 实例调用的 <a href=https://github.com/kubernetes/kubernetes/blob/v1.22.0/pkg/kubelet/kubelet.go#L695>containerRuntime</a> 毫无疑问便是之前 kubelet 在 <code>NewMainKubelet</code> 初始化 <code>kubeGenericRuntimeManager</code> 时创建出来的 <code>runtime</code> 实例：</p>
+<pre tabindex=0><code>runtime, err := kuberuntime.NewKubeGenericRuntimeManager(
+    ...
+)
+klet.containerRuntime = runtime</code></pre>
+<p>那么，这个 runtime manager 具体又是怎么调用容器运行时服务来 SyncPod 的呢？</p>
+<h3 id=调用-runtime-service-来-syncpod>调用 runtime service 来 SyncPod</h3>
+<p>我们不妨先来看看 SyncPod 方法的注释部分：</p>
+<pre tabindex=0><code>// SyncPod syncs the running pod into the desired pod by executing following steps:
+//
+//  1. Compute sandbox and container changes.
+//  2. Kill pod sandbox if necessary.
+//  3. Kill any containers that should not be running.
+//  4. Create sandbox if necessary.
+//  5. Create ephemeral containers.
+//  6. Create init containers.
+//  7. Create normal containers.
+func (m *kubeGenericRuntimeManager) SyncPod(pod *v1.Pod, podStatus *kubecontainer.PodStatus, pullSecrets []v1.Secret, backOff *flowcontrol.Backoff) (result kubecontainer.PodSyncResult) {
+	...
+}</code></pre>
+<p>可以看到，这就是一次经典的调谐逻辑。</p>
+<p>按照它的说法，它会计算 Pod 当前的状态，然后按需清理环境，并尝试保证 Pod Sandbox 及相关容器（依次是 ephemeral container、init container 以及应用容器）处于运行状态。</p>
+<p>快速浏览了一下 <code>SyncPod</code> 具体实现之后，不难发现，它将一些具体的实现部分放到了几个单独的方法里，如：<a href=https://github.com/kubernetes/kubernetes/blob/v1.22.0/pkg/kubelet/kuberuntime/kuberuntime_manager.go#L802>createSandbox</a>、<a href=https://github.com/kubernetes/kubernetes/blob/v1.22.0/pkg/kubelet/kuberuntime/kuberuntime_manager.go#L884>startContainer</a>。</p>
+<p>这里，以 <code>createSandbox</code> 为例，看看 kubelet 在创建 Pod Sandbox 这块，调用 dockershim 和其他支持 CRI 的容器运行时有什么不同。略过生成 Pod 配置等步骤，直接看最核心的这一段：</p>
+<pre tabindex=0><code>podSandBoxID, err := m.runtimeService.RunPodSandbox(podSandboxConfig, runtimeHandler)</code></pre>
+<p>隐约可以猜到，这个 runtimeService 应该就是一个统一实现调用 CRI 的入口，不妨回过头来再看看 <code>kuberuntime.NewKubeGenericRuntimeManager</code> 这一步是怎么初始化这个 <code>runtimeService</code> 的：</p>
+<pre tabindex=0><code>runtime, err := kuberuntime.NewKubeGenericRuntimeManager(
+	...
+	kubeDeps.RemoteRuntimeService,
+	...
+)</code></pre>
+<p>咦？这个 <code>kubeDeps</code> 又是何方神圣呢？顺着源头找，可以看到它是 <code>NewMainKubelet</code> 就传入进来的一个参数项。再顺着调用链的源头，笔者找到了 <a href=https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/app/server.go>cmd/kubelet/app/server.go</a> 里的 <code>RunKubelet</code>：</p>
+<pre tabindex=0><code>if err := RunKubelet(s, kubeDeps, s.RunOnce); err != nil {
+	return err
+}</code></pre>
+<p>再往上走便可以发现，这个 <code>kubeDeps</code> 早在 kubelet <code>NewKubeletCommand</code> 时候就已经<a href=https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/app/server.go#L269>做了初始化</a>：</p>
+<pre tabindex=0><code>// use kubeletServer to construct the default KubeletDeps
+kubeletDeps, err := UnsecuredDependencies(kubeletServer, utilfeature.DefaultFeatureGate)
+if err != nil {
+	klog.ErrorS(err, &#34;Failed to construct kubelet dependencies&#34;)
+	os.Exit(1)
+}</code></pre>
+<p>但是仔细一看，里面并没有初始化 <code>RemoteRuntimeService</code> 啊，那什么时候做的呢？</p>
+<p>啊！前文提到过，在执行 <code>RunKubelet</code> 前，kubelet 事先执行了 <code>PreInitRuntimeService</code>，它在里面是<a href=https://github.com/kubernetes/kubernetes/blob/v1.22.0/pkg/kubelet/kubelet.go#L334>这样</a>初始化 <code>kubeDeps</code> 的相关运行时依赖的：</p>
+<pre tabindex=0><code>if kubeDeps.RemoteRuntimeService, err = remote.NewRemoteRuntimeService(remoteRuntimeEndpoint, kubeCfg.RuntimeRequestTimeout.Duration); err != nil {
+	return err
+}</code></pre>
+<p>想必这个 <a href=https://github.com/kubernetes/kubernetes/blob/v1.22.0/pkg/kubelet/cri/remote/remote_runtime.go>pkg/kubelet/cri/remote/remote_runtime.go</a> 便是统一实现了调用 CRI 的 client 接口！</p>
+<p>至此，kubelet 调用容器运行时的流程基本浮出了水面：</p>
+<p>1、kubelet 在 <code>NewKubeletCommand</code> 命令入口便初始化了 <code>kubeDeps</code> 对象，用来存放一些 kubelet 需要的依赖；</p>
+<p>2、在 Kubelet 执行 <code>RunKubelet</code> 之前它会先执行 <code>PreInitRuntimeService</code> 根据 <code>containerRuntime</code> 参数初始化 <code>runtimeService</code> 句柄并存放到 <code>kubeDeps</code> 便于后面部分调用；</p>
+<p>3、在上一步骤中，如果是 docker 的话，会额外执行 <code>runDockershim</code> 启动 dockershim 服务；</p>
+<p>4、执行 <code>RunKubelet</code> 方法时，它会进一步去执行 <code>NewMainKubelet</code> 并最终启动 kubelet 服务；</p>
+<p>5、在 <code>NewMainKubelet</code> 这一步 kubelet 会初始化 Pod Worker 去执行 Pod 调谐，具体执行方法为 <code>syncPod</code>、<code>syncTerminatingPod</code> 等；</p>
+<p>6、此外，<code>NewMainKubelet</code> 这一步还在初始化 <code>KubeGenericRuntimeManager</code> 的时候传入了 <code>kubeDeps.RemoteRuntimeService</code>，然后将 runtime manager 该实例赋给了 <code>kubelet.containerRuntime</code>；</p>
+<p>7、当 kubelet 的 pod worker 进入主要的 syncPod 调谐周期时，它会调用 runtime manager 的 <code>SyncPod</code> 方法去做同步；</p>
+<p>8、runtime manager 的 <code>SyncPod</code> 方法会做一系列判断，并执行相应的必要操作，比如 <code>createSandbox</code>，它会通过之前传入的 runtimeService 的 <code>RunPodSandbox</code> 方法调用具体的容器运行时服务做对应的事情。</p>
+<h3 id=dockershim-的-cri-实现>dockershim 的 CRI 实现</h3>
+<p>嗯 ，大致了解了 kubelet 调用容器运行时做 syncPod 调谐的这个过程了。那 dockershim 又是怎样具体实现这一套运行时接口的呢？</p>
+<p>以 <code>RunSandbox</code> 这个接口为例，可以看到 dockershim 的实现里<a href=https://github.com/kubernetes/kubernetes/blob/v1.22.0/pkg/kubelet/dockershim/docker_sandbox.go#L89>做了大量手动操作的事情</a>：</p>
+<pre tabindex=0><code>// RunPodSandbox creates and starts a pod-level sandbox. Runtimes should ensure
+// the sandbox is in ready state.
+// For docker, PodSandbox is implemented by a container holding the network
+// namespace for the pod.
+// Note: docker doesn&#39;t use LogDirectory (yet).
+func (ds *dockerService) RunPodSandbox(ctx context.Context, r *runtimeapi.RunPodSandboxRequest) (*runtimeapi.RunPodSandboxResponse, error) {
+	...
+	// dockershim 会先保证 sandbox 镜像的存在，按需执行 docker pull
+	if err := ensureSandboxImageExists(ds.client, image); err != nil {
+		return nil, err
+	}
+	...
+	// dockershim 还会根据配置手动创建 infra 容器
+	createConfig, err := ds.makeSandboxDockerConfig(config, image)
+	if err != nil {
+		return nil, fmt.Errorf(&#34;failed to make sandbox docker config for pod %q: %v&#34;, config.Metadata.Name, err)
+	}
+	createResp, err := ds.client.CreateContainer(*createConfig)
+	if err != nil {
+		createResp, err = recoverFromCreationConflictIfNeeded(ds.client, *createConfig, err)
+	}
+	...
+	// dockershim 手动创建 checkpoint
+	if err = ds.checkpointManager.CreateCheckpoint(createResp.ID, constructPodSandboxCheckpoint(config)); err != nil {
+		return nil, err
+	}
+	...
+	// dockershim 调用 docker client 去启动容器
+	// 注意，这个时候 infra 容器的网络栈还没设置
+	err = ds.client.StartContainer(createResp.ID)
+	if err != nil {
+		return nil, fmt.Errorf(&#34;failed to start sandbox container for pod %q: %v&#34;, config.Metadata.Name, err)
+	}
+	...
+	// 如果 dns 配置需要定制，dockershim 还会去手动重写该容器的 dns 配置
+	// 这块是真的没想到，`rewriteResolvFile` 里就是一些调用操作系统接口去重写文件
+	// docker client 难道没有提供设置 dns 的方式吗？
+	...
+		if err := rewriteResolvFile(containerInfo.ResolvConfPath, dnsConfig.Servers, dnsConfig.Searches, dnsConfig.Options); err != nil {
+			return nil, fmt.Errorf(&#34;rewrite resolv.conf failed for pod %q: %v&#34;, config.Metadata.Name, err)
+		}
+	...
+	// 为了能够调用 CNI 插件设置 infra 容器的网络栈
+	// dockershim 还专门实现了一个 network 部分，它会给 CNI 插件传入相应的参数，设置 infra 容器的网络栈
+	err = ds.network.SetUpPod(config.GetMetadata().Namespace, config.GetMetadata().Name, cID, config.Annotations, networkOptions)
+	...
+}</code></pre>
+<p>笔者在上述代码里添加了一些自己的注释。可以看到，k8s 的 kubelet 为了兼容支持 docker 容器运行时，做了大量胶水性质的粘合操作，比如设置 DNS Server 这种甚至是直接调用操作系统接口，以重写 resolv.conf 文件形式实现的！</p>
+<p><em>注1：dns 配置这块为什么是直接重写文件呢？为了解答这个问题，笔者找到了<a href=https://github.com/kubernetes/kubernetes/commit/5960d87d2142055cd29ebbce0243652c4adc5742#diff-40b456472817aeb853ac82dfc7cdf7632243c09bd40a085b74c5748580f6e104R237>最初实现版本</a>，这里面是没有做任何重写操作。继续回溯历史，可以找到这个 <a href=https://github.com/kubernetes/kubernetes/pull/43368>PR #43368</a>，似乎 dockertool 时代就已经是这种方式设置 DNS 了，为了支持 k8s 的一些 DNS 设置方面的功能，社区沿用了之前 dockertool 的方案，在 dockershim 处理 Pod Sandbox 的时候也加入了重写 resolv.conf 的逻辑。那么，为什么 dockertool 会重写 resolv.conf 呢，继续回溯版本后，笔者发现了关于 dns 设置这块的一段<a href=https://github.com/kubernetes/kubernetes/blob/v0.21.4/pkg/kubelet/dockertools/manager.go#L1235>注释</a>，它的出处是 <a href=https://github.com/kubernetes/kubernetes/pull/10266>PR 10266</a>。终于破案了，由于当时 docker 还不支持 ndots 选项，k8s 选择的是 hack 掉 infra 容器的 resolv.conf 来解决这个问题。</em></p>
+<p><em>注2：接着上面一个注解，PR #10266 的确是通过魔改的方式给 k8s 加上了 ndots 选项的支持，但是，k8s 官方的核心开发人员 <a href=https://github.com/thockin>thockin</a> 在同一年（ 2015 年）的九月份就给 docker 提了 PR（见 <a href=https://github.com/moby/moby/pull/16031>PR #16031</a> ）加上了该功能。其实从这个事情也可以看出来，两个社区之间信息是不同步的，继续维护 dockershim 的话这样的问题还会不少。最好的解决办法恐怕还是将这些运行时方面的功能通过 CRI 标准接口定义好，然后容器运行时各自去实现。</em></p>
+<h3 id=containerd-beyond-1-0>containerd beyond 1.0</h3>
+<p>了解了 kubelet 调用 dockershim 这块的情况以后，笔者又想到了它的表兄弟 containerd，按道理它应该是 k8s 更为亲和的方案。那么，它在这个过程中扮演什么样的角色呢，现状又如何呢？</p>
+<p>带着这个疑问，笔者克隆了 <a href=https://github.com/containerd/containerd>containerd</a> 的仓库代码。通过 git log 很快便翻到了 commit 树的<a href=https://github.com/containerd/containerd/tree/15a96783ca2ac8c0eb2c400701e8eb335059c63b/>起点</a>：</p>
+<pre tabindex=0><code>commit 15a96783ca2ac8c0eb2c400701e8eb335059c63b (HEAD)
+Author: Michael Crosby &lt;crosbymichael@gmail.com&gt;
+Date:   Thu Nov 5 15:29:53 2015 -0800
+
+    Initial commit</code></pre>
+<p>可以看到，containerd 作为一个单独项目开发已经是 2015 年底了。有兴趣的朋友还可以翻阅一下这个起点 commit 的内容，其实等于就是从头开始写了&mldr;</p>
+<blockquote>
+<p>那么，docker 什么时候开始集成 containerd 作为它的容器运行时呢？</p>
+</blockquote>
+<p>其实也很简单，查一下 docker 仓库的 PR 历史就知道了。最终，笔者找到了 <a href=https://github.com/moby/moby/pull/20662>PR #20662</a>。在这个 PR 变更内容里，很容易就找到了集成的 containerd 的版本：</p>
+<pre tabindex=0><code>ENV CONTAINERD_COMMIT 7146b01a3d7aaa146414cdfb0a6c96cfba5d9091</code></pre>
+<p>对比 commit 提交时间，大致是 <a href=https://github.com/containerd/containerd/tree/v0.1.0>v0.1.0</a> 版本发布的时间。</p>
+<p>在 containerd 单独立项开发的两年以后，2017 年 12 月份，<a href=https://www.cncf.io/blog/2017/12/05/general-availability-containerd-1-0/>containerd 1.0 GA 了</a>，containerd 的核心开发人员 Michel Crosby 也<a href=https://www.docker.com/blog/containerd-ga-features-2/>撰文</a>讲述了 containerd 抵达 1.0 的这个旅程，其中包括像从 Graphdriver 切换到 Snapshot 这样的架构层面的重新设计。</p>
+<p>而在此之前的 11 月份，k8s 1.8 加入了对 containerd 运行时的支持，见 <a href=https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.8.md#container-runtime-interface-cri>1.8 changelog</a>。</p>
+<p><em>注：值得一提的是，引入 containerd 后的 docker 自身也不是太稳定（当然，剥离 containerd 之前笔者在生产环境使用 docker daemon 也遇到过不少问题），笔者自己就经历过一个诡异问题，具体可以参考笔者 17 年时候写的<a href=https://colstuwjx.github.io/2017/06/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%A4%B1%E8%B4%A5%E7%9A%84docker%E6%8E%92%E9%9A%9C%E7%BB%8F%E5%8E%86/>这篇博客</a>。那会儿的 containerd 尽管已经 1.0 了，UX 交互却还是相当简陋，有兴趣的朋友也可以看下笔者在 18 年初试玩 containerd 的<a href=https://colstuwjx.github.io/2018/02/%E5%8E%9F%E5%88%9B-%E5%B0%8F%E5%B0%9Dcontainerd%E4%B8%80/>经历</a>。</em></p>
+<h3 id=从-docker-到-containerd-的迁徙>从 docker 到 containerd 的迁徙</h3>
+<p>时至今日，CRI 已然在各个主流的容器运行时得到支持和普及，containerd 的一些周边支持也逐渐完善起来，比如命令行工具这块，<code>crictl</code> 沿用了之前 <code>docker</code> 留下来的操作习惯，相关命令均可以接近无缝地切换到 <code>crictl</code> 。</p>
+<p>业内也出现一些从 docker 引擎迁移到 containerd 的案例，如 eBay 早在 2019 年就将运行时<a href=https://www.infoq.cn/article/odslclsjvo8bnx*mbrbk>从 docker 切换到了 containerd</a>，各大公有云提供的 Kubernetes 服务也在 k8s 官方宣布弃用 dockershim 支持后不久便宣布<a href=https://thenewstack.io/azure-kubernetes-service-replaces-docker-with-containerd/>使用 containerd 替换 docker</a>。</p>
+<h2 id=结语>结语</h2>
+<p>呼，花了点时间，终于摸清了 dockershim 的身世背景。整体看下来，似乎和 k8s 官方博客里说的出入不大。笔者也感受到，在迭代过程中社区的开发人员为了弥补 k8s 和 docker 之间的 gap 做出的一些妥协，比如前面提到的实现 dockershim 让 docker 支持 CRI 标准，以及重写 resolv.conf 来支持 k8s 的一些 dns 功能等等。</p>
+<p>出于开发和运维方面的复杂性考虑，无论是 k8s 官方弃用 dockershim 还是社区用户将运行时切换到 containerd 其实都是非常理性的做法。</p>
+<p>只是，似乎 docker 的那个时代，谢幕了。</p>
+<h2 id=参考>参考</h2>
+<p>1、<a href=https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.20.md#deprecation>https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.20.md#deprecation</a></p>
+<p>2、<a href=https://kubernetes.io/blog/2020/12/02/dont-panic-kubernetes-and-docker/>https://kubernetes.io/blog/2020/12/02/dont-panic-kubernetes-and-docker/</a></p>
+<p>3、<a href=https://kubernetes.io/blog/2016/12/container-runtime-interface-cri-in-kubernetes/>https://kubernetes.io/blog/2016/12/container-runtime-interface-cri-in-kubernetes/</a></p>
+<p>4、<a href=https://github.com/kubernetes/community/blob/master/contributors/devel/sig-node/container-runtime-interface.md#design-docs-and-proposals>https://github.com/kubernetes/community/blob/master/contributors/devel/sig-node/container-runtime-interface.md#design-docs-and-proposals</a></p>
+<p>5、<a href=https://opencontainers.org/about/overview/>https://opencontainers.org/about/overview/</a></p>
+<p>6、<a href=https://dev.to/inductor/wait-docker-is-deprecated-in-kubernetes-now-what-do-i-do-e4m>https://dev.to/inductor/wait-docker-is-deprecated-in-kubernetes-now-what-do-i-do-e4m</a></p>
+</div>
+</div>
+<div id=post-footer class="post-footer main-content-wrap">
+<div class=post-footer-tags>
+<span class="text-color-light text-small">标签</span><br>
+<a class="tag tag--primary tag--small" href=https://colstuwjx.github.io/tags/cloudnative/>cloudnative</a>
+<a class="tag tag--primary tag--small" href=https://colstuwjx.github.io/tags/kubernetes/>kubernetes</a>
+<a class="tag tag--primary tag--small" href=https://colstuwjx.github.io/tags/docker/>docker</a>
+</div>
+<div class=post-actions-wrap>
+<nav>
+<ul class="post-actions post-action-nav">
+<li class=post-action>
+<a class="post-action-btn btn btn--disabled">
+<i class="fa fa-angle-left"></i>
+<span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+</a>
+</li>
+<li class=post-action>
+<a class="post-action-btn btn btn--default tooltip--top" href=https://colstuwjx.github.io/2021/04/%E7%BF%BB%E8%AF%91-%E9%9D%9E%E5%90%8C%E8%B4%A8%E5%8C%96%E4%BB%A3%E5%B8%81/ data-tooltip="[ 翻译 ] 非同质化代币">
+<span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+<i class="fa fa-angle-right"></i>
+</a>
+</li>
+</ul>
+</nav>
+<ul class="post-actions post-action-share">
+<li class="post-action hide-lg hide-md hide-sm">
+<a class="post-action-btn btn btn--default btn-open-shareoptions" href=#btn-open-shareoptions>
+<i class="fa fa-share-alt"></i>
+</a>
+</li>
+<li class=post-action>
+<a class="post-action-btn btn btn--default" href=#>
+<i class="fa fa-list"></i>
+</a>
+</li>
+</ul>
+</div>
+</div>
+</article>
+<footer id=footer class=main-content-wrap>
+<span class=copyrights>
+&copy; 2021 Powered by Hugo with tranquilpeak. All Rights Reserved
+</span>
+</footer>
+</div>
+<div id=bottom-bar class=post-bottom-bar data-behavior=4>
+<div class=post-actions-wrap>
+<nav>
+<ul class="post-actions post-action-nav">
+<li class=post-action>
+<a class="post-action-btn btn btn--disabled">
+<i class="fa fa-angle-left"></i>
+<span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+</a>
+</li>
+<li class=post-action>
+<a class="post-action-btn btn btn--default tooltip--top" href=https://colstuwjx.github.io/2021/04/%E7%BF%BB%E8%AF%91-%E9%9D%9E%E5%90%8C%E8%B4%A8%E5%8C%96%E4%BB%A3%E5%B8%81/ data-tooltip="[ 翻译 ] 非同质化代币">
+<span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+<i class="fa fa-angle-right"></i>
+</a>
+</li>
+</ul>
+</nav>
+<ul class="post-actions post-action-share">
+<li class="post-action hide-lg hide-md hide-sm">
+<a class="post-action-btn btn btn--default btn-open-shareoptions" href=#btn-open-shareoptions>
+<i class="fa fa-share-alt"></i>
+</a>
+</li>
+<li class=post-action>
+<a class="post-action-btn btn btn--default" href=#>
+<i class="fa fa-list"></i>
+</a>
+</li>
+</ul>
+</div>
+</div>
+<div id=share-options-bar class=share-options-bar data-behavior=4>
+<i id=btn-close-shareoptions class="fa fa-close"></i>
+<ul class=share-options>
+</ul>
+</div>
+<div id=share-options-mask class=share-options-mask></div>
+</div>
+<div id=about>
+<div id=about-card>
+<div id=about-btn-close>
+<i class="fa fa-remove"></i>
+</div>
+<img id=about-card-picture src=https://res.cloudinary.com/ddhitj0ja/image/upload/v1581899652/me_jfkg8t.jpg alt=作者的图片>
+<h4 id=about-card-name>Jacky Wu (Colstuwjx)</h4>
+<div id=about-card-bio>DevOPS & OpenSource Fans</div>
+<div id=about-card-job>
+<i class="fa fa-briefcase"></i>
+<br>
+DevOPS Engineer
+</div>
+<div id=about-card-location>
+<i class="fa fa-map-marker"></i>
+<br>
+Shanghai, China
+</div>
+</div>
+</div>
+<div id=cover style=background-image:url(https://res.cloudinary.com/ddhitj0ja/image/upload/v1581843208/pic_nfgplt.jpg)></div>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin=anonymous></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin=anonymous></script>
+<script src=https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin=anonymous></script>
+<script src=https://colstuwjx.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js></script>
+<script lang=javascript>window.onload=updateMinWidth,window.onresize=updateMinWidth,document.getElementById("sidebar").addEventListener("transitionend",updateMinWidth);function updateMinWidth(){var b=document.getElementById("sidebar"),a=document.getElementById("main"),c,d,e;a.style.minWidth="",c=getComputedStyle(a).getPropertyValue("min-width"),d=getComputedStyle(b).getPropertyValue("width"),e=getComputedStyle(b).getPropertyValue("left"),a.style.minWidth=`calc(${c} - ${d} - ${e})`}</script>
+<script>$(document).ready(function(){hljs.configure({classPrefix:'',useBR:!1}),$('pre.code-highlight > code, pre > code').each(function(b,a){$(this).hasClass('codeblock')||$(this).addClass('codeblock'),hljs.highlightBlock(a)})})</script>
+</body>
+</html>
