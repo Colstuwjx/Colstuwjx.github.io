@@ -17,22 +17,9 @@ aliases:
 
 <!--more-->
 
-# TOC
+<!--toc-->
 
-- 前世
-	- dockershim 的起点
-	- 前 CRI 时代
-- 今生
-	- 启动前还要运行 dockershim 服务?
-	- kubeGenericRuntimeManager 的用途
-	- 调用 runtime service 来 SyncPod
-	- dockershim 的 CRI 实现
-	- containerd beyond 1.0
-	- 从 docker 到 containerd 的迁徙
-- 结语
-- 参考
-
-## 前世
+# 前世
 
 在官方发布的博客文章里链接了一份[弃用 Dockershim 的常见问题解答](https://kubernetes.io/blog/2020/12/02/dockershim-faq/)。在这份 FAQ 里，官方也提到了弃用 Dockershim 的根本原因：
 
@@ -40,7 +27,7 @@ aliases:
 
 翻译一下就是: Dockershim 是当初 k8s 引入 CRI 容器运行时标准接口的时候为了兼容 Docker，k8s 官方自行维护的一套临时解决方案，他们现在不想再维护了。
 
-### dockershim 的起点
+## dockershim 的起点
 
 那么，dockershim 是什么时候加进去的呢？当时的背景又是怎样的？
 
@@ -54,7 +41,7 @@ yujuhong: ... Add a new docker integration with kubelet using the new runtime AP
 
 *注：dockershim 的代码位于 k8s 仓库的[这里](https://github.com/kubernetes/kubernetes/tree/v1.22.0/pkg/kubelet/dockershim)，我们可以很方便地通过[追溯 commit history ](https://github.com/kubernetes/kubernetes/commits/master?after=5a732dcfe1d4ec0e8ee2871b106605b7f8a69b98+104&branch=master&path%5B%5D=pkg&path%5B%5D=kubelet&path%5B%5D=dockershim&path%5B%5D=docker_service.go)来找到首次提交，最终便找到了这个[ PR ](https://github.com/kubernetes/kubernetes/pull/29553)。*
 
-### 前 CRI 时代
+## 前 CRI 时代
 
 在翻阅这块代码的时候，笔者内心还有一个疑问: **在 CRI 标准提出之前，k8s 是怎么和容器运行时交互的呢？**
 
@@ -133,7 +120,7 @@ type DockerInterface interface {
 
 2、官方于 1.5 版本开始正式引入 CRI 标准，并实现了对应的 shim 代码，如 dockershim 和 rktshim，在各个容器运行时尚未支持 CRI 标准的接口之前，充当一个胶水服务。
 
-## 今生
+# 今生
 
 通过追溯之前的版本历史，笔者终于了解了 k8s 在支持容器运行时这块的"坎坷经历"。
 
@@ -143,7 +130,7 @@ type DockerInterface interface {
 
 想要解答这个问题，恐怕还得先看看 dockershim 目前的使用场景以及 CRI 的发展现状。
 
-### 启动前还要运行 dockershim 服务?
+## 启动前还要运行 dockershim 服务?
 
 时至今日，kubelet 要去启动一个 docker 容器的话，究竟是怎么和 dockershim 配合工作的呢？不妨再来看看 kubelet 这层的代码实现。
 
@@ -205,7 +192,7 @@ func PreInitRuntimeService(kubeCfg *kubeletconfiginternal.KubeletConfiguration,
 
 很显然， kubelet 是通过这个 `dockershim` 服务包装的一层 CRI 接口调用 docker 启动 Pod 容器的。我们不妨看下 kubelet 实际是怎么去起 Pod 的，然后再来看看它是如何调用的容器运行时。
 
-### kubeGenericRuntimeManager 的用途
+## kubeGenericRuntimeManager 的用途
 
 回到 [cmd/kubelet/app/server.go](https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/app/server.go)，在执行了 `PreInitRuntimeService` 之后，不难发现 kubelet 会去执行 [RunKubelet](https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/app/server.go#L1108)，并最终通过 [kubelet.NewMainKubelet](https://github.com/kubernetes/kubernetes/blob/v1.22.0/cmd/kubelet/app/server.go#L1269) 来初始化 kubelet 服务实例。
 
@@ -256,7 +243,7 @@ klet.containerRuntime = runtime
 
 那么，这个 runtime manager 具体又是怎么调用容器运行时服务来 SyncPod 的呢？
 
-### 调用 runtime service 来 SyncPod
+## 调用 runtime service 来 SyncPod
 
 我们不妨先来看看 SyncPod 方法的注释部分：
 
@@ -346,7 +333,7 @@ if kubeDeps.RemoteRuntimeService, err = remote.NewRemoteRuntimeService(remoteRun
 
 8、runtime manager 的 `SyncPod` 方法会做一系列判断，并执行相应的必要操作，比如 `createSandbox`，它会通过之前传入的 runtimeService 的 `RunPodSandbox` 方法调用具体的容器运行时服务做对应的事情。
 
-### dockershim 的 CRI 实现
+## dockershim 的 CRI 实现
 
 嗯 ，大致了解了 kubelet 调用容器运行时做 syncPod 调谐的这个过程了。那 dockershim 又是怎样具体实现这一套运行时接口的呢？
 
@@ -408,7 +395,7 @@ func (ds *dockerService) RunPodSandbox(ctx context.Context, r *runtimeapi.RunPod
 
 *注2：接着上面一个注解，PR #10266 的确是通过魔改的方式给 k8s 加上了 ndots 选项的支持，但是，k8s 官方的核心开发人员 [thockin](https://github.com/thockin) 在同一年（ 2015 年）的九月份就给 docker 提了 PR（见 [PR #16031](https://github.com/moby/moby/pull/16031) ）加上了该功能。其实从这个事情也可以看出来，两个社区之间信息是不同步的，继续维护 dockershim 的话这样的问题还会不少。最好的解决办法恐怕还是将这些运行时方面的功能通过 CRI 标准接口定义好，然后容器运行时各自去实现。*
 
-### containerd beyond 1.0
+## containerd beyond 1.0
 
 了解了 kubelet 调用 dockershim 这块的情况以后，笔者又想到了它的表兄弟 containerd，按道理它应该是 k8s 更为亲和的方案。那么，它在这个过程中扮演什么样的角色呢，现状又如何呢？
 
@@ -442,13 +429,13 @@ ENV CONTAINERD_COMMIT 7146b01a3d7aaa146414cdfb0a6c96cfba5d9091
 
 *注2：此外，值得一提的是，引入 containerd 后的 docker 自身也不是太稳定（当然，剥离 containerd 之前笔者在生产环境使用 docker daemon 也遇到过不少问题），笔者自己就经历过一个诡异问题，具体可以参考笔者 17 年时候写的[这篇博客](https://colstuwjx.github.io/2017/06/%E8%AE%B0%E4%B8%80%E6%AC%A1%E5%A4%B1%E8%B4%A5%E7%9A%84docker%E6%8E%92%E9%9A%9C%E7%BB%8F%E5%8E%86/)，现在回过头来看，可能和 containerd-shim 的这个玩法有关系。顺便说一句，那会儿的 containerd 尽管已经 1.0 了，UX 交互却还是相当简陋，这也是很多用户在 containerd 可以单独作为容器运行时选项时仍然坚持选择 docker 的重要原因之一。有兴趣的朋友可以看下笔者在 18 年初试玩 containerd 的[经历](https://colstuwjx.github.io/2018/02/%E5%8E%9F%E5%88%9B-%E5%B0%8F%E5%B0%9Dcontainerd%E4%B8%80/)。*
 
-### 从 docker 到 containerd 的迁徙
+## 从 docker 到 containerd 的迁徙
 
 时至今日，CRI 已然在各个主流的容器运行时得到支持和普及，containerd 的一些周边支持也逐渐完善起来，比如命令行工具这块，`crictl` 沿用了之前 `docker` 留下来的操作习惯，相关命令均可以接近无缝地切换到 `crictl` 。
 
 业内也出现一些从 docker 引擎迁移到 containerd 的案例，如 eBay 早在 2019 年就将运行时[从 docker 切换到了 containerd](https://www.infoq.cn/article/odslclsjvo8bnx*mbrbk)，各大公有云提供的 Kubernetes 服务也在 k8s 官方宣布弃用 dockershim 支持后不久便宣布[使用 containerd 替换 docker](https://thenewstack.io/azure-kubernetes-service-replaces-docker-with-containerd/)。
 
-## 结语
+# 结语
 
 呼，花了点时间，终于摸清了 dockershim 的身世背景。整体看下来，似乎和 k8s 官方博客里说的差不多。笔者也感受到，在迭代过程中社区的开发人员为了弥补 k8s 和 docker 之间的 gap 做出的一些妥协：比如前面提到的实现 dockershim 让 docker 支持 CRI 标准，以及重写 resolv.conf 来支持 k8s 的一些 dns 功能等等。
 
@@ -456,7 +443,7 @@ ENV CONTAINERD_COMMIT 7146b01a3d7aaa146414cdfb0a6c96cfba5d9091
 
 只是，似乎 docker 的那个时代已经落幕了。
 
-## 参考
+# 参考
 
 1、https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.20.md#deprecation
 
