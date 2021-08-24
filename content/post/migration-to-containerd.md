@@ -18,7 +18,7 @@ aliases:
 
 ## 背景
 
-首先介绍一下这件事情的背景。我们内部有运行多套 k8s 集群，为了消费 v1.20 版本引入的一些新特性，我们打算升级一下集群的版本。然而，一旦升级到 v1.20 的话，官方已经声明将会逐渐弃用对 `dockershim` 的支持。要不要把运行时也直接切掉呢？一番讨论过后，我们最终还是决定趁着这次升级集群的机会，把运行时也切换到 `containerd` 。
+首先介绍一下这件事情的背景。我们内部有运行多套 k8s 集群，为了消费 v1.20 版本引入的一些新特性，我们打算升级一下集群的版本。然而，一旦升级到 v1.20 ，官方已经明确表示将会逐渐弃用对 `dockershim` 的支持。要不要把运行时也一起切掉呢？一番讨论过后，我们最终还是决定趁着这次升级集群的机会，把运行时也切换到 `containerd` 。
 
 *注：关于弃用 dockershim 这块，笔者也专门写了一篇[文章](https://colstuwjx.github.io/dive-into-sourcecode-why-k8s-deprecated-dockershim/)分析代码层面维护 dockershim 的成本，有兴趣的朋友可以看看*
 
@@ -37,15 +37,17 @@ $ vim /etc/containerd/config.toml
 
 此外，我们在测试环境把 docker 切换到 containerd 以后发现之前的 docker 容器还有一些残留，这也需要运维手动清理。
 
-*注：如何将运行时自动安全地从 docker 切换到 containerd，可以参考 eBay 分享的[这篇文章](https://www.infoq.cn/article/odslclsjvo8bnx*mbrbk)*
+*注：如何将运行时自动安全地从 docker 切换到 containerd，可以参考 eBay 分享的这篇文章：https://www.infoq.cn/article/odslclsjvo8bnx\*mbrbk*
 
 ### 监控适配：cadvisor
 
-整个切换的过程除了中间的一点小插曲倒还算顺利，跑了几天发现似乎也挺稳定的（毕竟 docker 也是用的这个 runtime ...）。这是不是就完事了呢？等一下，咦，监控好像没数据了！什么情况？
+整个切换的过程除了中间的一点小插曲倒还算顺利，跑了几天发现似乎也挺稳定的（毕竟 docker 也是用的这个 runtime ）。这是不是就完事了呢？等一下，咦，监控好像没数据了！什么情况？
 
-原来，我们当初落地 k8s 的时候还搞了几个配套的周边组件，用来解决监控日志之类的需求，其中就有用到 cadvisor 来采集容器层面的基础指标，比如 CPU、内存使用率等等。为了区分每个业务应用的数据，便于做单独的监控和告警，笔者在 cadvisor 这一层也做了一些改动，详细见这个 [PR #2330](https://github.com/google/cadvisor/pull/2330)，主要就是设置了一个容器 env 白名单，然后把这些 env 变量作为各项监控指标的 label 对外提供，这样我们便可以传入一些标识应用的环境变量，比如 `APP_ID`，方便做应用维度的监控告警。
+原来，我们当初落地 k8s 的时候还搞了几个配套的周边组件，用来解决监控日志之类的需求，其中就有用到 cadvisor 来采集容器层面的基础指标，比如 CPU、内存使用率等等。
 
-但是，从这个 PR 的[评论部分](https://github.com/google/cadvisor/pull/2330#issuecomment-545656563)也可以看到，官方的开发人员指出，把容器的 env 作为标签加到 cadvisor 对外暴露的 `/metrics` 接口的话，不只是 docker，containerd 和其他运行时也都会受影响。因此，他建议把 `docker_env_metadata_whitelist` 这个参数改为统一的 `env_metadata_whitelist` 参数，这样所有容器运行时都可以消费这个 flag。
+为了区分每个业务应用的数据，便于做单独的监控和告警，笔者在 cadvisor 这一层也做了一些改动，详细信息见 [PR #2330](https://github.com/google/cadvisor/pull/2330)，主要就是设置了一个容器 env 白名单，然后把这些 env 变量作为各项监控指标的 label 对外提供，这样我们便可以传入一些标识应用的环境变量，比如 `APP_ID`，方便做应用维度的监控告警。
+
+但是，从这个 PR 的[评论部分](https://github.com/google/cadvisor/pull/2330#issuecomment-545656563)也可以看到，社区开发人员指出，把容器的 env 作为标签加到 cadvisor 对外暴露的 `/metrics` 接口的话，不只是 docker，containerd 和其他运行时也都会受影响。因此，他建议把 `docker_env_metadata_whitelist` 这个参数改成统一的 `env_metadata_whitelist`，这样所有容器运行时都可以消费这个 flag。
 
 当时因为时间精力有限，笔者选择的是暂时先搁置这个 PR，手动在自己 fork 的 repo 里 merge 了[该 commit ](https://github.com/Colstuwjx/cadvisor/commit/96c96bb801a85bdf3b2f88a605a9053a1f95806d)，随后在我们内网环境使用这份修改后的版本。然而时隔将近两年后，因为切换到 containerd 的缘故，终究还是得把这件事情做完。
 
@@ -97,7 +99,7 @@ go func() {
 ...
 ```
 
-如上，笔者在 cadvisor 业务逻辑的入口实现 [manager.go](https://github.com/google/cadvisor/blob/v0.40.0/manager/manager.go) 里面找到了相关事件的[处理循环](https://github.com/google/cadvisor/blob/v0.40.0/manager/manager.go#L1168)，见上面笔者添加的一些注释，似乎就是中规中矩的监听各个添加或删除的事件然后执行相应的操作。那么，我们不妨看看各个容器运行时具体是怎么实现的吧！
+如上，笔者在 cadvisor 业务逻辑的入口实现 [manager.go](https://github.com/google/cadvisor/blob/v0.40.0/manager/manager.go) 里面找到了相关事件的[处理循环](https://github.com/google/cadvisor/blob/v0.40.0/manager/manager.go#L1168)，见上面笔者添加的一些注释，似乎就是中规中矩的监听各个添加或删除的事件然后执行相应的操作。那么，我们不妨看看各个容器运行时具体的 handler 是怎么实现的吧！
 
 ```
 ...
@@ -105,9 +107,9 @@ container.RegisterContainerHandlerFactory(f, []watcher.ContainerWatchSource{watc
 ...
 ```
 
-咦？无论是 [docker](https://github.com/google/cadvisor/blob/v0.40.0/container/docker/factory.go#L388)，还是 [containerd](https://github.com/google/cadvisor/blob/v0.40.0/container/docker/factory.go#L388)，又或者是 [cri-o](https://github.com/google/cadvisor/blob/v0.40.0/container/crio/factory.go#L160)，全都是注册的 Raw 这个 watcher，根本没有去各自实现所谓的 `ContainerWatcher`。
+咦？无论是 [docker](https://github.com/google/cadvisor/blob/v0.40.0/container/docker/factory.go#L388)，还是 [containerd](https://github.com/google/cadvisor/blob/v0.40.0/container/docker/factory.go#L388)，又或者是 [cri-o](https://github.com/google/cadvisor/blob/v0.40.0/container/crio/factory.go#L160)，全都是注册的 Raw 这个 watcher，根本没有去实现各自的 `ContainerWatcher`。
 
-且继续看下去。笔者再次找到 manager 这块的代码，可以看到，各个容器运行时貌似是有机会去注册各自的 `watcher` 的
+且继续看下去。笔者再次找到 manager 这块的代码，可以看到，各个容器运行时貌似是有机会去注册单独的 `watcher`：
 
 ```
 // Start the container manager.
@@ -137,7 +139,9 @@ func (p *plugin) Register(factory info.MachineInfoFactory, fsInfo fs.FsInfo, inc
 }
 ```
 
-哈哈，直接返回的 `nil`！cadvisor 竟然根本就没去实现各个运行时的 `watcher`。那它怎么拿到容器的生命周期然后做监控采集的处理呢？答案就在 manager 单独加进去的这个 raw watcher。我们不妨一起来看看这个 raw watcher 具体的代码实现。watcher 最开始会初始化一个 inotify 的 watcher，并且会给出对应的 cgroup 挂载路径：
+哈哈，直接返回的 `nil`！那它怎么拿到容器的生命周期，然后做监控采集的处理呢？答案就在于 manager 单独加进去的这个 raw watcher。
+
+我们不妨一起来看看这个 raw watcher 具体的代码实现。watcher 最开始会初始化一个 inotify 的 watcher，然后会给出对应的 cgroup 挂载路径：
 
 ```
 func NewRawContainerWatcher() (watcher.ContainerWatcher, error) {
@@ -201,7 +205,7 @@ func (w *rawContainerWatcher) Start(events chan watcher.ContainerEvent) error {
 
 > 除此之外，还有一个问题就是，cadvisor 怎么采集 containerd 的 metrics 呢？
 
-翻阅代码之后，笔者也增加了一些信心：
+翻阅代码之后一目了然：
 
 ```
 func (h *containerdContainerHandler) GetStats() (*info.ContainerStats, error) {
@@ -251,7 +255,7 @@ func (h *Handler) GetStats() (*info.ContainerStats, error) {
 }
 ```
 
-soga，看来主要是依赖 cgroup 还有读取 /proc 文件系统来汇总的监控数据。所以从 docker 切换到 containerd，cadvisor 在监控采集这块的差别不大。
+soga，看来主要是依赖 cgroup 还有读取 /proc 文件系统来汇总的监控数据。所以从 docker 切换到 containerd，cadvisor 在监控采集这块的具体实现上差别不大。
 
 当然，前面提到的笔者自己做的一些修改，这次切换到 containerd 以后自然还是要做一下兼容的。做法也挺简单，就是按照社区开发人员建议的，合并这些 flag，然后统一做注入操作，这块笔者也给社区反馈了一个单独的 PR，见 [PR #2921](https://github.com/google/cadvisor/pull/2921)。
 
@@ -263,15 +267,13 @@ soga，看来主要是依赖 cgroup 还有读取 /proc 文件系统来汇总的�
 
 log-pilot 原本是监听的 docker event 来做事的，切换到 containerd 以后直接就给整罢工了。
 
-那么，这个方案到底能不能用在 containerd 上面呢？核心即是要解决下面三个问题：
+那么，这个方案到底能不能用在 containerd 上面呢？核心即是要解决下面两个问题：
 
-1. containerd 或者 CRI 能否也提供一套 event 机制供订阅消费？
+> 1. containerd 或者 CRI 能否也提供一套 event 机制供订阅消费？
 
-2. 能否通过 containerd 或者 CRI 获取得到容器的详细信息（最核心的如容器的 ID、logPath、env、volume mount 等）？
+> 2. 能否通过 containerd 或者 CRI 接口拿到容器的详细信息（最核心的如容器的 ID、logPath、env、volume mount 等）？
 
-3. log-pilot 是否支持 containerd 的标准输出日志以及它创建出来的 volume mount？
-
-这块确实还蛮棘手的，笔者也是花了大概一周左右的时间详细了解了一下 containerd 和 cri-api 的相关细节，终于有所收获。
+这些问题确实还蛮棘手的，笔者也是花了大概一周左右的时间详细了解了一下 containerd 和 cri-api 的相关细节，终于有所收获。
 
 话不多说，直接上代码。
 
@@ -294,7 +296,7 @@ go func() {
 }()
 ```
 
-可以看到，log-pilot 是调用 docker client 的 `Events` 方法获取事件信息，然后在拿到消息后执行对应的处理逻辑。那切换到 containerd 之后，怎么获取容器启停的这个事件源呢？翻遍[ CRI 接口](https://github.com/kubernetes/cri-api/blob/master/pkg/apis/services.go#L98)，笔者并没有找到任何有关 event 的接口：
+可以看到，log-pilot 确实是调用 docker client 的 `Events` 方法获取事件信息，然后在拿到消息后执行对应的处理逻辑。那切换到 containerd 之后，怎么获取容器启停的这个事件源呢？翻遍[ CRI 接口](https://github.com/kubernetes/cri-api/blob/master/pkg/apis/services.go#L98)，笔者并没有找到任何有关 event 的接口：
 
 ```
 // RuntimeService interface should be implemented by a container runtime.
@@ -321,7 +323,7 @@ type Subscriber interface {
 }
 ```
 
-containerd 确实是有提供事件订阅机制的，那么怎么使用呢？很遗憾，这方面的文档非常稀缺，笔者不得不通过代码里的 [testcase](https://github.com/containerd/containerd/blob/v1.5.5/events/exchange/exchange_test.go) 来了解具体的调用方式：
+containerd 还真有提供事件订阅机制，那么问题来了，怎么用呢？很遗憾，这方面的文档非常稀缺，笔者不得不通过代码里的 [testcase](https://github.com/containerd/containerd/blob/v1.5.5/events/exchange/exchange_test.go) 来了解具体的调用方式：
 
 ```
 func TestExchangeBasic(t *testing.T) {
@@ -344,7 +346,9 @@ func TestExchangeBasic(t *testing.T) {
 }
 ```
 
-OK，event 这块有了，那么第二个问题怎么解决呢？如何获取容器的明细信息呢？log-pilot 之前是通过调用 docker client 的 `ContainerList` 和 `ContainerInspect` 来获取容器的明细。那么，如今是否可以通过调用 containerd 对外暴露的 CRI 接口来实现这一步呢？如果可以的话，那这块代码便可以自然而然地推广到其他支持 CRI 接口的运行时了。
+OK，event 这块有了，那么第二个问题怎么解决呢？如何获取容器的明细信息呢？
+
+log-pilot 之前是通过调用 docker client 的 `ContainerList` 和 `ContainerInspect` 来获取容器的明细。那么，如今是否可以通过调用 containerd 对外暴露的 CRI 接口来实现这一步呢？如果可以的话，那这块代码便可以自然而然地推广到其他支持 CRI 接口的运行时了。
 
 然而，很遗憾，答案是否定的。这一块也是笔者最困惑的地方，CRI 标准里的确是有列出所有容器和获取某个容器详细状态的[接口](https://github.com/kubernetes/cri-api/blob/v0.22.1/pkg/apis/services.go#L42)：
 
@@ -359,9 +363,11 @@ ContainerStatus(containerID string) (*runtimeapi.ContainerStatus, error)
 
 然而，这上面接口返回的信息少了一些关键字段，比如 [runtimeapi.Container](https://github.com/kubernetes/cri-api/blob/v0.22.1/pkg/apis/runtime/v1alpha2/api.pb.go#L4141) 里面**根本就没有容器 env 和 volume 相关字段**，更让人迷惑的是，[CreateContainer](https://github.com/kubernetes-sigs/cri-tools/blob/v1.22.0/vendor/k8s.io/cri-api/pkg/apis/services.go#L35) 创建容器接口方法里却要求用户传入容器配置 [ContainerConfig](https://github.com/kubernetes/cri-api/blob/v0.22.1/pkg/apis/runtime/v1alpha2/api.pb.go#L3390)，里面就有 env 和 mount 相关的定义。
 
-再者，[runtimeapi.ContainerStatus](https://github.com/kubernetes/cri-api/blob/v0.22.1/pkg/apis/runtime/v1alpha2/api.pb.go#L4366) 里面尽管有 mount 字段，却不是全部的 volume mount 数据，比如在 Dockerfile 里通过 VOLUME 指令创建的 image volume 就不包含在内。
+再者，[runtimeapi.ContainerStatus](https://github.com/kubernetes/cri-api/blob/v0.22.1/pkg/apis/runtime/v1alpha2/api.pb.go#L4366) 里面尽管有 mount 字段，却不是全部的 volume mount 数据，比如在 Dockerfile 里通过 `VOLUME` 指令创建的 image volume 就不包含在内。
 
-事情似乎又走到了死胡同。诶？等一下，平时敲 `crictl inspect <CONTAINER_ID>` 的时候是可以看到 env 和 volume 的，`crictl` 这个工具它是怎么拿到的呢？翻阅了一下 crictl 工具的[代码实现](https://github.com/kubernetes-sigs/cri-tools/blob/v1.22.0/cmd/crictl/container.go#L390)以后，笔者恍然大悟：
+事情似乎又走到了死胡同。
+
+诶？等一下，平时敲 `crictl inspect <CONTAINER_ID>` 的时候是可以看到 env 和 volume 的，`crictl` 这个工具它是怎么拿到的呢？翻阅了 crictl 的[代码实现](https://github.com/kubernetes-sigs/cri-tools/blob/v1.22.0/cmd/crictl/container.go#L390)以后一下就恍然大悟了：
 
 ```
 var containerStatusCommand = &cli.Command{
@@ -418,7 +424,7 @@ func getRuntimeService(context *cli.Context) (internalapi.RuntimeService, error)
 }
 ```
 
-那么，cri-tool 为什么会选择用 grpc 的方式去调用呢？
+那么，cri-tool 为什么会选择用 grpc 的方式去调用 contaienrd 的接口，而不是标准的 CRI 呢？
 
 对比之下，笔者发现，`internalapi.RuntimeService` 返回的信息就是标准的 CRI 接口约定的内容，而 grpc 版本的返回里会附带一些额外信息，比如在执行 `crictl inspect <CONTAINER_ID>` 的时候，它在[这里](https://github.com/kubernetes-sigs/cri-tools/blob/v1.22.0/cmd/crictl/container.go#L866)会将获取的一些额外信息也打印输出到屏幕：
 
@@ -428,23 +434,25 @@ return outputStatusInfo(status, r.Info, output, tmplStr)
 
 这里的 [Info](https://github.com/kubernetes-sigs/cri-tools/blob/v1.22.0/vendor/k8s.io/cri-api/pkg/apis/runtime/v1alpha2/api.pb.go#L4550) 也即是调用 [ContainerStatus](https://github.com/kubernetes-sigs/cri-tools/blob/v1.22.0/vendor/k8s.io/cri-api/pkg/apis/runtime/v1alpha2/api.pb.go#L7781) 这个 grpc 接口拿到的 [ContainerStatusResponse](https://github.com/kubernetes-sigs/cri-tools/blob/v1.22.0/vendor/k8s.io/cri-api/pkg/apis/runtime/v1alpha2/api.pb.go#L4543) 里的其中一部分。
 
-OK，看上去只需要自己手动解析一下这个 `Info`，然后拿到对应的 env 和 volume 数据就行了。至此，前两个问题应该都有办法解决了。其实到这里，第三个问题也不攻自破了，`crictl inspect` 的时候我们便可以找到 containerd 容器标准输出日志的路径以及挂载的各种 volume mount。
+也就是说，要想拿到容器的 env 和完整的 volume mount 等这些"额外信息"，光靠 CRI 接口是不够用的（这感觉挺扯淡的）。
 
-总体来说 log-pilot 的设计还是不错的。通过少许的改造，我们是能够让 log-pilot 支持 containerd 的，笔者最终也是完成了这块的适配工作，详细改动见 [Colstuwjx/log-pilot PR #2](https://github.com/Colstuwjx/log-pilot/pull/2)。
+话说回来，要是想解决第二个问题，看上去只需要自己手动解析一下这个 `Info`，然后拿到对应的 env 和 volume 数据就行了。至此，基本都有解决办法了，可以开搞了！
+
+通过少许的改造，笔者最终也是完成了这块的适配工作，详细改动见 [Colstuwjx/log-pilot PR #2](https://github.com/Colstuwjx/log-pilot/pull/2)。
 
 在开发过程中，笔者也遇到了一些问题：
 
-1. 不同于 docker 容器默认输出的 jsonlog，containerd 容器标准输出的日志格式是 plain text，log-pilot 生成的 filebeat、fluentd 配置需要做相应的适配；
+1. 不同于 docker 容器默认输出的 jsonlog，containerd 容器标准输出的日志格式是 plain text，log-pilot 生成的 filebeat、fluentd 配置需要做一些相应的适配；
 
-2. containerd 置备的 volume 只是单纯作为卷挂载到容器里，并没有像 docker 那样作为一种资源显式管理起来，比如 docker 可以执行 `docker volume ls` 来查看对应的卷，需要统一封装一层，不能再完全照搬之前 inspect volume 这块的逻辑；
+2. containerd 置备的 volume 只是单纯作为卷挂载到容器里，并没有像 docker 那样作为一种资源显式管理起来，比如 docker 可以执行 `docker volume ls` 来查看对应的卷。因此，我们需要统一封装一层，不能再完全照搬之前 inspect volume 这块的逻辑；
 
-3. 在切换到 containerd 以后，如果机器上同时还跑着 docker daemon 的话，再用 docker 去启动一个容器的话，containerd 会监听到一些 exit 类型的垃圾事件，可能是错误拿到了 docker 容器的相关事件，解决办法也很简单：就是一个宿主机上只跑一种 runtime；
+3. 在切换到 containerd 以后，如果机器上同时还跑着 docker daemon ，再用 docker 去启动一个容器的话，containerd 会监听到一些 exit 类型的垃圾事件，怀疑可能是错误拿到了 docker 容器的相关事件。解决办法也很简单：就是一个宿主机上只跑一种 runtime；
 
-4. 在实际运行改版后的 log-pilot 后，笔者发现时不时会收到一条 task start 事件，一路追查下来发现，该容器的 ID 竟然是某个 Pod sandbox ID，想必 containerd 是监听到了 Pod 的 sandbox 容器启动事件。这块其实也比较迷惑，按道理 containerd 应该不会再向用户展示 sandbox 容器这一层了，事实上，从命令也可以看到，sandbox 是通过一个单独的命令来查询的，然而在 event 这一层它们又变成对等的 container 了，挺奇怪的逻辑。
+4. 在实际运行改版后的 log-pilot 后，笔者发现时不时会收到一条 task start 事件，一路追查下来发现，该容器的 ID 竟然是某个 Pod sandbox ID，想必 containerd 是监听到了 Pod 的 sandbox 容器启动事件。这块其实也比较迷惑，按道理 containerd 应该不会再向用户展示 sandbox 容器这一层了，事实上，从命令也可以看到，sandbox 是通过一个单独的命令来查询的，然而在 event 这一层它们又变成对等的 container 了，挺奇怪的逻辑。最终，笔者通过在拿到事件后手动检查一下是否是 Pod Sandbox ID 的 workaround 方式变相解决了这个问题。
 
 ## 结语
 
-这一番折腾下来总算搞定了，万万没想到最花时间精力的部分竟然是周边监控和日志组件的适配环节。
+这一番折腾下来总算搞定了，万万没想到最花时间精力的部分竟然是周边的监控和日志组件的适配。
 
 其实这个过程中间，相信大家也能看出来，k8s 和 docker 两个开发阵营之间的 gap 还是很多的，这里列举几个比较典型的吧：
 
@@ -452,19 +460,19 @@ OK，看上去只需要自己手动解析一下这个 `Info`，然后拿到对�
 
 - CRI 约定的只是 kubelet 管理容器相关需要的一些接口，至于 events、volume 这些都是没有包含在内的。其实个人认为至少应该把 image volume（即在 Dockerfile 里面通过 `VOLUME` 指定的匿名卷，它的定义会体现在 OCI 镜像里 ）和 container volume 这些给明确定义出来，而不是放任不管，然后在实现的时候一股脑塞到原生 grpc 接口的 extra info 里...
 
-- 用 crictl 或者类似的工具去调用 containerd 裸起一个容器，相信我，真不是一件简单的事儿。其实也能理解，这并不是 k8s 社区关注的重点；
+- 如果想用 crictl 或者类似的工具去调用 containerd 裸起一个容器，相信我，这真不是一件简单的事儿。其实也能理解，这并不是 k8s 社区关注的重点；
 
 - containerd 原生暴露的 event 接口里能够监听到 sandbox 容器 start 的事件，然而在查询容器这层面的接口又无法查到 Sandbox 容器的信息，那么 Sandbox 到底是不是一个 container 呢？似乎和 dockershim 时代的 infra container 相比，Sandbox 这个概念在 containerd 具体实现时变得更加模糊了；
 
-- containerd 自身是有区分 namespace 的，比如 docker 容器默认都在 `moby` 这个 namespace 下面，k8s 的则会是 `k8s.io`。这个 namespace 概念感觉有点类似于 jenkins 的 workspace 的意思，然而它是没有体现到 CRI 标准里的，这也就造成了我们实际在用 containerd 的时候，只有当找不到容器了，才会意识到有这个 namespace 的区分；
+- containerd 自身是有区分 namespace 的，比如 docker 容器默认都在 `moby` 这个 namespace 下面，k8s 的则会是 `k8s.io`。此 namespace 非 k8s 的那个彼 namespace。这个 namespace 概念感觉有点类似于 jenkins 的 workspace 的意思，然而它是没有体现到 CRI 标准里的，这也就造成了我们实际在用 containerd 的时候，只有当找不到容器了，才会意识到有这个 namespace 的区分；
 
-- 早期的云原生开发者多是站在 docker 的角度思考问题，这也是为什么 log-pilot 会直接选择把宿主机目录以只读形式挂载到它的容器里，这样来采集日志。然而，时代变了，今天回头再看 log-pilot 的这个做法，恐怕已经是有悖于云原生理念了，至少在安全性方面是很难达标的；
+- 早期的云原生开发者多是站在 docker 用户的角度思考问题，这也是为什么 log-pilot 会直接选择把宿主机目录以只读形式挂载到它的容器里，这样来采集日志。然而，时代变了，今天回头再看 log-pilot 的这个做法，恐怕已经是有悖于云原生理念了，至少在安全性方面是很难达标的；
 
 - docker 的 event 机制乍一看好像和 k8s 的 informer 机制差别不大，但是仔细一想其实出入挺大的：event 传递的是变化的增量信息，informer 除了传递这个变化以外，还鼓励和提倡遵循 "reconcile" 这套理念。
 
 *注：当然，以上这些也只是笔者个人看到的一些情况，未必是完全准确的，欢迎拍砖。*
 
-此外，这次迁移也给了笔者一次反思的机会。时移世易，有些在之前看起来理所当然的行为模式，如今回过头来看可能会产生一些新的看法。
+此外，这次迁移也给了笔者一次反思的机会。时移世易，有些在之前看起来理所当然的行为模式，如今回过头来看可能会有一些新的看法。
 
 完。
 
