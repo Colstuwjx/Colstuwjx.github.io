@@ -1,11 +1,13 @@
 ---
-title: "[ 原创 ] 小尝containerd（一）"
+title: "[ 原创 ] 小尝 containerd（一）"
 date: 2018-02-05T20:00:00+08:00
 tags: ["cloud-native", "containerd", "docker"]
 categories: ["cloud-native"]
 comments: false
 showMeta: false
 showAction: false
+aliases:
+    - /tasting-containerd-01/
 ---
 
 [containerd](https://containerd.io/)是一个开源的container runtime实现，也是docker背后管理容器生命周期的功臣，借着周末的一些时间，鄙人也小小把玩了一下containerd，有任何不对的地方欢迎指正。
