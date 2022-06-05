@@ -73,7 +73,7 @@ canonifyurls = true
   url = "/index.xml"
 
 [markup]
-  defaultMarkdownHandler = "blackfriday"
+  defaultMarkdownHandler = "goldmark"
 
 [params]
   # Customize date format use to render blog post date, categories and other
