@@ -1,5 +1,5 @@
 ---
-title: "[ 翻译 ] Kubernetes 是过早优化的危险信号"
+title: "[ 翻译 ] 引入 Kubernetes 是过早优化的危险信号"
 date: 2022-09-18T08:00:00+08:00
 tags: ["translate", "kubernetes"]
 categories: ["devops"]
